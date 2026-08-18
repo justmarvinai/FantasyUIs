@@ -3,12 +3,18 @@ import { PRIMITIVES } from './demos/primitives.ts';
 import { WIDGETS } from './demos/widgets.ts';
 import { SCREENS, FEEDBACK } from './demos/screens.ts';
 import { GACHA } from './demos/gacha.ts';
+import { KIT } from './demos/kit.ts';
+import { ROSTER } from './demos/roster.ts';
+import { COMBAT } from './demos/combat.ts';
 
 /** Every documented component, in the order the gallery lists them. */
 export const CATALOG: CatalogEntry[] = [
   ...PRIMITIVES,
+  ...KIT,
   ...WIDGETS,
+  ...COMBAT,
   ...GACHA,
+  ...ROSTER,
   ...FEEDBACK,
   ...SCREENS,
 ];

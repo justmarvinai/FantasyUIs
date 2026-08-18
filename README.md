@@ -2,10 +2,10 @@
 
 **A growing database of ready-to-use UI components for Fantasy & RPG web games.**
 
-66 components built from 354 art assets across 2 swappable themes and 2 icon
-collections. Vanilla TypeScript and CSS — zero runtime dependencies, no
-framework, no build plugin. Drops into any Vite project, React or not, or
-straight over a Phaser canvas as a DOM layer.
+106 components built from 494 art assets across 2 swappable themes, 2 icon
+collections and a tintable ornament set. Vanilla TypeScript and CSS — zero
+runtime dependencies, no framework, no build plugin. Drops into any Vite
+project, React or not, or straight over a Phaser canvas as a DOM layer.
 
 🔗 **[fantasy-u-is.vercel.app](https://fantasy-u-is.vercel.app)**
 
@@ -15,12 +15,14 @@ straight over a Phaser canvas as a DOM layer.
 
 | Group | Components |
 | --- | --- |
-| **Surfaces & Framing** | Panel, Frame, Divider, Banner |
-| **Controls** | Button, Tabs, Toggle, Slider, Select, TextInput, ContextMenu, RadialMenu |
-| **Data display** | Icon, Glyph, StatBar, Slot, Portrait, Tooltip, Badge, ItemCard |
+| **Surfaces & Framing** | Panel, **TintFrame**, Frame, Divider, Banner, **Carousel** |
+| **Controls** | Button, Tabs, Toggle, Slider, Select, TextInput, ContextMenu, RadialMenu, **SegmentedControl**, **NumberStepper**, **ConfirmSlider**, **Accordion**, **FilterBar**, **SortBar** |
+| **Data display** | Icon, Glyph, StatBar, Slot, Portrait, Tooltip, Badge, ItemCard, **ProgressRing**, **StatChip**, **CompareStats**, **StatRadar** |
 | **Game widgets** | InventoryGrid, ActionBar, UnitFrame, PartyFrame, BuffBar, CastBar, DialogueBox, QuestLog, QuestTracker, ShopPanel, LootWindow, CraftingPanel, SkillTree, StatsPanel, Paperdoll, Minimap, CurrencyBar, Leaderboard |
-| **Collection & live-ops** | ChampionCard, StarRating, AffinityBadge, SummonResult, TeamSlots, TurnMeter, EnergyBar, RewardTrack, DailyRewards, UpgradePanel, StageSelect, OfferCard, CountdownTimer, BottomNav, BattleControls, TierBadge |
-| **Feedback** | ToastStack, FloatingText, AchievementPopup |
+| **Combat & battle** | **BossHealthBar**, **ShieldBar**, **WaveTracker**, **DamageMeter**, **BattleLog**, **ComboCounter**, **ArenaMatchup** |
+| **Collection & live-ops** | ChampionCard, StarRating, AffinityBadge, SummonResult, TeamSlots, TurnMeter, EnergyBar, RewardTrack, DailyRewards, UpgradePanel, StageSelect, OfferCard, CountdownTimer, BottomNav, BattleControls, TierBadge, **ChampionList**, **SkillCard**, **MasteryGrid**, **ArtifactCard**, **ArtifactSet**, **RankUpPanel**, **ShardCounter**, **PowerRating**, **PityCounter**, **BannerCarousel**, **TopBar**, **VipProgress**, **EventBanner**, **StreakMeter** |
+| **Social & clan** | **ClanCard**, **MailInbox**, **ChatPanel** |
+| **Feedback** | ToastStack, FloatingText, AchievementPopup, **RewardPopup**, **EmptyState**, **LoadingDots**, **TutorialTip** |
 | **Screens & overlays** | MainMenu, PauseMenu, SettingsScreen, CharacterSelect, LoadingScreen, ResultScreen, LevelUpModal, Modal, HUD |
 
 These are not static skins. The inventory grid does real drag-and-drop and
@@ -29,10 +31,12 @@ afford, the dialogue box types text out and branches, the skill tree gates nodes
 behind prerequisites and draws its own dependency lines, and the turn meter
 reorders itself live as each unit's speed fills its bar.
 
-The **Collection & live-ops** set targets browser and mobile squad-RPGs of the
-Raid: Shadow Legends shape — gacha pulls, champion rosters, affinity counters,
-energy gating, battle passes, daily logins, ascension costs and timed shop
-bundles.
+The **Collection & live-ops**, **Combat** and **Social** sets target browser and
+mobile squad-RPGs of the Raid: Shadow Legends shape — gacha banners with visible
+mercy counters, champion rosters that filter and sort, gear with substat roll
+pips, mastery boards, ascension with fodder slots, multi-phase clan bosses with
+damage meters, arena matchups, VIP ladders, login streaks, clan browsers, mail
+and chat.
 
 ## Art
 
@@ -40,10 +44,21 @@ bundles.
 | --- | --- |
 | **Spell & Skill Icons** (`spell-icons`) | 235 painted square ability icons — runes and sigils, melee arts, earth and crystal, fire and inferno, beasts and ranged weapons, gadgets, blood magic |
 | **Line Glyphs** (`line-glyphs`) | 40 single-colour vector glyphs for interface chrome, drawn through a CSS mask so one file tints to any colour |
+| **Ornate Frames** (`deco-frames`) | 128 pixel-art frames (32 shapes × 4 centre treatments) plus 12 dividers, drawn as 9-sliced *masks* so one file renders in any colour |
 
 Icons are a general collection addressed by id — `fire-phoenix-rise`,
 `glyph-crossed-swords`, `blood-necromancer` — and work from any theme. They are
 named for what they depict, never for a character class.
+
+The frames are the same idea taken further. Their art is a pure white
+silhouette, so `TintFrame` 9-slices it as a `mask-border` and paints the colour
+underneath. One 400-byte PNG is therefore a grey common frame, a purple epic
+frame and a gold legendary frame at once:
+
+```ts
+new TintFrame({ shape: 7, rarity: 'legendary', content: card });
+new TintFrame({ shape: 7, fill: 'scrim', tint: 'linear-gradient(160deg,#ffd98a,#7a3d05)' });
+```
 
 ## Themes
 
@@ -146,6 +161,8 @@ npm run shots      # capture reference screenshots (needs the dev server running
 
 Artwork is 9-sliced with CSS `border-image`, so a stone window frame painted at
 747×642 stays crisp whether it wraps a 200px tooltip or a full-screen journal.
+Where the art is a flat silhouette it is 9-sliced as a `mask-border` instead,
+which is what lets one ornament render in any colour.
 Every asset becomes three CSS custom properties at build time
 (`--fui-img-*`, `--fui-slice-*`, `--fui-bw-*`); themes bind those to *semantic*
 slots (`--fui-panel-*`, `--fui-btn-*`, `--fui-slot-*`); components only ever

@@ -1,0 +1,180 @@
+/* ChatPanel — clan and world chat with channel tabs and a composer. */
+
+.fui-chat {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(0, 0, 0, 0.55);
+  border-radius: var(--fui-radius);
+  background: rgba(0, 0, 0, 0.38);
+  overflow: hidden;
+}
+
+.fui-chat__tabs {
+  display: flex;
+  gap: 2px;
+  padding: 4px 4px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.fui-chat__tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 13px;
+  border: 0;
+  border-radius: var(--fui-radius) var(--fui-radius) 0 0;
+  background: none;
+  color: var(--fui-ink-faint);
+  font-family: var(--fui-font-ui);
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: color var(--fui-t-fast) var(--fui-ease), background var(--fui-t-fast) var(--fui-ease);
+}
+
+.fui-chat__tab.is-on {
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--fui-accent-soft);
+  box-shadow: inset 0 -2px 0 var(--fui-accent);
+}
+
+.fui-chat__unread {
+  min-width: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: var(--fui-danger);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+}
+
+.fui-chat__body {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: var(--fui-gap-sm) 10px;
+}
+
+.fui-chat__msg {
+  --fui-chat-ink: var(--fui-accent-soft);
+  display: flex;
+  gap: 7px;
+  align-items: flex-start;
+}
+
+/* The player's own lines mirror to the right, which is the one cue that makes
+   a busy clan channel scannable. */
+.fui-chat__msg.is-mine {
+  flex-direction: row-reverse;
+}
+
+.fui-chat__avatar {
+  width: 26px;
+  height: 26px;
+  flex: none;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.5) center / cover no-repeat;
+}
+
+.fui-chat__bubble {
+  max-width: 80%;
+  padding: 5px 9px;
+  border-radius: var(--fui-radius);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.fui-chat__msg.is-mine .fui-chat__bubble {
+  background: color-mix(in srgb, var(--fui-accent) 22%, transparent);
+}
+
+.fui-chat__meta {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  margin-bottom: 1px;
+}
+
+.fui-chat__tag {
+  padding: 0 5px;
+  border-radius: 7px;
+  background: rgba(0, 0, 0, 0.45);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fui-gold-soft);
+}
+
+.fui-chat__author {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--fui-chat-ink);
+}
+
+.fui-chat__time {
+  font-size: 9.5px;
+  color: var(--fui-ink-faint);
+}
+
+.fui-chat__text {
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--fui-ink);
+  overflow-wrap: anywhere;
+}
+
+.fui-chat__system {
+  padding: 2px 0;
+  font-size: 11px;
+  font-style: italic;
+  text-align: center;
+  color: var(--fui-ink-faint);
+}
+
+.fui-chat__composer {
+  display: flex;
+  gap: 5px;
+  padding: 6px;
+  border-top: 1px solid rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.fui-chat__input {
+  flex: 1;
+  min-width: 0;
+  padding: 7px 10px;
+  border: 1px solid rgba(0, 0, 0, 0.6);
+  border-radius: var(--fui-radius);
+  background: rgba(0, 0, 0, 0.45);
+  color: var(--fui-ink);
+  font-size: 12.5px;
+}
+
+.fui-chat__input::placeholder {
+  color: var(--fui-ink-faint);
+}
+
+.fui-chat__input:focus {
+  outline: none;
+  border-color: var(--fui-accent);
+}
+
+.fui-chat__send {
+  padding: 0 15px;
+  border: 1px solid var(--fui-accent);
+  border-radius: var(--fui-radius);
+  background: color-mix(in srgb, var(--fui-accent) 24%, transparent);
+  color: var(--fui-accent-soft);
+  font-family: var(--fui-font-ui);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: background var(--fui-t-fast) var(--fui-ease);
+}
+
+.fui-chat__send:hover {
+  background: color-mix(in srgb, var(--fui-accent) 45%, transparent);
+}

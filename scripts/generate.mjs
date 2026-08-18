@@ -543,7 +543,7 @@ ${g.items
 ${byPack
   .map(
     ({ pack, assets }) => `<section class="group">
-  <h2 class="group__title">${esc(pack.name)} <span class="muted">— ${esc(assets.length)} assets</span><span class="pack-kind">${esc(pack.kind === 'icons' ? 'icon collection' : 'theme')}</span></h2>
+  <h2 class="group__title">${esc(pack.name)} <span class="muted">— ${esc(assets.length)} assets</span><span class="pack-kind">${esc(pack.kind === 'theme' ? 'theme' : pack.kind === 'frames' ? 'frame collection' : 'icon collection')}</span></h2>
   <p class="muted group__blurb">${esc(pack.blurb)}</p>
   <div class="assetgrid${assets.length > 60 ? ' assetgrid--dense' : ''}">
 ${assets
@@ -675,13 +675,14 @@ ${assets
     assetBase: `${SITE.origin}/fui`,
     stylesheet: `${SITE.origin}/dist/fantasyuis.css`,
     assetVariablesOnly: `${SITE.origin}/dist/fantasyuis.assets.css`,
-    themes: PACKS.filter((p) => p.kind !== 'icons').map((p) => ({
+    themes: PACKS.filter((p) => p.kind === 'theme').map((p) => ({
       id: p.id,
       name: p.name,
       blurb: p.blurb,
       assets: p.count,
     })),
-    iconPacks: PACKS.filter((p) => p.kind === 'icons').map((p) => ({
+    artPacks: PACKS.filter((p) => p.kind !== 'theme').map((p) => ({
+      kind: p.kind,
       id: p.id,
       name: p.name,
       blurb: p.blurb,
@@ -740,7 +741,7 @@ The whole UI scales from one variable: \`--fui-ui-scale\` (default 0.5).
 
 ## Themes
 
-${PACKS.filter((p) => p.kind !== 'icons')
+${PACKS.filter((p) => p.kind === 'theme')
   .map((p) => `- **${p.name}** (\`${p.id}\`) — ${p.blurb} ${p.count} assets.`)
   .join('\n')}
 

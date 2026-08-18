@@ -1,0 +1,177 @@
+/* ClanCard — the row a clan browser is made of. */
+
+.fui-clan {
+  --fui-clan-ink: var(--fui-accent);
+  --fui-clan-activity: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--fui-gap);
+  padding: var(--fui-gap-sm) var(--fui-gap);
+  border: 1px solid rgba(0, 0, 0, 0.55);
+  border-radius: var(--fui-radius);
+  background: linear-gradient(
+    100deg,
+    color-mix(in srgb, var(--fui-clan-ink) 14%, transparent),
+    rgba(0, 0, 0, 0.4) 55%
+  );
+}
+
+.fui-clan__crest {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  flex: none;
+}
+
+/* A shield silhouette rather than a square, so a clan crest never reads as an
+   inventory slot. It lives on a pseudo-element because `clip-path` also clips
+   descendants, and the level badge has to hang off the bottom point. */
+.fui-clan__crest::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 2px solid var(--fui-clan-ink);
+  clip-path: polygon(50% 0, 100% 14%, 100% 62%, 50% 100%, 0 62%, 0 14%);
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.fui-clan__crest::after {
+  content: '';
+  position: absolute;
+  inset: 22% 26% 32%;
+  background-color: var(--fui-clan-ink);
+  mask: var(--fui-glyph-src, var(--fui-mask-none)) center / contain no-repeat;
+  -webkit-mask: var(--fui-glyph-src, var(--fui-mask-none)) center / contain no-repeat;
+}
+
+.fui-clan__level {
+  position: absolute;
+  left: 50%;
+  bottom: -7px;
+  z-index: 1;
+  transform: translateX(-50%);
+  min-width: 20px;
+  padding: 0 4px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.7);
+  background: var(--fui-slate, #22222a);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 15px;
+  text-align: center;
+  color: var(--fui-gold-soft);
+}
+
+.fui-clan__main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.fui-clan__head {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.fui-clan__name {
+  font-size: 14px;
+  color: var(--fui-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fui-clan__tag {
+  font-family: var(--fui-font-mono);
+  font-size: 11px;
+  color: var(--fui-clan-ink);
+}
+
+.fui-clan__motto {
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--fui-ink-faint);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fui-clan__stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--fui-gap-sm);
+  font-size: 11px;
+  color: var(--fui-ink-dim);
+}
+
+.fui-clan__members {
+  font-weight: 700;
+  color: var(--fui-success);
+}
+
+.fui-clan__members[data-full='true'] {
+  color: var(--fui-danger);
+}
+
+.fui-clan__boss {
+  padding: 0 6px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.4);
+  color: var(--fui-gold-soft);
+}
+
+.fui-clan__req {
+  color: var(--fui-ink-faint);
+}
+
+.fui-clan__activity {
+  height: 4px;
+  margin-top: 2px;
+  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+.fui-clan__activity-fill {
+  display: block;
+  width: calc(var(--fui-clan-activity) * 100%);
+  height: 100%;
+  background: var(--fui-clan-ink);
+  transition: width var(--fui-t-slow) var(--fui-ease);
+}
+
+.fui-clan__action {
+  flex: none;
+  padding: 8px 16px;
+  border: 1px solid var(--fui-clan-ink);
+  border-radius: var(--fui-radius);
+  background: color-mix(in srgb, var(--fui-clan-ink) 22%, transparent);
+  color: var(--fui-ink);
+  font-family: var(--fui-font-ui);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background var(--fui-t-fast) var(--fui-ease);
+}
+
+.fui-clan__action:hover {
+  background: color-mix(in srgb, var(--fui-clan-ink) 42%, transparent);
+}
+
+.fui-clan[data-entry='apply'] .fui-clan__action {
+  border-color: var(--fui-warn);
+  color: var(--fui-warn);
+  background: color-mix(in srgb, var(--fui-warn) 16%, transparent);
+}
+
+.fui-clan__closed {
+  flex: none;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fui-ink-faint);
+}

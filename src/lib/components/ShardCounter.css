@@ -1,0 +1,125 @@
+/* ShardCounter — fragment progress toward a guaranteed unlock. */
+
+.fui-shards {
+  --fui-shard-ink: var(--fui-rarity-rare);
+  --fui-shard-art: 54px;
+  display: flex;
+  align-items: center;
+  gap: var(--fui-gap);
+  padding: var(--fui-gap-sm) var(--fui-gap);
+  border: 1px solid color-mix(in srgb, var(--fui-shard-ink) 40%, rgba(0, 0, 0, 0.6));
+  border-radius: var(--fui-radius);
+  background: linear-gradient(
+    100deg,
+    color-mix(in srgb, var(--fui-shard-ink) 16%, transparent),
+    rgba(0, 0, 0, 0.4) 60%
+  );
+}
+
+.fui-shards[data-size='sm'] {
+  --fui-shard-art: 38px;
+  gap: var(--fui-gap-sm);
+  padding: 6px 10px;
+}
+
+.fui-shards[data-rarity='uncommon'] { --fui-shard-ink: var(--fui-rarity-uncommon); }
+.fui-shards[data-rarity='rare'] { --fui-shard-ink: var(--fui-rarity-rare); }
+.fui-shards[data-rarity='epic'] { --fui-shard-ink: var(--fui-rarity-epic); }
+.fui-shards[data-rarity='legendary'] { --fui-shard-ink: var(--fui-rarity-legendary); }
+.fui-shards[data-rarity='mythic'] { --fui-shard-ink: var(--fui-rarity-mythic); }
+
+.fui-shards__art {
+  width: var(--fui-shard-art);
+  height: var(--fui-shard-art);
+  flex: none;
+  border: 1px solid color-mix(in srgb, var(--fui-shard-ink) 60%, transparent);
+  border-radius: var(--fui-radius);
+  background: rgba(0, 0, 0, 0.45) center / cover no-repeat;
+}
+
+.fui-shards.is-full .fui-shards__art {
+  box-shadow: 0 0 12px color-mix(in srgb, var(--fui-shard-ink) 70%, transparent);
+  animation: fui-glow 1.8s var(--fui-ease) infinite;
+}
+
+.fui-shards__main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fui-shards__name {
+  font-size: 13px;
+  color: color-mix(in srgb, var(--fui-shard-ink) 50%, var(--fui-ink));
+}
+
+.fui-shards__track {
+  position: relative;
+  height: 15px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.5);
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.7);
+  overflow: hidden;
+}
+
+.fui-shards__fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 8px 0 0 8px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--fui-shard-ink) 85%, white),
+    var(--fui-shard-ink)
+  );
+  transition: width var(--fui-t-slow) var(--fui-ease);
+}
+
+.fui-shards.is-full .fui-shards__fill {
+  border-radius: 8px;
+}
+
+.fui-shards__count {
+  position: relative;
+  display: block;
+  line-height: 13px;
+  font-size: 10px;
+  font-weight: 700;
+  text-align: center;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+}
+
+.fui-shards__source {
+  font-size: 10.5px;
+  letter-spacing: 0.05em;
+  color: var(--fui-ink-faint);
+}
+
+.fui-shards__action {
+  flex: none;
+  padding: 8px 16px;
+  border: 1px solid var(--fui-gold);
+  border-radius: var(--fui-radius);
+  background: linear-gradient(180deg, rgba(217, 164, 65, 0.4), rgba(217, 164, 65, 0.14));
+  color: var(--fui-gold-soft);
+  font-family: var(--fui-font-display);
+  font-size: 12px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: filter var(--fui-t-fast) var(--fui-ease);
+}
+
+.fui-shards__action:hover:not(:disabled) {
+  filter: brightness(1.25);
+}
+
+.fui-shards__action:disabled {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.35);
+  color: var(--fui-ink-faint);
+  cursor: not-allowed;
+}
