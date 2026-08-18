@@ -535,9 +535,9 @@ ${g.items
 ${byPack
   .map(
     ({ pack, assets }) => `<section class="group">
-  <h2 class="group__title">${esc(pack.name)} <span class="muted">— ${esc(assets.length)} assets</span></h2>
+  <h2 class="group__title">${esc(pack.name)} <span class="muted">— ${esc(assets.length)} assets</span><span class="pack-kind">${esc(pack.kind === 'icons' ? 'icon collection' : 'theme')}</span></h2>
   <p class="muted group__blurb">${esc(pack.blurb)}</p>
-  <div class="assetgrid">
+  <div class="assetgrid${assets.length > 60 ? ' assetgrid--dense' : ''}">
 ${assets
   .map(
     (a) => `    <figure class="asset" data-search="${esc([a.id, a.name, a.category, ...a.tags].join(' ').toLowerCase())}">
@@ -667,7 +667,18 @@ ${assets
     assetBase: `${SITE.origin}/fui`,
     stylesheet: `${SITE.origin}/dist/fantasyuis.css`,
     assetVariablesOnly: `${SITE.origin}/dist/fantasyuis.assets.css`,
-    themes: PACKS.map((p) => ({ id: p.id, name: p.name, blurb: p.blurb, assets: p.count })),
+    themes: PACKS.filter((p) => p.kind !== 'icons').map((p) => ({
+      id: p.id,
+      name: p.name,
+      blurb: p.blurb,
+      assets: p.count,
+    })),
+    iconPacks: PACKS.filter((p) => p.kind === 'icons').map((p) => ({
+      id: p.id,
+      name: p.name,
+      blurb: p.blurb,
+      assets: p.count,
+    })),
     counts: { components: CATALOG.length, assets: ASSETS.length, themes: PACKS.length },
     endpoints: {
       llms: `${SITE.origin}/llms.txt`,
@@ -721,7 +732,20 @@ The whole UI scales from one variable: \`--fui-ui-scale\` (default 0.5).
 
 ## Themes
 
-${PACKS.map((p) => `- **${p.name}** (\`${p.id}\`) — ${p.blurb} ${p.count} assets.`).join('\n')}
+${PACKS.filter((p) => p.kind !== 'icons')
+  .map((p) => `- **${p.name}** (\`${p.id}\`) — ${p.blurb} ${p.count} assets.`)
+  .join('\n')}
+
+## Icon collections
+
+These are art libraries rather than themes — reference any icon by id from any theme.
+
+${PACKS.filter((p) => p.kind === 'icons')
+  .map((p) => `- **${p.name}** (\`${p.id}\`) — ${p.blurb} ${p.count} assets.`)
+  .join('\n')}
+
+Line glyphs are SVG and are meant to be drawn through a CSS mask so they inherit
+\`currentColor\`; the \`Glyph\` component does this for you.
 
 ## Components
 

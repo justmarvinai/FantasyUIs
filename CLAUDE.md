@@ -32,14 +32,31 @@ build me more components."* That workflow is:
 2. **Add the pack to `catalog/packs.mjs`.** This file is the source of truth: it
    maps every raw file to a canonical id, human name, category, tag list, output
    width cap and 9-slice inset. Slices are in *source* pixels — `ingest` rescales
-   them when it downsizes an image.
+   them when it downsizes an image. Large icon collections live in their own
+   files (`catalog/icons-spell.mjs`, `catalog/icons-line.mjs`) and are spread
+   into `packs.mjs`.
+
+   Each pack declares `kind`: `theme` packs bind the semantic slots and get a
+   theme CSS file; `icons` packs are art collections with no theme of their own.
+
+   **Naming rule — icons are named for what they depict.** Source packs often
+   ship art keyed to a character class (`Barbarian_12.png`, `FireMage_3.png`) or
+   to nothing at all (`Icon_27.png`). Those names are meaningless to a consumer,
+   so never carry them through. Look at the art and name it: `weapon-warhammer`,
+   `fire-phoenix-rise`, `blood-necromancer`. Ids must be unique across the whole
+   library, not just the pack.
+
+   Per-asset `format` picks the encoding: `png` (default, keeps alpha), `webp`
+   (opaque painted tiles — 235 icons went 175 MB → 7.9 MB this way), or `svg`
+   (vector passthrough; ingest rewrites the fill to `currentColor` so the file
+   works as a CSS mask).
 
 3. `npm run ingest` — optimises art into `public/fui/<pack>/`, writes thumbnails,
    regenerates `src/data/assets.generated.ts` and the CSS variable layer.
 
 4. **Write a theme file** if the pack is a new visual style: copy
    `src/lib/styles/theme-stone-vine.css` and rebind every semantic slot. A theme
-   that fills in all the slots gets all 49 existing components for free.
+   that fills in all the slots gets all 66 existing components for free.
 
 5. **Build new components** for what the art newly makes possible, plus demos in
    `src/site/demos/`.
@@ -112,6 +129,11 @@ zero component changes.
 - **9-slice insets must fit.** If top + bottom slices exceed the element's
   height, `border-image` renders nothing at all. Bars and small buttons carry
   explicit `min-height` guards for this reason.
+- **Monochrome art should be a mask, not an image.** `Glyph` sets
+  `mask-image: var(--fui-img-<id>)` with `background-color: currentColor`, so
+  one SVG serves every colour and state. Prefer that to shipping recoloured
+  copies. The mask has no drop shadow of its own — use `filter: drop-shadow()`
+  on the element for a halo.
 - **Demos are the code samples.** `scripts/generate.mjs` extracts each demo's own
   source with `Function.prototype.toString()`, so the snippet on the page can
   never drift from the code that ran. Write demos as idiomatic usage. Vite's SSR

@@ -13,12 +13,16 @@
  * To add a pack: drop it in `new_assets/`, add an entry below, run `npm run ingest`.
  */
 
-/** @typedef {'panel'|'frame'|'button'|'slot'|'bar'|'icon'|'banner'|'background'|'decor'|'silhouette'} AssetCategory */
+/** @typedef {'panel'|'frame'|'button'|'slot'|'bar'|'icon'|'glyph'|'banner'|'background'|'decor'|'silhouette'} AssetCategory */
+
+import { SPELL_ICONS } from './icons-spell.mjs';
+import { LINE_GLYPHS } from './icons-line.mjs';
 
 export const packs = [
   {
     id: 'stone-vine',
     name: 'Stone & Vine',
+    kind: 'theme',
     dir: 'GUI_Fantasy_RPG_Kit',
     blurb:
       'Carved grey stone framing with celtic vine ornaments, teal button faces and painted RPG item icons. Reads as adventure, exploration and town UI.',
@@ -78,6 +82,7 @@ export const packs = [
   {
     id: 'dark-ember',
     name: 'Dark Ember',
+    kind: 'theme',
     dir: 'Dark_GUI_Parts',
     blurb:
       'Thin bronze art-deco framing over black leather, with glossy blood-red buttons and glowing spell icons. Reads as combat, dark fantasy and endgame UI.',
@@ -139,6 +144,28 @@ export const packs = [
       { src: 'RPG_icons/skill_icon_04_nobg.png', id: 'skill-thunderhammer',  name: 'Thunder Hammer',       category: 'icon', slice: null, maxW: 256, tags: ['skill', 'spell', 'lightning', 'hammer', 'holy', 'cutout'] },
     ],
   },
+
+  {
+    id: 'spell-icons',
+    name: 'Spell & Skill Icons',
+    kind: 'icons',
+    dir: 'Skill_Spell_Icons',
+    blurb:
+      'A general collection of 235 painted ability icons — runes and sigils, melee arts, earth and crystal, fire and inferno, beasts and ranged weapons, gadgets, and blood magic. Square, full-bleed and built for skill buttons, champion abilities and mastery grids.',
+    accent: '#d98f4a',
+    assets: SPELL_ICONS,
+  },
+
+  {
+    id: 'line-glyphs',
+    name: 'Line Glyphs',
+    kind: 'icons',
+    dir: 'Demo_Icon_Assets',
+    blurb:
+      'Forty single-colour vector glyphs for interface chrome — stats, currencies, nav, status. Shipped as SVG and drawn through a CSS mask, so one file tints to any colour the UI needs.',
+    accent: '#9ec5d8',
+    assets: LINE_GLYPHS,
+  },
 ];
 
 export const categoryLabels = {
@@ -148,6 +175,7 @@ export const categoryLabels = {
   slot: 'Slots',
   bar: 'Bars & Meters',
   icon: 'Icons',
+  glyph: 'Line Glyphs',
   banner: 'Banners & Nameplates',
   background: 'Backgrounds & Fills',
   decor: 'Decor & Dividers',
