@@ -540,6 +540,40 @@ h3 {
   background: #0a0a0e;
 }
 
+/* Filler text inside a frame or slide, so the shape has something to hold. */
+.demo-note {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  min-height: 40px;
+  font-family: var(--site-font-display, inherit);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fff;
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.95),
+    0 0 8px rgba(0, 0, 0, 0.7);
+}
+
+/* A stand-in control for demos that need something to point at. */
+.demo-target {
+  position: absolute;
+  left: 50%;
+  top: 34%;
+  transform: translate(-50%, -50%);
+  padding: 10px 26px;
+  border: 1px solid var(--site-gold, #d9a441);
+  border-radius: 3px;
+  background: rgba(217, 164, 65, 0.2);
+  color: #f0cf85;
+  font-family: inherit;
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
 .demo-stagerow {
   position: absolute;
   left: 16px;

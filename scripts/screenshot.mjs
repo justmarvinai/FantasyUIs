@@ -41,6 +41,19 @@ const SHOTS = [
   { name: 'offer-dark', url: '/components/OfferCard.html', height: 1500, theme: 'dark-ember' },
   { name: 'bottom-nav', url: '/components/BottomNav.html', height: 1200 },
   { name: 'tier-badge', url: '/components/TierBadge.html', height: 1200 },
+  { name: 'tint-frame', url: '/components/TintFrame.html', height: 1600 },
+  { name: 'tint-frame-dark', url: '/components/TintFrame.html', height: 1600, theme: 'dark-ember' },
+  { name: 'boss-bar', url: '/components/BossHealthBar.html', height: 1200 },
+  { name: 'arena-matchup', url: '/components/ArenaMatchup.html', height: 1300 },
+  { name: 'banner-carousel', url: '/components/BannerCarousel.html', height: 1400 },
+  { name: 'mastery-grid', url: '/components/MasteryGrid.html', height: 1500 },
+  { name: 'artifact-card', url: '/components/ArtifactCard.html', height: 1400 },
+  { name: 'champion-list', url: '/components/ChampionList.html', height: 1400 },
+  { name: 'top-bar', url: '/components/TopBar.html', height: 1200 },
+  { name: 'reward-popup', url: '/components/RewardPopup.html', height: 1300 },
+  { name: 'battle-log', url: '/components/BattleLog.html', height: 1300 },
+  { name: 'chat-panel', url: '/components/ChatPanel.html', height: 1300 },
+  { name: 'skill-card', url: '/components/SkillCard.html', height: 1300 },
 ];
 
 async function main() {

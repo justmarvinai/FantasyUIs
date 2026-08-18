@@ -17,6 +17,7 @@
 
 import { SPELL_ICONS } from './icons-spell.mjs';
 import { LINE_GLYPHS } from './icons-line.mjs';
+import { KENNEY_FRAMES } from './frames-kenney.mjs';
 
 export const packs = [
   {
@@ -154,6 +155,17 @@ export const packs = [
       'A general collection of 235 painted ability icons — runes and sigils, melee arts, earth and crystal, fire and inferno, beasts and ranged weapons, gadgets, and blood magic. Square, full-bleed and built for skill buttons, champion abilities and mastery grids.',
     accent: '#d98f4a',
     assets: SPELL_ICONS,
+  },
+
+  {
+    id: 'deco-frames',
+    name: 'Ornate Frames',
+    kind: 'frames',
+    dir: 'Kenney_Fantasy_UI_Elements',
+    blurb:
+      'Kenney\'s CC0 fantasy borders: 32 ornamental frame designs in four fills, plus 12 dividers. Pure white pixel art on transparent, so `TintFrame` can draw them through a CSS mask and render the same frame in any colour.',
+    accent: '#cfd6e0',
+    assets: KENNEY_FRAMES,
   },
 
   {

@@ -1,0 +1,98 @@
+/* ComboCounter — the hit chain, its rank, and the timer that drops it. */
+
+.fui-combo {
+  --fui-combo-size: 44px;
+  --fui-combo-ink: var(--fui-ink-dim);
+  --fui-combo-grow: 1;
+  --fui-combo-decay: 2500ms;
+  position: relative;
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--fui-gap-sm);
+  padding-bottom: 5px;
+  opacity: 0.35;
+  transform: scale(var(--fui-combo-grow));
+  transform-origin: left center;
+  transition: opacity var(--fui-t) var(--fui-ease), transform var(--fui-t) var(--fui-ease);
+}
+
+.fui-combo.is-live {
+  opacity: 1;
+}
+
+.fui-combo__stack {
+  display: inline-flex;
+  align-items: baseline;
+  gap: calc(var(--fui-combo-size) * 0.16);
+}
+
+.fui-combo__number {
+  display: inline-block;
+  font-family: var(--fui-font-display);
+  font-size: var(--fui-combo-size);
+  font-weight: 700;
+  line-height: 1;
+  color: var(--fui-combo-ink);
+  text-shadow:
+    0 0 12px color-mix(in srgb, var(--fui-combo-ink) 60%, transparent),
+    0 3px 5px rgba(0, 0, 0, 0.8);
+}
+
+.fui-combo__number.is-pop {
+  animation: fui-combo-pop 260ms var(--fui-ease);
+}
+
+.fui-combo__suffix {
+  font-size: calc(var(--fui-combo-size) * 0.3);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--fui-ink-faint);
+}
+
+.fui-combo__rank {
+  font-family: var(--fui-font-display);
+  font-size: calc(var(--fui-combo-size) * 0.36);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fui-combo-ink);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+/* The timer drains in CSS rather than on a rAF loop — the JS timeout is the
+   source of truth and this is purely the visual. */
+.fui-combo__timer {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: 100%;
+  border-radius: 2px;
+  background: var(--fui-combo-ink);
+  transform-origin: left center;
+  transform: scaleX(0);
+}
+
+.fui-combo__timer.is-running {
+  animation: fui-combo-drain var(--fui-combo-decay) linear forwards;
+}
+
+@keyframes fui-combo-pop {
+  0% {
+    transform: scale(1.5);
+  }
+  60% {
+    transform: scale(0.94);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes fui-combo-drain {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}

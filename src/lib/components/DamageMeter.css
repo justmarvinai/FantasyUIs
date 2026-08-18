@@ -1,0 +1,116 @@
+/* DamageMeter — who actually contributed, ranked and scaled against the leader. */
+
+.fui-meter {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: var(--fui-gap-sm) var(--fui-gap);
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  border-radius: var(--fui-radius);
+  background: rgba(0, 0, 0, 0.32);
+}
+
+.fui-meter__title {
+  font-size: 10px;
+}
+
+.fui-meter__list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.fui-meter__row {
+  --fui-meter-p: 0;
+  --fui-meter-ink: var(--fui-accent);
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--fui-gap-sm);
+  padding: 5px 8px;
+  border-radius: var(--fui-radius);
+  background: rgba(0, 0, 0, 0.3);
+  font-size: 12.5px;
+  overflow: hidden;
+}
+
+/* The bar is the row's own background, so the text always sits on top of its
+   own colour and never needs a second element to stay legible. */
+.fui-meter__row::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: calc(var(--fui-meter-p) * 100%);
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--fui-meter-ink) 55%, transparent),
+    color-mix(in srgb, var(--fui-meter-ink) 22%, transparent)
+  );
+  transition: width var(--fui-t-slow) var(--fui-ease);
+}
+
+.fui-meter__row.is-you {
+  box-shadow: inset 0 0 0 1px var(--fui-gold);
+}
+
+.fui-meter__row > * {
+  position: relative;
+}
+
+.fui-meter__rank {
+  width: 15px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--fui-ink-faint);
+  text-align: right;
+}
+
+.fui-meter__art {
+  width: 22px;
+  height: 22px;
+  flex: none;
+  border-radius: 2px;
+  border: 1px solid rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.4) center / cover no-repeat;
+}
+
+.fui-meter--compact .fui-meter__art {
+  width: 16px;
+  height: 16px;
+}
+
+.fui-meter__name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--fui-ink);
+}
+
+.fui-meter__row.is-you .fui-meter__name {
+  color: var(--fui-gold-soft);
+}
+
+.fui-meter__nums {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--fui-gap-sm);
+}
+
+.fui-meter__value {
+  font-weight: 700;
+  color: var(--fui-ink);
+}
+
+.fui-meter__share,
+.fui-meter__rate {
+  font-size: 11px;
+  color: var(--fui-ink-faint);
+}
+
+.fui-meter__more {
+  padding: 3px 8px;
+  font-size: 11px;
+  color: var(--fui-ink-faint);
+}

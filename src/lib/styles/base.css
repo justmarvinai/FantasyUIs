@@ -64,6 +64,13 @@
   --fui-radius: 3px;
   --fui-slot-size: 64px;
 
+  /* ── Masking ───────────────────────────────────────────────────────────
+     The fallback for an unset mask image. `none` cannot be used: it means
+     "no mask", which paints the whole box, so an optional glyph slot with no
+     glyph in it would render as a solid rectangle. A fully transparent
+     gradient masks the element away instead. */
+  --fui-mask-none: linear-gradient(transparent, transparent);
+
   /* ── Motion ────────────────────────────────────────────────────────────── */
   --fui-t-fast: 120ms;
   --fui-t: 220ms;
@@ -72,11 +79,15 @@
 }
 
 /* ── Scoped reset ─────────────────────────────────────────────────────────
-   Applies only inside `.fui` roots. */
-.fui,
-.fui *,
-.fui *::before,
-.fui *::after {
+   Applies only inside `.fui` roots.
+
+   Everything below is wrapped in `:where()`, which contributes zero
+   specificity. That matters: a plain `.fui button { margin: 0 }` scores
+   (0,1,1) and silently beats a component's own `.fui-x__btn { margin-left:
+   auto }` at (0,1,0), so the reset would quietly win arguments it has no
+   business being in. At zero specificity a reset can only ever fill in
+   defaults nobody has set. */
+:where(.fui, .fui *, .fui *::before, .fui *::after) {
   box-sizing: border-box;
 }
 
@@ -88,33 +99,22 @@
   text-rendering: optimizeLegibility;
 }
 
-.fui button,
-.fui input,
-.fui select,
-.fui textarea {
+:where(.fui) :where(button, input, select, textarea) {
   font: inherit;
   color: inherit;
   margin: 0;
 }
 
-.fui img {
+:where(.fui) :where(img) {
   display: block;
   max-width: 100%;
 }
 
-.fui h1,
-.fui h2,
-.fui h3,
-.fui h4,
-.fui p,
-.fui ul,
-.fui ol,
-.fui figure {
+:where(.fui) :where(h1, h2, h3, h4, p, ul, ol, figure) {
   margin: 0;
 }
 
-.fui ul,
-.fui ol {
+:where(.fui) :where(ul, ol) {
   padding: 0;
   list-style: none;
 }
@@ -263,6 +263,9 @@
   }
 }
 
+/* The 100% frame declares `opacity` deliberately. Without it, an element whose
+   own rule sets `opacity: 0` would interpolate back down to 0 between 60% and
+   100% and finish invisible under `animation-fill-mode: forwards`. */
 @keyframes fui-pop {
   0% {
     opacity: 0;
@@ -273,6 +276,7 @@
     transform: scale(1.06);
   }
   100% {
+    opacity: 1;
     transform: scale(1);
   }
 }

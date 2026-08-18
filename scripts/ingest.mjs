@@ -219,8 +219,8 @@ export interface AssetRecord {
 export interface PackRecord {
   id: string;
   name: string;
-  /** A \`theme\` pack binds the semantic slots; an \`icons\` pack is an art collection. */
-  kind: 'theme' | 'icons';
+  /** A \`theme\` pack binds the semantic slots; every other kind is an art collection. */
+  kind: ${[...new Set(packMeta.map((p) => p.kind))].sort().map((k) => `'${k}'`).join(' | ')};
   blurb: string;
   accent: string;
   count: number;

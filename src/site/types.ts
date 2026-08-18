@@ -5,7 +5,9 @@ export type CatalogGroup =
   | 'controls'
   | 'data'
   | 'widgets'
+  | 'combat'
   | 'gacha'
+  | 'social'
   | 'screens'
   | 'feedback';
 
@@ -47,7 +49,9 @@ export const GROUP_LABELS: Record<CatalogGroup, string> = {
   controls: 'Controls',
   data: 'Data Display',
   widgets: 'Game Widgets',
+  combat: 'Combat & Battle',
   gacha: 'Collection & Live-Ops',
+  social: 'Social & Clan',
   screens: 'Screens & Overlays',
   feedback: 'Feedback & Notifications',
 };
@@ -57,7 +61,9 @@ export const GROUP_ORDER: CatalogGroup[] = [
   'controls',
   'data',
   'widgets',
+  'combat',
   'gacha',
+  'social',
   'feedback',
   'screens',
 ];

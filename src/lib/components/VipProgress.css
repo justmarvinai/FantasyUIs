@@ -1,0 +1,104 @@
+/* VipProgress — the VIP ladder, and what the next tier actually unlocks. */
+
+.fui-vip {
+  --fui-vip-p: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: var(--fui-gap-sm) var(--fui-gap);
+  border: 1px solid color-mix(in srgb, var(--fui-gold) 40%, rgba(0, 0, 0, 0.6));
+  border-radius: var(--fui-radius);
+  background: linear-gradient(180deg, rgba(217, 164, 65, 0.13), rgba(0, 0, 0, 0.4));
+}
+
+.fui-vip__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--fui-gap);
+}
+
+.fui-vip__badge {
+  padding: 2px 10px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, var(--fui-gold-soft), var(--fui-gold));
+  color: #2a1c05;
+  font-family: var(--fui-font-display);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+.fui-vip__points {
+  font-size: 12px;
+  color: var(--fui-ink-dim);
+}
+
+.fui-vip__bar {
+  height: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.6);
+  border-radius: 5px;
+  background: rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+.fui-vip__fill {
+  display: block;
+  width: calc(var(--fui-vip-p) * 100%);
+  height: 100%;
+  border-radius: 5px;
+  background: linear-gradient(90deg, var(--fui-gold), var(--fui-gold-soft));
+  box-shadow: 0 0 8px rgba(217, 164, 65, 0.6);
+  transition: width var(--fui-t-slow) var(--fui-ease);
+}
+
+.fui-vip.is-max .fui-vip__fill {
+  animation: fui-glow 2.4s var(--fui-ease) infinite;
+}
+
+.fui-vip__foot {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.fui-vip__next {
+  font-size: 11px;
+  color: var(--fui-gold-soft);
+}
+
+.fui-vip__perk-block {
+  margin-top: 3px;
+  padding-top: var(--fui-gap-sm);
+  border-top: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.fui-vip__perk-title {
+  font-size: 10px;
+}
+
+.fui-vip__perks {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 4px;
+}
+
+.fui-vip__perk {
+  position: relative;
+  padding-left: 14px;
+  font-size: 12px;
+  color: var(--fui-ink-dim);
+}
+
+.fui-vip__perk::before {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 7px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--fui-gold);
+}

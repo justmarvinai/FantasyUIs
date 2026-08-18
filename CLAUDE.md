@@ -37,7 +37,9 @@ build me more components."* That workflow is:
    into `packs.mjs`.
 
    Each pack declares `kind`: `theme` packs bind the semantic slots and get a
-   theme CSS file; `icons` packs are art collections with no theme of their own.
+   theme CSS file; `icons` and `frames` packs are art collections with no theme
+   of their own. The `kind` union in `src/data/assets.generated.ts` is derived
+   from the packs themselves, so a new kind needs no edit to `ingest.mjs`.
 
    **Naming rule — icons are named for what they depict.** Source packs often
    ship art keyed to a character class (`Barbarian_12.png`, `FireMage_3.png`) or
@@ -56,7 +58,7 @@ build me more components."* That workflow is:
 
 4. **Write a theme file** if the pack is a new visual style: copy
    `src/lib/styles/theme-stone-vine.css` and rebind every semantic slot. A theme
-   that fills in all the slots gets all 66 existing components for free.
+   that fills in all the slots gets all 106 existing components for free.
 
 5. **Build new components** for what the art newly makes possible, plus demos in
    `src/site/demos/`.
@@ -78,6 +80,12 @@ src/lib/styles/
   theme-*.css                semantic slot bindings, one per art pack
 src/lib/components/          one <Name>.ts + <Name>.css per component
 src/site/                    the documentation site (catalog, demos, chrome)
+  demos/primitives.ts        Panel, Button, Icon, Slot, bars, inputs
+  demos/kit.ts               TintFrame and the shared UI kit
+  demos/widgets.ts           inventory, quests, shops, crafting
+  demos/combat.ts            battle, live-ops and social
+  demos/gacha.ts, roster.ts  collection, champions, gear, ascension
+  demos/screens.ts           full-screen templates and feedback
 scripts/ingest.mjs           new_assets/ → public/fui/ + manifests
 scripts/generate.mjs         → static site, registry.json, llms.txt, /r/*.json
 scripts/gen-lib.mjs          → src/lib/index.ts and styles/index.css
@@ -134,6 +142,41 @@ zero component changes.
   one SVG serves every colour and state. Prefer that to shipping recoloured
   copies. The mask has no drop shadow of its own — use `filter: drop-shadow()`
   on the element for a halo.
+
+- **Flat silhouettes 9-slice as a mask, not a border-image.** The Kenney frames
+  are pure white with binary alpha, so `TintFrame` draws them with
+  `-webkit-mask-box-image` over an arbitrary paint — 32 shapes × 4 centres × any
+  colour from one file each. Chromium and Safari ship only the prefixed
+  property (`CSS.supports('mask-border', …)` is still false), so the rule lives
+  behind `@supports (-webkit-mask-box-image: url('a') 32 stretch)` with a plain
+  white `border-image` as the fallback. Match the element's aspect ratio to the
+  art's when masking a `contain` background, or the mask lands on the letterbox
+  instead of the picture.
+
+- **`mask-image: none` means *no mask*, i.e. a solid block.** Never write
+  `mask: var(--fui-glyph-src, none)` for an optional glyph slot — with the
+  variable unset the pseudo-element paints as a filled rectangle. Use
+  `var(--fui-mask-none)` (a transparent gradient, declared in `base.css`).
+
+- **The scoped reset is wrapped in `:where()` for a reason.** A plain
+  `.fui button { margin: 0 }` scores (0,1,1) and silently beats a component's
+  own `.fui-x__btn { margin-left: auto }` at (0,1,0). At zero specificity the
+  reset can only fill in defaults nobody has set. Keep new reset rules inside
+  `:where()`.
+
+- **A keyframe must declare every property it fill-modes into.** `fui-pop` sets
+  `opacity` at 0%, 60% *and* 100%; without the last one an element whose own
+  rule sets `opacity: 0` interpolates back down to 0 after 60% and finishes
+  invisible under `animation-fill-mode: forwards`.
+
+- **Widths that depend on siblings must be measured, not divided.**
+  `SegmentedControl`'s thumb and `TutorialTip`'s anchor both start from a CSS
+  approximation (which is what the pre-rendered markup ships) and then correct
+  themselves from a `ResizeObserver` on the root, which fires on mount, on
+  resize and after late fonts land. `TutorialTip` also subtracts its own
+  `getBoundingClientRect()`, because a `position: fixed` element is laid out
+  against the nearest *transformed* ancestor when there is one — as there is
+  inside every demo stage.
 - **Demos are the code samples.** `scripts/generate.mjs` extracts each demo's own
   source with `Function.prototype.toString()`, so the snippet on the page can
   never drift from the code that ran. Write demos as idiomatic usage. Vite's SSR
