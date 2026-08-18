@@ -1,0 +1,192 @@
+/* LootRoll — Need / Greed / Pass on a timer, with the party's picks visible. */
+
+.fui-roll {
+  --fui-roll-rarity: var(--fui-rarity-rare);
+  display: flex;
+  flex-direction: column;
+  gap: var(--fui-gap-sm);
+  width: 300px;
+  padding: var(--fui-gap);
+  border: 1px solid color-mix(in srgb, var(--fui-roll-rarity) 45%, rgba(0, 0, 0, 0.6));
+  border-radius: var(--fui-radius);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--fui-roll-rarity) 14%, transparent),
+    rgba(0, 0, 0, 0.44)
+  );
+}
+
+.fui-roll[data-rarity='uncommon'] { --fui-roll-rarity: var(--fui-rarity-uncommon); }
+.fui-roll[data-rarity='epic'] { --fui-roll-rarity: var(--fui-rarity-epic); }
+.fui-roll[data-rarity='legendary'] { --fui-roll-rarity: var(--fui-rarity-legendary); }
+.fui-roll[data-rarity='mythic'] { --fui-roll-rarity: var(--fui-rarity-mythic); }
+
+.fui-roll__head {
+  display: flex;
+  align-items: center;
+  gap: var(--fui-gap-sm);
+}
+
+.fui-roll__art {
+  width: 52px;
+  height: 52px;
+  flex: none;
+  border: 2px solid var(--fui-roll-rarity);
+  border-radius: var(--fui-radius);
+  background: rgba(0, 0, 0, 0.5) center / cover no-repeat;
+  box-shadow: 0 0 14px color-mix(in srgb, var(--fui-roll-rarity) 45%, transparent);
+}
+
+.fui-roll__info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fui-roll__name {
+  font-size: 14px;
+  line-height: 1.2;
+  color: color-mix(in srgb, var(--fui-roll-rarity) 55%, var(--fui-ink));
+}
+
+.fui-roll__note {
+  font-size: 11px;
+  color: var(--fui-ink-faint);
+}
+
+.fui-roll__timer {
+  position: relative;
+  height: 14px;
+  border-radius: 7px;
+  background: rgba(0, 0, 0, 0.55);
+  overflow: hidden;
+}
+
+.fui-roll__timer-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 7px;
+  background: linear-gradient(90deg, var(--fui-accent-deep), var(--fui-accent));
+  transition: width 1s linear;
+}
+
+.fui-roll.is-urgent .fui-roll__timer-fill {
+  background: linear-gradient(90deg, #8c2a20, var(--fui-danger));
+}
+
+.fui-roll__timer-text {
+  position: relative;
+  display: block;
+  line-height: 14px;
+  font-size: 9.5px;
+  font-weight: 700;
+  text-align: center;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+}
+
+.fui-roll__choices {
+  display: flex;
+  gap: 5px;
+}
+
+.fui-roll__choice {
+  --fui-roll-ink: var(--fui-ink-dim);
+  flex: 1;
+  padding: 8px 0;
+  border: 1px solid color-mix(in srgb, var(--fui-roll-ink) 50%, transparent);
+  border-radius: var(--fui-radius);
+  background: rgba(0, 0, 0, 0.35);
+  color: var(--fui-roll-ink);
+  font-family: var(--fui-font-ui);
+  font-size: 12px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background var(--fui-t-fast) var(--fui-ease), color var(--fui-t-fast) var(--fui-ease);
+}
+
+.fui-roll__choice[data-choice='need'] { --fui-roll-ink: var(--fui-success); }
+.fui-roll__choice[data-choice='greed'] { --fui-roll-ink: var(--fui-gold); }
+.fui-roll__choice[data-choice='pass'] { --fui-roll-ink: var(--fui-ink-faint); }
+
+.fui-roll__choice:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--fui-roll-ink) 24%, transparent);
+  color: var(--fui-ink);
+}
+
+/* Once picked, the choice stays lit and the rest fade — the decision should
+   still be readable after it is made. */
+.fui-roll__choice.is-on {
+  background: color-mix(in srgb, var(--fui-roll-ink) 34%, transparent);
+  color: var(--fui-ink);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--fui-roll-ink) 45%, transparent);
+}
+
+.fui-roll__choice:disabled:not(.is-on) {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.fui-roll__party {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-top: var(--fui-gap-sm);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.fui-roll__member {
+  --fui-roll-ink: var(--fui-ink-faint);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 4px;
+  border-radius: var(--fui-radius);
+  font-size: 12px;
+}
+
+.fui-roll__member[data-choice='need'] { --fui-roll-ink: var(--fui-success); }
+.fui-roll__member[data-choice='greed'] { --fui-roll-ink: var(--fui-gold); }
+.fui-roll__member[data-choice='pass'] { --fui-roll-ink: var(--fui-ink-faint); }
+
+.fui-roll__member.is-winner {
+  background: color-mix(in srgb, var(--fui-gold) 20%, transparent);
+  box-shadow: inset 0 0 0 1px var(--fui-gold);
+}
+
+.fui-roll__avatar {
+  width: 22px;
+  height: 22px;
+  flex: none;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.45) center / cover no-repeat;
+}
+
+.fui-roll__member-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--fui-ink);
+}
+
+.fui-roll__number {
+  font-family: var(--fui-font-display);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--fui-roll-ink);
+}
+
+.fui-roll__member-choice {
+  min-width: 42px;
+  text-align: right;
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fui-roll-ink);
+}

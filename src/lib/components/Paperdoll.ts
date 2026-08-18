@@ -18,7 +18,9 @@ export interface PaperdollOptions extends BaseOptions {
   portrait?: string;
   slots?: EquipSlotDef[];
   equipped?: Record<string, SlotItem | null>;
+  /** Width in pixels. */
   width?: number;
+  /** Height in pixels. */
   height?: number;
   /** Combined item level / gear score shown at the bottom. */
   gearScore?: number;

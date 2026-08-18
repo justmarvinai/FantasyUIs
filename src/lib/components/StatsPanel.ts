@@ -24,6 +24,7 @@ export interface StatsPanelOptions extends BaseOptions {
   groups: StatGroup[];
   /** Unspent attribute points; enables the +/- controls when above zero. */
   points?: number;
+  /** Width in pixels. */
   width?: number;
 }
 

@@ -10,6 +10,7 @@ export interface BannerOptions extends BaseOptions {
   /** `plain` is a flat nameplate, `arrow` uses the chevron ribbon art. */
   variant?: 'plain' | 'arrow' | 'dark';
   size?: 'sm' | 'md' | 'lg';
+  /** Width in pixels, or any CSS length such as `'100%'`. */
   width?: number | string;
   /** Tint the text with a rarity / faction colour. */
   tone?: 'default' | 'gold' | 'danger' | 'accent';

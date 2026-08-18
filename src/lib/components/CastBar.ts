@@ -2,6 +2,7 @@ import { FuiComponent, type BaseOptions } from '../core/component.ts';
 import { h, clamp } from '../core/dom.ts';
 
 export interface CastBarOptions extends BaseOptions {
+  /** Width in pixels. */
   width?: number;
   /** Show the elapsed / total seconds readout. Default true. */
   showTime?: boolean;

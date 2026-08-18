@@ -1,0 +1,87 @@
+/* HealthPips — discrete hearts, lives or charges, with halves and bonus pips. */
+
+.fui-pips {
+  --fui-pip-size: 22px;
+  --fui-pip-ink: var(--fui-health);
+  --fui-pip-empty: rgba(255, 255, 255, 0.14);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--fui-gap-sm);
+}
+
+.fui-pips__track {
+  display: inline-flex;
+  gap: calc(var(--fui-pip-size) * 0.12);
+}
+
+.fui-pips__pip {
+  position: relative;
+  width: var(--fui-pip-size);
+  height: var(--fui-pip-size);
+  flex: none;
+}
+
+/* The empty state is the same silhouette in a dim colour, so the track's length
+   never changes as it drains. */
+.fui-pips[data-variant='heart'] .fui-pips__pip {
+  background-color: var(--fui-pip-empty);
+  mask: var(--fui-pip-src) center / contain no-repeat;
+  -webkit-mask: var(--fui-pip-src) center / contain no-repeat;
+}
+
+/* A half pip is the filled colour clipped to the left half, layered over the
+   empty silhouette below. */
+.fui-pips[data-variant='heart'] .fui-pips__pip::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: var(--fui-pip-ink);
+  mask: var(--fui-pip-src) center / contain no-repeat;
+  -webkit-mask: var(--fui-pip-src) center / contain no-repeat;
+  filter: drop-shadow(0 0 3px color-mix(in srgb, var(--fui-pip-ink) 60%, transparent));
+  transition: clip-path var(--fui-t) var(--fui-ease), opacity var(--fui-t) var(--fui-ease);
+}
+
+.fui-pips__pip[data-fill='full']::after { clip-path: inset(0); }
+.fui-pips__pip[data-fill='half']::after { clip-path: inset(0 50% 0 0); }
+.fui-pips__pip[data-fill='empty']::after { opacity: 0; }
+
+.fui-pips[data-variant='chip'] .fui-pips__pip {
+  width: calc(var(--fui-pip-size) * 0.45);
+  border-radius: calc(var(--fui-pip-size) * 0.22);
+  background: var(--fui-pip-empty);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+.fui-pips[data-variant='chip'] .fui-pips__pip[data-fill='full'] {
+  background: var(--fui-pip-ink);
+  box-shadow: 0 0 7px color-mix(in srgb, var(--fui-pip-ink) 60%, transparent);
+}
+
+.fui-pips[data-variant='chip'] .fui-pips__pip[data-fill='half'] {
+  background: linear-gradient(180deg, var(--fui-pip-ink) 50%, var(--fui-pip-empty) 50%);
+}
+
+/* Bonus pips are gold and sit past the end of the track, so they read as
+   temporary rather than as a bigger maximum. */
+.fui-pips__pip.is-bonus {
+  --fui-pip-ink: var(--fui-gold);
+}
+
+.fui-pips__pip.is-bonus::after {
+  animation: fui-pulse 2.4s var(--fui-ease) infinite;
+}
+
+.fui-pips__pip.is-last::after {
+  animation: fui-pulse 0.8s var(--fui-ease) infinite;
+}
+
+.fui-pips__count {
+  font-size: calc(var(--fui-pip-size) * 0.6);
+  font-weight: 700;
+  color: var(--fui-ink-dim);
+}
+
+.fui-pips.is-critical .fui-pips__count {
+  color: var(--fui-danger);
+}

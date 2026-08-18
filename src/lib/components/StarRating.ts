@@ -6,6 +6,7 @@ export interface StarRatingOptions extends BaseOptions {
   value?: number;
   /** Total stars on the track. Gacha games usually run 1–6. */
   max?: number;
+  /** Size in pixels. */
   size?: number;
   /**
    * `star` is the standard gold rating; `awaken` is the second, hotter track

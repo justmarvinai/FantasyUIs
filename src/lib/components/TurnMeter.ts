@@ -26,6 +26,7 @@ export interface TurnMeterOptions extends BaseOptions {
   rate?: number;
   /** Show each unit's own fill bar under its portrait. */
   showBars?: boolean;
+  /** Size in pixels. */
   size?: number;
 }
 

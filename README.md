@@ -2,7 +2,7 @@
 
 **A growing database of ready-to-use UI components for Fantasy & RPG web games.**
 
-106 components built from 494 art assets across 2 swappable themes, 2 icon
+120 components built from 494 art assets across 2 swappable themes, 2 icon
 collections and a tintable ornament set. Vanilla TypeScript and CSS — zero
 runtime dependencies, no framework, no build plugin. Drops into any Vite
 project, React or not, or straight over a Phaser canvas as a DOM layer.
@@ -16,13 +16,13 @@ project, React or not, or straight over a Phaser canvas as a DOM layer.
 | Group | Components |
 | --- | --- |
 | **Surfaces & Framing** | Panel, **TintFrame**, Frame, Divider, Banner, **Carousel** |
-| **Controls** | Button, Tabs, Toggle, Slider, Select, TextInput, ContextMenu, RadialMenu, **SegmentedControl**, **NumberStepper**, **ConfirmSlider**, **Accordion**, **FilterBar**, **SortBar** |
-| **Data display** | Icon, Glyph, StatBar, Slot, Portrait, Tooltip, Badge, ItemCard, **ProgressRing**, **StatChip**, **CompareStats**, **StatRadar** |
-| **Game widgets** | InventoryGrid, ActionBar, UnitFrame, PartyFrame, BuffBar, CastBar, DialogueBox, QuestLog, QuestTracker, ShopPanel, LootWindow, CraftingPanel, SkillTree, StatsPanel, Paperdoll, Minimap, CurrencyBar, Leaderboard |
-| **Combat & battle** | **BossHealthBar**, **ShieldBar**, **WaveTracker**, **DamageMeter**, **BattleLog**, **ComboCounter**, **ArenaMatchup** |
-| **Collection & live-ops** | ChampionCard, StarRating, AffinityBadge, SummonResult, TeamSlots, TurnMeter, EnergyBar, RewardTrack, DailyRewards, UpgradePanel, StageSelect, OfferCard, CountdownTimer, BottomNav, BattleControls, TierBadge, **ChampionList**, **SkillCard**, **MasteryGrid**, **ArtifactCard**, **ArtifactSet**, **RankUpPanel**, **ShardCounter**, **PowerRating**, **PityCounter**, **BannerCarousel**, **TopBar**, **VipProgress**, **EventBanner**, **StreakMeter** |
-| **Social & clan** | **ClanCard**, **MailInbox**, **ChatPanel** |
-| **Feedback** | ToastStack, FloatingText, AchievementPopup, **RewardPopup**, **EmptyState**, **LoadingDots**, **TutorialTip** |
+| **Controls** | Button, Tabs, Toggle, Slider, Select, TextInput, ContextMenu, RadialMenu, SegmentedControl, NumberStepper, ConfirmSlider, Accordion, FilterBar, SortBar, **SideNav** |
+| **Data display** | Icon, Glyph, StatBar, Slot, Portrait, Tooltip, Badge, ItemCard, ProgressRing, StatChip, CompareStats, StatRadar, **HealthPips** |
+| **Game widgets** | InventoryGrid, ActionBar, UnitFrame, PartyFrame, BuffBar, CastBar, DialogueBox, QuestLog, QuestTracker, ShopPanel, LootWindow, CraftingPanel, SkillTree, StatsPanel, Paperdoll, Minimap, CurrencyBar, Leaderboard, **WorldMap**, **CodexEntry**, **AchievementList**, **PatchNotes** |
+| **Combat & battle** | BossHealthBar, ShieldBar, WaveTracker, DamageMeter, BattleLog, ComboCounter, ArenaMatchup, **MatchHistory**, **LootRoll** |
+| **Collection & live-ops** | ChampionCard, StarRating, AffinityBadge, SummonResult, TeamSlots, TurnMeter, EnergyBar, RewardTrack, DailyRewards, UpgradePanel, StageSelect, OfferCard, CountdownTimer, BottomNav, BattleControls, TierBadge, **ChampionList**, **SkillCard**, **MasteryGrid**, **ArtifactCard**, **ArtifactSet**, **RankUpPanel**, **ShardCounter**, **PowerRating**, **PityCounter**, **BannerCarousel**, **TopBar**, **VipProgress**, EventBanner, StreakMeter, **FormationGrid**, **SocketPanel**, **CollectionProgress** |
+| **Social & clan** | ClanCard, MailInbox, ChatPanel, **FriendList**, **LeaderboardPodium** |
+| **Feedback** | ToastStack, FloatingText, AchievementPopup, RewardPopup, EmptyState, LoadingDots, TutorialTip, **Ticker** |
 | **Screens & overlays** | MainMenu, PauseMenu, SettingsScreen, CharacterSelect, LoadingScreen, ResultScreen, LevelUpModal, Modal, HUD |
 
 These are not static skins. The inventory grid does real drag-and-drop and
@@ -130,7 +130,33 @@ Point an agent at the site root and it can discover and copy anything:
 Use the UI library at https://fantasy-u-is.vercel.app.
 Read https://fantasy-u-is.vercel.app/llms.txt first, then fetch
 https://fantasy-u-is.vercel.app/r/<Component>.json for the source of anything you need.
+Copy every path listed in that record's "copy" field — components compose each
+other, so a component's dependencies have to come along with it.
 ```
+
+### Copying a component correctly
+
+Most components are self-contained, but not all: `ChampionCard` composes
+`StarRating` and `AffinityBadge`, and `TeamSlots` composes all three. Every
+`/r/<Component>.json` record therefore carries the answer rather than leaving it
+to be discovered by a failing build:
+
+```jsonc
+// GET /r/ChampionCard.json
+{
+  "dependencies": ["AffinityBadge", "StarRating"],
+  "copy": [
+    "src/lib/core/component.ts",
+    "src/lib/core/dom.ts",
+    "src/lib/components/AffinityBadge.ts",  "src/lib/components/AffinityBadge.css",
+    "src/lib/components/StarRating.ts",     "src/lib/components/StarRating.css",
+    "src/lib/components/ChampionCard.ts",   "src/lib/components/ChampionCard.css"
+  ]
+}
+```
+
+Imports between components are plain relative paths, so dropping that list into a
+flat `src/ui/` folder compiles with no rewriting.
 
 ## Adding new art
 
@@ -155,7 +181,13 @@ npm run typecheck  # tsc --noEmit
 npm run ingest     # reprocess new_assets/ into public/fui/
 npm run gen        # regenerate the site pages and machine-readable endpoints
 npm run shots      # capture reference screenshots (needs the dev server running)
+npm run audit      # library-wide invariants tsc cannot see
+npm run smoke      # load every generated page in Chromium (needs the dev server)
 ```
+
+`audit` is part of `build`, so a deploy cannot ship a component that is missing
+from the barrel, reaches for the global `document`, leaks a timer, emits an
+un-namespaced event, or references art that is not in the manifest.
 
 ## How it works
 

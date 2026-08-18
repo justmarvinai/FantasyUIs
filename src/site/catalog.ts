@@ -6,6 +6,7 @@ import { GACHA } from './demos/gacha.ts';
 import { KIT } from './demos/kit.ts';
 import { ROSTER } from './demos/roster.ts';
 import { COMBAT } from './demos/combat.ts';
+import { WORLD } from './demos/world.ts';
 
 /** Every documented component, in the order the gallery lists them. */
 export const CATALOG: CatalogEntry[] = [
@@ -15,6 +16,7 @@ export const CATALOG: CatalogEntry[] = [
   ...COMBAT,
   ...GACHA,
   ...ROSTER,
+  ...WORLD,
   ...FEEDBACK,
   ...SCREENS,
 ];

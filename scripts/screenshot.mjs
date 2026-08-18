@@ -54,6 +54,17 @@ const SHOTS = [
   { name: 'battle-log', url: '/components/BattleLog.html', height: 1300 },
   { name: 'chat-panel', url: '/components/ChatPanel.html', height: 1300 },
   { name: 'skill-card', url: '/components/SkillCard.html', height: 1300 },
+  { name: 'world-map', url: '/components/WorldMap.html', height: 1300 },
+  { name: 'formation', url: '/components/FormationGrid.html', height: 1200 },
+  { name: 'socket-panel', url: '/components/SocketPanel.html', height: 1200 },
+  { name: 'codex', url: '/components/CodexEntry.html', height: 1400 },
+  { name: 'friend-list', url: '/components/FriendList.html', height: 1300 },
+  { name: 'achievements', url: '/components/AchievementList.html', height: 1400 },
+  { name: 'podium', url: '/components/LeaderboardPodium.html', height: 1300 },
+  { name: 'side-nav', url: '/components/SideNav.html', height: 1300 },
+  { name: 'health-pips', url: '/components/HealthPips.html', height: 1100 },
+  { name: 'loot-roll', url: '/components/LootRoll.html', height: 1400 },
+  { name: 'patch-notes', url: '/components/PatchNotes.html', height: 1300 },
 ];
 
 async function main() {

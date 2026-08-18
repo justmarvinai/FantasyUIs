@@ -24,6 +24,7 @@ export interface MinimapOptions extends BaseOptions {
   y?: number;
   /** Player facing in degrees, 0 = north. */
   heading?: number;
+  /** Size in pixels. */
   size?: number;
   /** Circular mask (classic MMO) or a square frame. */
   shape?: 'round' | 'square';

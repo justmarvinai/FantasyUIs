@@ -30,6 +30,7 @@ export interface CraftingPanelOptions extends BaseOptions {
   title?: string;
   recipes: Recipe[];
   selected?: string;
+  /** Width in pixels. */
   width?: number;
 }
 

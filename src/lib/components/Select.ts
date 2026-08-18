@@ -17,6 +17,7 @@ export interface SelectOptions extends BaseOptions {
   value?: string;
   placeholder?: string;
   disabled?: boolean;
+  /** Width in pixels, or any CSS length such as `'100%'`. */
   width?: number | string;
   onChange?: (value: string) => void;
 }

@@ -12,6 +12,8 @@ export interface RadarAxis {
 export interface StatRadarOptions extends BaseOptions {
   /** Three or more axes. Five or six reads best. */
   axes: RadarAxis[];
+  /** Diameter of the web in pixels. The element is wider than this, because
+   *  the axis labels are given their own margin either side. */
   size?: number;
   /** Colour of the primary polygon. */
   color?: string;

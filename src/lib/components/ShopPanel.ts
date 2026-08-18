@@ -19,7 +19,9 @@ export interface ShopPanelOptions extends BaseOptions {
   gold?: number;
   /** Button label on each row. Default `'Buy'`. */
   action?: string;
+  /** Width in pixels. */
   width?: number;
+  /** Height in pixels. */
   height?: number;
 }
 

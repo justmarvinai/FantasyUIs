@@ -28,6 +28,7 @@ export interface TierBadgeOptions extends BaseOptions {
   points?: number;
   /** Ladder position, shown as `#12`. */
   rank?: number;
+  /** Size in pixels. */
   size?: number;
   /** Hide the tier name and show the emblem alone. */
   compact?: boolean;

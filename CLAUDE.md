@@ -58,13 +58,13 @@ build me more components."* That workflow is:
 
 4. **Write a theme file** if the pack is a new visual style: copy
    `src/lib/styles/theme-stone-vine.css` and rebind every semantic slot. A theme
-   that fills in all the slots gets all 106 existing components for free.
+   that fills in all the slots gets all 120 existing components for free.
 
 5. **Build new components** for what the art newly makes possible, plus demos in
    `src/site/demos/`.
 
-6. `npm run gen && npm run typecheck`, then screenshot and *look* at the result
-   before claiming it works.
+6. `npm run gen && npm run typecheck && npm run audit`, then screenshot and
+   *look* at the result before claiming it works.
 
 ## Architecture
 
@@ -85,10 +85,12 @@ src/site/                    the documentation site (catalog, demos, chrome)
   demos/widgets.ts           inventory, quests, shops, crafting
   demos/combat.ts            battle, live-ops and social
   demos/gacha.ts, roster.ts  collection, champions, gear, ascension
+  demos/world.ts             maps, codex, social, achievements, patch notes
   demos/screens.ts           full-screen templates and feedback
 scripts/ingest.mjs           new_assets/ → public/fui/ + manifests
 scripts/generate.mjs         → static site, registry.json, llms.txt, /r/*.json
 scripts/gen-lib.mjs          → src/lib/index.ts and styles/index.css
+scripts/audit.mjs            library-wide invariants a typechecker cannot see
 ```
 
 ### The three-layer art indirection
@@ -169,6 +171,11 @@ zero component changes.
   rule sets `opacity: 0` interpolates back down to 0 after 60% and finishes
   invisible under `animation-fill-mode: forwards`.
 
+- **Events are always `ns:verb`.** An agent generating code against this library
+  infers the pattern from the other 119 components, so a bare `close` or
+  `change` makes it guess wrong. `Panel` emits `panel:close`, `Modal` emits
+  `modal:open` / `modal:close` / `modal:action`, `StatBar` emits `bar:change`.
+
 - **Widths that depend on siblings must be measured, not divided.**
   `SegmentedControl`'s thumb and `TutorialTip`'s anchor both start from a CSS
   approximation (which is what the pre-rendered markup ships) and then correct
@@ -182,6 +189,38 @@ zero component changes.
   never drift from the code that ran. Write demos as idiomatic usage. Vite's SSR
   transform rewrites imports to `__vite_ssr_import_N__.X`; the extractor strips
   that, so keep an eye on it if the transform ever changes.
+
+## The two checks
+
+Both run in seconds and have caught real bugs every time the library grew.
+
+**`npm run audit`** enforces what `tsc` cannot, and *fails the build*: a
+component reaching for the global `document` or `window` (which would break the
+site's Node pre-render), a timer or observer with no `onDestroy`, a `mask`
+falling back to `none`, an event without a `ns:verb` namespace, an asset id
+absent from the manifest, and any component missing from the barrel, the
+stylesheet or the catalog. It also *notes* — without failing — classes emitted
+with no matching rule and option fields with no doc comment, since the first is
+usually a deliberate styling hook and the second only costs a blank cell in the
+props table.
+
+**`npm run smoke`** drives Chromium over all 123 generated pages and fails on an
+uncaught error, a console error from this origin, a 4xx on any local resource,
+or a component page whose demos rendered nothing. It waits for `load` rather
+than `domcontentloaded` on purpose: navigating away early aborts in-flight image
+requests, and an aborted request is indistinguishable from a failed one — that
+false positive cost an hour once. Unreachable third-party hosts (the optional
+Google Fonts link) are reported but never counted.
+
+## Consuming the library from a game
+
+Components compose each other — `ChampionCard` imports `StarRating` and
+`AffinityBadge` — so a single file is not always enough. `generate.mjs` walks
+the real import statements and writes the transitive closure into every
+`/r/<Component>.json` as `dependencies` and `copy`. That list is the contract:
+copy exactly those paths into a flat `src/ui/` and it compiles untouched.
+`llms.txt` documents the same workflow, because an agent is the likeliest
+consumer.
 
 ## Commands
 

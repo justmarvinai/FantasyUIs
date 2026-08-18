@@ -55,7 +55,7 @@ export const PRIMITIVES: CatalogEntry[] = [
               new Button({ label: 'Close' }).el,
             ],
           });
-          panel.on('close', () => console.log('closed'));
+          panel.on('panel:close', () => console.log('closed'));
           return panel.el;
         },
       },

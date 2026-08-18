@@ -328,6 +328,43 @@ async function main() {
   const { CATALOG, GROUP_LABELS, GROUP_ORDER } = await vite.ssrLoadModule('/src/site/catalog.ts');
   const { ASSETS, PACKS } = await vite.ssrLoadModule('/src/data/assets.generated.ts');
 
+  /**
+   * Which other components a component pulls in, transitively.
+   *
+   * This is the piece that makes "copy the file into your game" actually work:
+   * ChampionCard imports StarRating and AffinityBadge, so handing someone only
+   * ChampionCard.ts hands them a file that will not compile. Everything below
+   * is derived from the real import statements rather than maintained by hand.
+   */
+  const componentDir = path.join(ROOT, 'src', 'lib', 'components');
+  const directDeps = new Map();
+  for (const entry of CATALOG) {
+    const file = path.join(componentDir, `${entry.id}.ts`);
+    const src = existsSync(file) ? await readFile(file, 'utf8') : '';
+    const deps = new Set();
+    for (const m of src.matchAll(/from '\.\/([A-Za-z0-9_]+)\.ts'/g)) deps.add(m[1]);
+    directDeps.set(entry.id, deps);
+  }
+  const depCache = new Map();
+  const resolveDeps = (id, seen = new Set()) => {
+    if (depCache.has(id)) return depCache.get(id);
+    const out = new Set();
+    for (const dep of directDeps.get(id) ?? []) {
+      if (seen.has(dep)) continue;
+      seen.add(dep);
+      out.add(dep);
+      for (const nested of resolveDeps(dep, seen)) out.add(nested);
+    }
+    const sorted = [...out].sort();
+    depCache.set(id, sorted);
+    return sorted;
+  };
+  /** The core files every component needs, whatever else it imports. */
+  const CORE_FILES = ['src/lib/core/component.ts', 'src/lib/core/dom.ts'];
+
+  const THEME_PACKS = PACKS.filter((p) => p.kind === 'theme');
+  const ART_PACKS = PACKS.filter((p) => p.kind !== 'theme');
+
   const registry = [];
 
   // ── Component pages ──────────────────────────────────────────────────────
@@ -337,6 +374,14 @@ async function main() {
     const tsSrc = existsSync(tsPath) ? await readFile(tsPath, 'utf8') : '';
     const cssSrc = existsSync(cssPath) ? await readFile(cssPath, 'utf8') : '';
     const props = parseProps(tsSrc);
+    const deps = resolveDeps(entry.id);
+    const copyList = [
+      ...CORE_FILES,
+      ...(tsSrc.includes('core/assets.ts') ? ['src/lib/core/assets.ts'] : []),
+      ...deps.flatMap((d) => [`src/lib/components/${d}.ts`, `src/lib/components/${d}.css`]),
+      `src/lib/components/${entry.id}.ts`,
+      `src/lib/components/${entry.id}.css`,
+    ];
 
     const demoBlocks = [];
     const snippets = [];
@@ -419,7 +464,14 @@ ${props
 
   <section class="block">
     <h2>Source</h2>
-    <p class="muted">Both files are dependency-free. Drop them into <code>src/ui/</code> and they work as-is.</p>
+    <p class="muted">${
+      deps.length
+        ? `This component composes ${deps
+            .map((d) => `<a href="/components/${esc(d)}.html"><code>${esc(d)}</code></a>`)
+            .join(', ')}, so copy those too. Everything below has no other dependency.`
+        : 'Both files are dependency-free. Drop them into <code>src/ui/</code> and they work as-is.'
+    }</p>
+    ${codeBlock(copyList.join('\n'), 'text', 'Files to copy')}
     <details class="src"><summary><code>${esc(entry.id)}.ts</code></summary>${codeBlock(tsSrc, 'ts', `${entry.id}.ts`)}</details>
     <details class="src"><summary><code>${esc(entry.id)}.css</code></summary>${codeBlock(cssSrc, 'css', `${entry.id}.css`)}</details>
   </section>
@@ -452,6 +504,11 @@ ${props
         ts: `src/lib/components/${entry.id}.ts`,
         css: `src/lib/components/${entry.id}.css`,
       },
+      // Other components this one composes. Copy these too, or it will not
+      // compile — resolved transitively from the actual imports.
+      dependencies: deps,
+      // The complete file list to copy into a game, in dependency order.
+      copy: copyList,
       props,
       examples: entry.demos.map((d, i) => ({ title: d.title, note: d.note ?? '', code: snippets[i] })),
     };
@@ -476,7 +533,7 @@ ${props
 
   const indexBody = `<section class="hero">
   <div class="hero__inner">
-    <p class="hero__eyebrow">${esc(CATALOG.length)} components · ${esc(ASSETS.length)} art assets · ${esc(PACKS.length)} themes</p>
+    <p class="hero__eyebrow">${esc(CATALOG.length)} components · ${esc(ASSETS.length)} art assets · ${esc(THEME_PACKS.length)} themes · ${esc(ART_PACKS.length)} art collections</p>
     <h1>Fantasy<em>UIs</em></h1>
     <p class="hero__lede">${esc(SITE.tagline)}. Vanilla TypeScript and CSS, zero dependencies — drops into any Vite project, React or not, or straight over a Phaser canvas.</p>
     <div class="hero__actions">
@@ -589,13 +646,13 @@ ${assets
     <p>One import wires up the design tokens, both themes and every component's styles. Art resolves against the hosted CDN, so nothing needs copying to see pixels on screen.</p>
     ${codeBlock(`<!-- index.html -->\n<link rel="stylesheet" href="${SITE.origin}/dist/fantasyuis.css" />`, 'html', 'Hosted art')}
     <p>Or, if you copied <code>public/fui/</code> into your own project, point the variables at it instead and drop the CDN entirely:</p>
-    ${codeBlock(`import { setAssetBase } from './ui/assets';\n\nsetAssetBase('/fui');`, 'ts', 'Self-hosted art')}
+    ${codeBlock(`import { setAssetBase } from './ui/core/assets';\n\nsetAssetBase('/fui');`, 'ts', 'Self-hosted art')}
   </section>
 
   <section class="block">
     <h2>2. Build some UI</h2>
     ${codeBlock(
-      `import { Panel, Button, StatBar, InventoryGrid } from './ui';\n\nconst panel = new Panel({\n  title: 'Inventory',\n  width: 460,\n  closable: true,\n  mount: document.body,\n});\n\nconst bag = new InventoryGrid({ cols: 6, size: 24 });\nbag.add({ icon: 'icon-potion', name: 'Healing Draught', qty: 5, rarity: 'uncommon' });\npanel.add(bag.el);\n\nconst hp = new StatBar({ kind: 'health', value: 72, max: 100, label: 'Health' });\nhp.set(48); // animates, and leaves a damage trail\n\npanel.on('close', () => panel.destroy());`,
+      `import { Panel, Button, StatBar, InventoryGrid } from './ui';\n\nconst panel = new Panel({\n  title: 'Inventory',\n  width: 460,\n  closable: true,\n  mount: document.body,\n});\n\nconst bag = new InventoryGrid({ cols: 6, size: 24 });\nbag.add({ icon: 'icon-potion', name: 'Healing Draught', qty: 5, rarity: 'uncommon' });\npanel.add(bag.el);\n\nconst hp = new StatBar({ kind: 'health', value: 72, max: 100, label: 'Health' });\nhp.set(48); // animates, and leaves a damage trail\n\npanel.on('panel:close', () => panel.destroy());`,
       'ts',
       'main.ts',
     )}
@@ -617,8 +674,9 @@ ${assets
       <li><a href="/registry.json"><code>/registry.json</code></a> — machine-readable index of every component and asset.</li>
       <li><code>/r/&lt;Component&gt;.json</code> — one component's full record including its complete TypeScript and CSS source. <a href="/r/Panel.json">Example: /r/Panel.json</a></li>
     </ul>
+    <p>Most components are self-contained, but not all: <code>ChampionCard</code> composes <code>StarRating</code> and <code>AffinityBadge</code>. Every record carries a <code>dependencies</code> list and a <code>copy</code> list — the complete, ordered set of files that component needs — so copying is a mechanical step rather than a guess. Imports between components are plain relative paths, so a flat <code>src/ui/</code> folder compiles with no rewriting.</p>
     <p>Point your agent at the site root and it can discover, read and copy any component without a single manual step:</p>
-    ${codeBlock(`Use the UI library at ${SITE.origin}.\nRead ${SITE.origin}/llms.txt first, then fetch\n${SITE.origin}/r/<Component>.json for the source of anything you need.`, 'text', 'Prompt')}
+    ${codeBlock(`Use the UI library at ${SITE.origin}.\nRead ${SITE.origin}/llms.txt first, then fetch\n${SITE.origin}/r/<Component>.json for the source of anything you need.\nCopy every path in that record's "copy" field \u2014 components compose each other,\nso a component's dependencies have to come along with it.`, 'text', 'Prompt')}
   </section>
 
   <section class="block">
@@ -688,7 +746,12 @@ ${assets
       blurb: p.blurb,
       assets: p.count,
     })),
-    counts: { components: CATALOG.length, assets: ASSETS.length, themes: PACKS.length },
+    counts: {
+      components: CATALOG.length,
+      assets: ASSETS.length,
+      themes: THEME_PACKS.length,
+      artPacks: ART_PACKS.length,
+    },
     endpoints: {
       llms: `${SITE.origin}/llms.txt`,
       registry: `${SITE.origin}/registry.json`,
@@ -710,7 +773,7 @@ ${assets
 
   const llms = `# ${SITE.name}
 
-> ${SITE.tagline}. ${CATALOG.length} components built from ${ASSETS.length} hand-painted art assets, in ${PACKS.length} swappable themes. Vanilla TypeScript + CSS, zero runtime dependencies, designed for Vite projects but framework-agnostic.
+> ${SITE.tagline}. ${CATALOG.length} components built from ${ASSETS.length} art assets, in ${THEME_PACKS.length} swappable themes plus ${ART_PACKS.length} art collections (icons, glyphs and tintable ornament frames). Vanilla TypeScript + CSS, zero runtime dependencies, designed for Vite projects but framework-agnostic.
 
 ## How to use this library
 
@@ -739,22 +802,56 @@ The whole UI scales from one variable: \`--fui-ui-scale\` (default 0.5).
 - \`${SITE.origin}/components/<ComponentId>.html\` — the human-readable page, pre-rendered.
 - \`${SITE.origin}/fui/<pack>/<assetId>.png\` — the raw art.
 
+## Copying a component into a game
+
+Each \`/r/<ComponentId>.json\` record carries two fields that make this reliable:
+
+- \`copy\` — the complete, ordered list of files that component needs.
+- \`dependencies\` — the other components it composes.
+
+Most components are self-contained, but some are not: \`ChampionCard\` imports
+\`StarRating\` and \`AffinityBadge\`, so copying only \`ChampionCard.ts\` gives you a file
+that will not compile. Always copy the whole \`copy\` list. Every component also needs
+\`src/lib/core/component.ts\` and \`src/lib/core/dom.ts\`, which are already in that list.
+
+Components import each other with explicit \`./Name.ts\` paths, so a flat \`src/ui/\`
+folder works with no rewriting:
+
+    src/ui/
+      core/component.ts
+      core/dom.ts
+      StarRating.ts   StarRating.css
+      AffinityBadge.ts AffinityBadge.css
+      ChampionCard.ts ChampionCard.css
+
+Then import the CSS files (or link the single hosted stylesheet, which already
+contains all of them).
+
 ## Themes
 
 ${PACKS.filter((p) => p.kind === 'theme')
   .map((p) => `- **${p.name}** (\`${p.id}\`) — ${p.blurb} ${p.count} assets.`)
   .join('\n')}
 
-## Icon collections
+## Art collections
 
-These are art libraries rather than themes — reference any icon by id from any theme.
+These are art libraries rather than themes — reference any asset by id from any
+theme, in any component that takes an \`art\` or \`glyph\` option.
 
-${PACKS.filter((p) => p.kind === 'icons')
-  .map((p) => `- **${p.name}** (\`${p.id}\`) — ${p.blurb} ${p.count} assets.`)
-  .join('\n')}
+${ART_PACKS.map((p) => `- **${p.name}** (\`${p.id}\`, ${p.kind}) — ${p.blurb} ${p.count} assets.`).join('\n')}
 
-Line glyphs are SVG and are meant to be drawn through a CSS mask so they inherit
-\`currentColor\`; the \`Glyph\` component does this for you.
+Two of these are drawn through a CSS mask rather than as images, which is what
+lets one file serve every colour:
+
+- **Line glyphs** are SVG with their fill rewritten to \`currentColor\`. The
+  \`Glyph\` component masks them, so the same \`glyph-crossed-swords\` renders grey
+  in a disabled row and gold on a legendary card.
+- **Ornate frames** are white silhouettes 9-sliced as a \`mask-border\`. The
+  \`TintFrame\` component paints any colour or gradient underneath, so 32 shapes ×
+  4 centre treatments (\`hollow\`, \`scrim\`, \`solid\`, \`soft\`) cover every rarity
+  and faction colour a game needs from one set of small PNGs. Ids run
+  \`deco-frame-01\` … \`deco-frame-32\`, with \`-scrim\` / \`-solid\` / \`-soft\`
+  suffixes, plus \`deco-divider-01\` … \`-06\`.
 
 ## Components
 
@@ -767,7 +864,10 @@ ${GROUP_ORDER.filter((g) => CATALOG.some((c) => c.group === g))
           .slice(0, 8)
           .map((p) => `${p.name}${p.optional ? '?' : ''}: ${p.type}`)
           .join('; ');
-        return `- **${c.name}** — ${c.blurb}\n  - keywords: ${c.tags.join(', ')}\n  - options: ${keyProps || 'none beyond base options'}\n  - source: ${SITE.origin}/r/${c.id}.json`;
+        const needs = rec.dependencies.length
+          ? `\n  - also copy: ${rec.dependencies.join(', ')}`
+          : '';
+        return `- **${c.name}** — ${c.blurb}\n  - keywords: ${c.tags.join(', ')}\n  - options: ${keyProps || 'none beyond base options'}${needs}\n  - source: ${SITE.origin}/r/${c.id}.json`;
       })
       .join('\n')}`,
   )

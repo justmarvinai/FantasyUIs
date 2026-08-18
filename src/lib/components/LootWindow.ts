@@ -9,6 +9,7 @@ export interface LootWindowOptions extends BaseOptions {
   items: ItemCardData[];
   gold?: number;
   xp?: number;
+  /** Width in pixels. */
   width?: number;
   /** Hero art shown above the list — a chest, a boss portrait. */
   hero?: string;

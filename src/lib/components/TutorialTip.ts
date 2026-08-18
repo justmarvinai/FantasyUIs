@@ -59,7 +59,6 @@ export class TutorialTip extends FuiComponent<TutorialTipOptions> {
     if (opts.spotlight) {
       this.hole = h('div', { class: 'fui-tip__hole', attrs: { 'aria-hidden': 'true' } });
       root.appendChild(this.hole);
-      root.classList.add('fui-tip--spotlight');
     }
 
     this.card = h('div', { class: 'fui-tip__card' });

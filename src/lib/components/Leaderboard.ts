@@ -25,6 +25,7 @@ export interface LeaderboardOptions extends BaseOptions {
   scoreLabel?: string;
   /** Format the score column; defaults to thousands separators. */
   format?: (score: number) => string;
+  /** Width in pixels. */
   width?: number;
   /** Pin the player's own row to the bottom when they're off the visible list. */
   pinYou?: boolean;

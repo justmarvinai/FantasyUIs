@@ -27,6 +27,7 @@ export interface UnitFrameOptions extends BaseOptions {
   compact?: boolean;
   /** Portrait size in px. */
   portraitSize?: number;
+  /** Width in pixels. */
   width?: number;
 }
 

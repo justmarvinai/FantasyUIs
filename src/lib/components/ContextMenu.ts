@@ -18,6 +18,7 @@ export interface ContextMenuOptions extends BaseOptions {
   items: MenuItem[];
   /** Small heading above the items — usually the item's name. */
   title?: string;
+  /** Width in pixels. */
   width?: number;
 }
 

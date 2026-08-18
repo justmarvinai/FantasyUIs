@@ -46,7 +46,9 @@ export interface TintFrameOptions extends BaseOptions {
   glow?: boolean;
   /** Space between the ornament and the content. */
   pad?: number | string;
+  /** Width in pixels, or any CSS length such as `'100%'`. */
   width?: number | string;
+  /** Height in pixels, or any CSS length such as `'60vh'`. */
   height?: number | string;
   /** Explicit asset id, overriding `shape` and `fill`. */
   art?: string;
