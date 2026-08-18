@@ -20,15 +20,12 @@ import path from 'node:path';
 import { createServer } from 'vite';
 import { parseHTML } from 'linkedom';
 import { genLib } from './gen-lib.mjs';
+import { SITE, ASSET_BASE } from '../catalog/site.mjs';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
 const OUT_COMPONENTS = path.join(ROOT, 'components');
 const OUT_PUBLIC = path.join(ROOT, 'public');
-const SITE = {
-  name: 'FantasyUIs',
-  tagline: 'Ready-to-use UI components for Fantasy & RPG web games',
-  origin: 'https://fantasyuis.vercel.app',
-};
+
 
 // ── HTML helpers ───────────────────────────────────────────────────────────
 const esc = (s) =>
@@ -269,6 +266,17 @@ ${body}
 // ── Main ───────────────────────────────────────────────────────────────────
 async function main() {
   const lib = await genLib();
+
+  // `core/assets.ts` is hand-written (it is part of the copy-paste surface), so
+  // its default base cannot be generated from the site config. Check it instead
+  // — a mismatch would ship snippets pointing at a domain that isn't ours.
+  const assetsTs = await readFile(path.join(ROOT, 'src', 'lib', 'core', 'assets.ts'), 'utf8');
+  const declared = assetsTs.match(/CDN_BASE = '([^']+)'/)?.[1];
+  if (declared !== ASSET_BASE) {
+    console.warn(
+      `  ! CDN_BASE in src/lib/core/assets.ts is "${declared}" but catalog/site.mjs says "${ASSET_BASE}" — update assets.ts.`,
+    );
+  }
 
   // Fresh output every run so deleted components never linger.
   if (existsSync(OUT_COMPONENTS)) await rm(OUT_COMPONENTS, { recursive: true });
@@ -535,9 +543,9 @@ ${g.items
 ${byPack
   .map(
     ({ pack, assets }) => `<section class="group">
-  <h2 class="group__title">${esc(pack.name)} <span class="muted">— ${esc(assets.length)} assets</span></h2>
+  <h2 class="group__title">${esc(pack.name)} <span class="muted">— ${esc(assets.length)} assets</span><span class="pack-kind">${esc(pack.kind === 'icons' ? 'icon collection' : 'theme')}</span></h2>
   <p class="muted group__blurb">${esc(pack.blurb)}</p>
-  <div class="assetgrid">
+  <div class="assetgrid${assets.length > 60 ? ' assetgrid--dense' : ''}">
 ${assets
   .map(
     (a) => `    <figure class="asset" data-search="${esc([a.id, a.name, a.category, ...a.tags].join(' ').toLowerCase())}">
@@ -667,7 +675,18 @@ ${assets
     assetBase: `${SITE.origin}/fui`,
     stylesheet: `${SITE.origin}/dist/fantasyuis.css`,
     assetVariablesOnly: `${SITE.origin}/dist/fantasyuis.assets.css`,
-    themes: PACKS.map((p) => ({ id: p.id, name: p.name, blurb: p.blurb, assets: p.count })),
+    themes: PACKS.filter((p) => p.kind !== 'icons').map((p) => ({
+      id: p.id,
+      name: p.name,
+      blurb: p.blurb,
+      assets: p.count,
+    })),
+    iconPacks: PACKS.filter((p) => p.kind === 'icons').map((p) => ({
+      id: p.id,
+      name: p.name,
+      blurb: p.blurb,
+      assets: p.count,
+    })),
     counts: { components: CATALOG.length, assets: ASSETS.length, themes: PACKS.length },
     endpoints: {
       llms: `${SITE.origin}/llms.txt`,
@@ -721,7 +740,20 @@ The whole UI scales from one variable: \`--fui-ui-scale\` (default 0.5).
 
 ## Themes
 
-${PACKS.map((p) => `- **${p.name}** (\`${p.id}\`) — ${p.blurb} ${p.count} assets.`).join('\n')}
+${PACKS.filter((p) => p.kind !== 'icons')
+  .map((p) => `- **${p.name}** (\`${p.id}\`) — ${p.blurb} ${p.count} assets.`)
+  .join('\n')}
+
+## Icon collections
+
+These are art libraries rather than themes — reference any icon by id from any theme.
+
+${PACKS.filter((p) => p.kind === 'icons')
+  .map((p) => `- **${p.name}** (\`${p.id}\`) — ${p.blurb} ${p.count} assets.`)
+  .join('\n')}
+
+Line glyphs are SVG and are meant to be drawn through a CSS mask so they inherit
+\`currentColor\`; the \`Glyph\` component does this for you.
 
 ## Components
 

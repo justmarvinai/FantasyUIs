@@ -10,11 +10,12 @@
  *
  * Safe to re-run; it is fully deterministic and overwrites its own output.
  */
-import { readdir, mkdir, writeFile, stat } from 'node:fs/promises';
+import { readdir, mkdir, writeFile, readFile, stat } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
 import { packs } from '../catalog/packs.mjs';
+import { ASSET_BASE } from '../catalog/site.mjs';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
 const RAW = path.join(ROOT, 'new_assets');
@@ -89,54 +90,86 @@ async function main() {
 
       sourceBytes += (await stat(src)).size;
 
-      const image = sharp(src);
-      const meta = await image.metadata();
-      const srcW = meta.width;
-      const srcH = meta.height;
+      const format = asset.format ?? 'png';
+      let outW;
+      let outH;
+      let outBytes;
+      let factor = 1;
+      const ext = format === 'svg' ? 'svg' : format === 'webp' ? 'webp' : 'png';
 
-      const targetW = Math.min(asset.maxW ?? srcW, srcW);
-      const factor = targetW / srcW;
-      const outW = Math.round(srcW * factor);
-      const outH = Math.round(srcH * factor);
+      if (format === 'svg') {
+        // Vector glyphs pass through untouched apart from their fill, which is
+        // rewritten to `currentColor` so the shape can be tinted wherever it is
+        // used — as an <img>, inline, or (the useful one) as a CSS mask.
+        const raw = await readFile(src, 'utf8');
+        const tinted = raw
+          .replace(/fill\s*=\s*"(?!none)[^"]*"/g, 'fill="currentColor"')
+          .replace(/fill\s*:\s*(?!none)[^;"}]+/g, 'fill:currentColor');
+        await writeFile(path.join(packOut, `${asset.id}.svg`), tinted, 'utf8');
+        outBytes = Buffer.byteLength(tinted);
 
-      const pipeline = sharp(src).resize({
-        width: outW,
-        height: outH,
-        fit: 'fill',
-        kernel: 'lanczos3',
-      });
+        const svgMeta = await sharp(Buffer.from(raw)).metadata();
+        outW = svgMeta.width ?? 512;
+        outH = svgMeta.height ?? 512;
 
-      const outFile = path.join(packOut, `${asset.id}.png`);
-      const info = await pipeline
-        .clone()
-        .png({ compressionLevel: 9, effort: 10 })
-        .toFile(outFile);
-      totalBytes += info.size;
+        // Rasterise the thumbnail in white so it reads on the dark gallery card.
+        await sharp(Buffer.from(raw.replace(/currentColor/g, '#FFFFFF')), { density: 200 })
+          .resize({ width: THUMB_MAX, height: THUMB_MAX, fit: 'inside', withoutEnlargement: true })
+          .webp({ quality: 88, effort: 6 })
+          .toFile(path.join(packOut, 'thumb', `${asset.id}.webp`));
+      } else {
+        const meta = await sharp(src).metadata();
+        const srcW = meta.width;
+        const srcH = meta.height;
 
-      // Gallery thumbnail — site-only, never shipped into a game.
-      await pipeline
-        .clone()
-        .resize({
-          width: Math.min(THUMB_MAX, outW),
-          height: Math.min(THUMB_MAX, outH),
-          fit: 'inside',
-          withoutEnlargement: true,
-        })
-        .webp({ quality: 82, effort: 6 })
-        .toFile(path.join(packOut, 'thumb', `${asset.id}.webp`));
+        const targetW = Math.min(asset.maxW ?? srcW, srcW);
+        factor = targetW / srcW;
+        outW = Math.round(srcW * factor);
+        outH = Math.round(srcH * factor);
+
+        const pipeline = sharp(src).resize({
+          width: outW,
+          height: outH,
+          fit: 'fill',
+          kernel: 'lanczos3',
+        });
+
+        const encoded =
+          format === 'webp'
+            ? pipeline.clone().webp({ quality: asset.quality ?? 86, effort: 6 })
+            : pipeline.clone().png({ compressionLevel: 9, effort: 10 });
+
+        const info = await encoded.toFile(path.join(packOut, `${asset.id}.${ext}`));
+        outBytes = info.size;
+
+        // Gallery thumbnail — site-only, never shipped into a game.
+        await pipeline
+          .clone()
+          .resize({
+            width: Math.min(THUMB_MAX, outW),
+            height: Math.min(THUMB_MAX, outH),
+            fit: 'inside',
+            withoutEnlargement: true,
+          })
+          .webp({ quality: 82, effort: 6 })
+          .toFile(path.join(packOut, 'thumb', `${asset.id}.webp`));
+
+      }
+      totalBytes += outBytes;
 
       manifest.push({
         id: asset.id,
         pack: pack.id,
         name: asset.name,
         category: asset.category,
+        format,
         tags: asset.tags ?? [],
-        file: `${pack.id}/${asset.id}.png`,
+        file: `${pack.id}/${asset.id}.${ext}`,
         thumb: `${pack.id}/thumb/${asset.id}.webp`,
         width: outW,
         height: outH,
-        slice: scaleSlice(asset.slice, factor, outW, outH),
-        bytes: info.size,
+        slice: format === 'svg' ? null : scaleSlice(asset.slice, factor, outW, outH),
+        bytes: outBytes,
       });
     }
   }
@@ -146,6 +179,7 @@ async function main() {
   const packMeta = packs.map((p) => ({
     id: p.id,
     name: p.name,
+    kind: p.kind ?? 'theme',
     blurb: p.blurb,
     accent: p.accent,
     count: manifest.filter((a) => a.pack === p.id).length,
@@ -168,6 +202,8 @@ export interface AssetRecord {
   /** Human-readable label. */
   name: string;
   category: AssetCategory;
+  /** Encoding of the shipped file. SVG glyphs are tintable through a CSS mask. */
+  format: 'png' | 'webp' | 'svg';
   tags: string[];
   /** Path relative to the asset base, e.g. "stone-vine/panel-stone.png". */
   file: string;
@@ -183,6 +219,8 @@ export interface AssetRecord {
 export interface PackRecord {
   id: string;
   name: string;
+  /** A \`theme\` pack binds the semantic slots; an \`icons\` pack is an art collection. */
+  kind: 'theme' | 'icons';
   blurb: string;
   accent: string;
   count: number;
@@ -236,10 +274,7 @@ export const ASSETS_BY_ID: Record<string, AssetRecord> = Object.fromEntries(
   await mkdir(path.join(ROOT, 'public', 'dist'), { recursive: true });
   await writeFile(
     path.join(ROOT, 'public', 'dist', 'fantasyuis.assets.css'),
-    emitCss(
-      'https://fantasyuis.vercel.app/fui',
-      'Hosted CDN paths — works with zero setup, no files to copy.',
-    ),
+    emitCss(ASSET_BASE, 'Hosted CDN paths — works with zero setup, no files to copy.'),
     'utf8',
   );
 

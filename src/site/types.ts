@@ -1,6 +1,13 @@
 /** Shared types for the documentation site's component catalog. */
 
-export type CatalogGroup = 'surfaces' | 'controls' | 'data' | 'widgets' | 'screens' | 'feedback';
+export type CatalogGroup =
+  | 'surfaces'
+  | 'controls'
+  | 'data'
+  | 'widgets'
+  | 'gacha'
+  | 'screens'
+  | 'feedback';
 
 export interface Demo {
   /** Heading shown above this example. */
@@ -40,6 +47,7 @@ export const GROUP_LABELS: Record<CatalogGroup, string> = {
   controls: 'Controls',
   data: 'Data Display',
   widgets: 'Game Widgets',
+  gacha: 'Collection & Live-Ops',
   screens: 'Screens & Overlays',
   feedback: 'Feedback & Notifications',
 };
@@ -49,6 +57,7 @@ export const GROUP_ORDER: CatalogGroup[] = [
   'controls',
   'data',
   'widgets',
+  'gacha',
   'feedback',
   'screens',
 ];

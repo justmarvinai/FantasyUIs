@@ -29,6 +29,18 @@ const SHOTS = [
   { name: 'dialogue', url: '/components/DialogueBox.html', height: 1400 },
   { name: 'shop-dark', url: '/components/ShopPanel.html', height: 1500, theme: 'dark-ember' },
   { name: 'mainmenu', url: '/components/MainMenu.html', height: 1500 },
+  { name: 'champion-card', url: '/components/ChampionCard.html', height: 1500 },
+  { name: 'summon', url: '/components/SummonResult.html', height: 1500 },
+  { name: 'glyph', url: '/components/Glyph.html', height: 1300 },
+  { name: 'team-slots', url: '/components/TeamSlots.html', height: 1300 },
+  { name: 'turn-meter', url: '/components/TurnMeter.html', height: 1200 },
+  { name: 'reward-track', url: '/components/RewardTrack.html', height: 1300 },
+  { name: 'daily-rewards', url: '/components/DailyRewards.html', height: 1300 },
+  { name: 'upgrade', url: '/components/UpgradePanel.html', height: 1500 },
+  { name: 'stage-select', url: '/components/StageSelect.html', height: 1300 },
+  { name: 'offer-dark', url: '/components/OfferCard.html', height: 1500, theme: 'dark-ember' },
+  { name: 'bottom-nav', url: '/components/BottomNav.html', height: 1200 },
+  { name: 'tier-badge', url: '/components/TierBadge.html', height: 1200 },
 ];
 
 async function main() {

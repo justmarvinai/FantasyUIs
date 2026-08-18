@@ -2,12 +2,12 @@
 
 **A growing database of ready-to-use UI components for Fantasy & RPG web games.**
 
-49 components built from 79 hand-painted art assets across 2 swappable themes.
-Vanilla TypeScript and CSS — zero runtime dependencies, no framework, no build
-plugin. Drops into any Vite project, React or not, or straight over a Phaser
-canvas as a DOM layer.
+66 components built from 354 art assets across 2 swappable themes and 2 icon
+collections. Vanilla TypeScript and CSS — zero runtime dependencies, no
+framework, no build plugin. Drops into any Vite project, React or not, or
+straight over a Phaser canvas as a DOM layer.
 
-🔗 **[fantasyuis.vercel.app](https://fantasyuis.vercel.app)**
+🔗 **[fantasy-u-is.vercel.app](https://fantasy-u-is.vercel.app)**
 
 ---
 
@@ -17,15 +17,33 @@ canvas as a DOM layer.
 | --- | --- |
 | **Surfaces & Framing** | Panel, Frame, Divider, Banner |
 | **Controls** | Button, Tabs, Toggle, Slider, Select, TextInput, ContextMenu, RadialMenu |
-| **Data display** | Icon, StatBar, Slot, Portrait, Tooltip, Badge, ItemCard |
+| **Data display** | Icon, Glyph, StatBar, Slot, Portrait, Tooltip, Badge, ItemCard |
 | **Game widgets** | InventoryGrid, ActionBar, UnitFrame, PartyFrame, BuffBar, CastBar, DialogueBox, QuestLog, QuestTracker, ShopPanel, LootWindow, CraftingPanel, SkillTree, StatsPanel, Paperdoll, Minimap, CurrencyBar, Leaderboard |
+| **Collection & live-ops** | ChampionCard, StarRating, AffinityBadge, SummonResult, TeamSlots, TurnMeter, EnergyBar, RewardTrack, DailyRewards, UpgradePanel, StageSelect, OfferCard, CountdownTimer, BottomNav, BattleControls, TierBadge |
 | **Feedback** | ToastStack, FloatingText, AchievementPopup |
 | **Screens & overlays** | MainMenu, PauseMenu, SettingsScreen, CharacterSelect, LoadingScreen, ResultScreen, LevelUpModal, Modal, HUD |
 
 These are not static skins. The inventory grid does real drag-and-drop and
 stacking, the action bar runs cooldown sweeps and greys out what you cannot
 afford, the dialogue box types text out and branches, the skill tree gates nodes
-behind prerequisites and draws its own dependency lines.
+behind prerequisites and draws its own dependency lines, and the turn meter
+reorders itself live as each unit's speed fills its bar.
+
+The **Collection & live-ops** set targets browser and mobile squad-RPGs of the
+Raid: Shadow Legends shape — gacha pulls, champion rosters, affinity counters,
+energy gating, battle passes, daily logins, ascension costs and timed shop
+bundles.
+
+## Art
+
+| Collection | What's in it |
+| --- | --- |
+| **Spell & Skill Icons** (`spell-icons`) | 235 painted square ability icons — runes and sigils, melee arts, earth and crystal, fire and inferno, beasts and ranged weapons, gadgets, blood magic |
+| **Line Glyphs** (`line-glyphs`) | 40 single-colour vector glyphs for interface chrome, drawn through a CSS mask so one file tints to any colour |
+
+Icons are a general collection addressed by id — `fire-phoenix-rise`,
+`glyph-crossed-swords`, `blood-necromancer` — and work from any theme. They are
+named for what they depict, never for a character class.
 
 ## Themes
 
@@ -47,7 +65,7 @@ entire subtree with no code change:
 
 ```html
 <!-- 1. One stylesheet: tokens, both themes, every component, artwork included -->
-<link rel="stylesheet" href="https://fantasyuis.vercel.app/dist/fantasyuis.css" />
+<link rel="stylesheet" href="https://fantasy-u-is.vercel.app/dist/fantasyuis.css" />
 ```
 
 ```ts
@@ -85,18 +103,18 @@ demo markup already rendered, so nothing needs JavaScript to be understood.
 
 | Endpoint | What it gives you |
 | --- | --- |
-| [`/llms.txt`](https://fantasyuis.vercel.app/llms.txt) | The whole library summarised for an LLM — every component, its purpose, its options, every asset id |
-| [`/registry.json`](https://fantasyuis.vercel.app/registry.json) | Machine-readable index of all components and assets |
+| [`/llms.txt`](https://fantasy-u-is.vercel.app/llms.txt) | The whole library summarised for an LLM — every component, its purpose, its options, every asset id |
+| [`/registry.json`](https://fantasy-u-is.vercel.app/registry.json) | Machine-readable index of all components and assets |
 | `/r/<Component>.json` | One component's full record, **including its complete TypeScript and CSS source** |
 | `/components/<Component>.html` | The human-readable page, pre-rendered |
-| `/fui/<pack>/<assetId>.png` | The raw artwork |
+| `/fui/<pack>/<assetId>.<ext>` | The raw artwork — `.png`, `.webp` or `.svg` depending on the asset |
 
 Point an agent at the site root and it can discover and copy anything:
 
 ```
-Use the UI library at https://fantasyuis.vercel.app.
-Read https://fantasyuis.vercel.app/llms.txt first, then fetch
-https://fantasyuis.vercel.app/r/<Component>.json for the source of anything you need.
+Use the UI library at https://fantasy-u-is.vercel.app.
+Read https://fantasy-u-is.vercel.app/llms.txt first, then fetch
+https://fantasy-u-is.vercel.app/r/<Component>.json for the source of anything you need.
 ```
 
 ## Adding new art
