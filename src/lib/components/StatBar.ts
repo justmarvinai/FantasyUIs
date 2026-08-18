@@ -10,6 +10,7 @@ export interface StatBarOptions extends BaseOptions {
   label?: string;
   /** `'none'` hides the readout, `'ratio'` shows 80 / 100, `'pct'` shows 80%. */
   readout?: 'none' | 'ratio' | 'pct';
+  /** Width in pixels, or any CSS length such as `'100%'`. */
   width?: number | string;
   /**
    * Leaves a slower-draining ghost behind the fill when the value drops, the
@@ -117,7 +118,7 @@ export class StatBar extends FuiComponent<StatBarOptions> {
       this.trailEl.style.width = `${this.pct() * 100}%`;
     }
 
-    this.emit('change', { value: this.value, max: this.max, pct: this.pct() });
+    this.emit('bar:change', { value: this.value, max: this.max, pct: this.pct() });
     return this;
   }
 

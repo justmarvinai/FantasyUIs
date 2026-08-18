@@ -1,0 +1,197 @@
+/* FriendList — presence, power, support champion, and the daily gift loop. */
+
+.fui-friends {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(0, 0, 0, 0.55);
+  border-radius: var(--fui-radius);
+  background: rgba(0, 0, 0, 0.32);
+  overflow: hidden;
+}
+
+.fui-friends__head {
+  display: flex;
+  align-items: center;
+  gap: var(--fui-gap-sm);
+  padding: 7px 10px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.fui-friends__title {
+  font-size: 10px;
+}
+
+.fui-friends__count {
+  flex: 1;
+  font-size: 11px;
+  color: var(--fui-ink-faint);
+}
+
+.fui-friends__bulk {
+  padding: 4px 11px;
+  border: 1px solid var(--fui-accent);
+  border-radius: var(--fui-radius);
+  background: color-mix(in srgb, var(--fui-accent) 18%, transparent);
+  color: var(--fui-accent-soft);
+  font-family: var(--fui-font-ui);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background var(--fui-t-fast) var(--fui-ease);
+}
+
+.fui-friends__bulk:hover {
+  background: color-mix(in srgb, var(--fui-accent) 38%, transparent);
+}
+
+.fui-friends__bulk--claim {
+  border-color: var(--fui-gold);
+  background: rgba(217, 164, 65, 0.16);
+  color: var(--fui-gold-soft);
+}
+
+.fui-friends__bulk--claim:hover {
+  background: rgba(217, 164, 65, 0.34);
+}
+
+.fui-friends__body {
+  display: flex;
+  flex-direction: column;
+}
+
+.fui-friends__row {
+  --fui-friend-ink: var(--fui-ink-faint);
+  display: flex;
+  align-items: center;
+  gap: var(--fui-gap-sm);
+  padding: 6px 10px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+}
+
+.fui-friends__row:last-child {
+  border-bottom: 0;
+}
+
+.fui-friends__row[data-status='online'] { --fui-friend-ink: var(--fui-success); }
+.fui-friends__row[data-status='idle'] { --fui-friend-ink: var(--fui-warn); }
+.fui-friends__row[data-status='in-battle'] { --fui-friend-ink: var(--fui-danger); }
+
+.fui-friends__row[data-status='offline'] {
+  opacity: 0.6;
+}
+
+.fui-friends__avatar {
+  position: relative;
+  width: 34px;
+  height: 34px;
+  flex: none;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.45) center / cover no-repeat;
+}
+
+/* The presence pip is on the avatar rather than in a column, so it stays
+   attached to the person as the row wraps on a narrow screen. */
+.fui-friends__pip {
+  position: absolute;
+  right: -1px;
+  bottom: -1px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid #14141a;
+  background: var(--fui-friend-ink);
+}
+
+.fui-friends__row[data-status='online'] .fui-friends__pip {
+  box-shadow: 0 0 6px var(--fui-success);
+}
+
+.fui-friends__main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.fui-friends__line {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+}
+
+.fui-friends__name {
+  font-size: 13px;
+  color: var(--fui-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fui-friends__clan {
+  font-family: var(--fui-font-mono);
+  font-size: 10px;
+  color: var(--fui-accent-soft);
+}
+
+.fui-friends__meta {
+  display: flex;
+  gap: var(--fui-gap-sm);
+  font-size: 10.5px;
+  color: var(--fui-ink-faint);
+}
+
+.fui-friends__status {
+  color: var(--fui-friend-ink);
+  text-transform: capitalize;
+}
+
+.fui-friends__support {
+  width: 30px;
+  height: 30px;
+  flex: none;
+  border: 1px solid var(--fui-gold);
+  border-radius: var(--fui-radius);
+  background: rgba(0, 0, 0, 0.45) center / cover no-repeat;
+}
+
+.fui-friends__action {
+  min-width: 60px;
+  padding: 4px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: var(--fui-radius);
+  background: rgba(0, 0, 0, 0.35);
+  color: var(--fui-ink-dim);
+  font-family: var(--fui-font-ui);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background var(--fui-t-fast) var(--fui-ease);
+}
+
+.fui-friends__action:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--fui-ink);
+}
+
+.fui-friends__action:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.fui-friends__action--claim {
+  border-color: var(--fui-gold);
+  background: rgba(217, 164, 65, 0.2);
+  color: var(--fui-gold-soft);
+  animation: fui-pulse 2.4s var(--fui-ease) infinite;
+}
+
+.fui-friends__empty {
+  padding: var(--fui-gap-lg);
+  text-align: center;
+  font-size: 13px;
+  color: var(--fui-ink-faint);
+}

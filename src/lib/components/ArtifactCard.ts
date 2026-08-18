@@ -33,6 +33,7 @@ export interface ArtifactCardOptions extends BaseOptions {
   locked?: boolean;
   selected?: boolean;
   selectable?: boolean;
+  /** Width in pixels. */
   width?: number;
 }
 

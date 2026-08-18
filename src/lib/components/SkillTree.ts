@@ -27,6 +27,7 @@ export interface SkillTreeOptions extends BaseOptions {
   points?: number;
   /** Columns in the layout grid. Defaults to the widest tier. */
   columns?: number;
+  /** Width in pixels. */
   width?: number;
 }
 

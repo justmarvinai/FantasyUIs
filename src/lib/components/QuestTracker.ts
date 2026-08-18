@@ -5,6 +5,7 @@ import type { Quest } from './QuestLog.ts';
 export interface QuestTrackerOptions extends BaseOptions {
   quests?: Quest[];
   title?: string;
+  /** Width in pixels. */
   width?: number;
   /** Collapse to titles only. */
   collapsed?: boolean;

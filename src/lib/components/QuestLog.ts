@@ -39,7 +39,9 @@ export interface QuestLogOptions extends BaseOptions {
   quests: Quest[];
   /** Id of the quest shown in the detail pane. */
   selected?: string;
+  /** Width in pixels. */
   width?: number;
+  /** Height in pixels. */
   height?: number;
   title?: string;
 }

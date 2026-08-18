@@ -11,6 +11,7 @@ export interface EnergyBarOptions extends BaseOptions {
   label?: string;
   /** Show a `+` button that emits `energy:refill`. */
   refillable?: boolean;
+  /** Width in pixels, or any CSS length such as `'100%'`. */
   width?: number | string;
   /** Tick the clock and top up automatically. Default true. */
   autoRegen?: boolean;

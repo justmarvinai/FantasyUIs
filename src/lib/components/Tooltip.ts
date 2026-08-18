@@ -26,6 +26,7 @@ export interface TooltipOptions extends BaseOptions {
   hint?: string;
   /** Arbitrary extra nodes appended to the body. */
   content?: Child | Child[];
+  /** Width in pixels. */
   width?: number;
 }
 

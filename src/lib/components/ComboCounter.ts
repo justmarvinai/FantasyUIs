@@ -18,6 +18,7 @@ export interface ComboCounterOptions extends BaseOptions {
   decay?: number;
   /** Word after the number. */
   suffix?: string;
+  /** Font size of the combo number in pixels. Rank and suffix scale from it. */
   size?: number;
   /** Show the decay timer as a draining underline. */
   showTimer?: boolean;

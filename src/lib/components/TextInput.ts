@@ -13,6 +13,7 @@ export interface TextInputOptions extends BaseOptions {
   disabled?: boolean;
   /** Red validation line under the field. */
   error?: string;
+  /** Width in pixels, or any CSS length such as `'100%'`. */
   width?: number | string;
   type?: 'text' | 'password' | 'search' | 'number';
   onInput?: (value: string) => void;

@@ -30,6 +30,7 @@ export interface AffinityBadgeOptions extends BaseOptions {
   /** Key into `AFFINITIES`, or supply `def` for a custom system. */
   affinity?: string;
   def?: AffinityDef;
+  /** Size in pixels. */
   size?: number;
   /** `chip` shows the label beside the glyph; `dot` is glyph-only. */
   variant?: 'dot' | 'chip';

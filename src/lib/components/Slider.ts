@@ -12,6 +12,7 @@ export interface SliderOptions extends BaseOptions {
   /** Asset id for a leading icon, e.g. a speaker or brightness glyph. */
   icon?: string;
   disabled?: boolean;
+  /** Width in pixels, or any CSS length such as `'100%'`. */
   width?: number | string;
   onInput?: (value: number) => void;
 }

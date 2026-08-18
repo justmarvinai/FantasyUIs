@@ -33,7 +33,9 @@ export interface SettingsSection {
 export interface SettingsScreenOptions extends BaseOptions {
   title?: string;
   sections: SettingsSection[];
+  /** Width in pixels. */
   width?: number;
+  /** Height in pixels. */
   height?: number;
   /** Show Apply / Reset buttons in the footer. Default true. */
   footer?: boolean;

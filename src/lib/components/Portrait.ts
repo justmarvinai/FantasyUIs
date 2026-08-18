@@ -8,6 +8,7 @@ export interface PortraitOptions extends BaseOptions {
   art?: string;
   /** Square with an ornament frame, or a circular medallion. */
   shape?: 'square' | 'round';
+  /** Size in pixels. */
   size?: number;
   /** Level pip in the lower corner. */
   level?: number;

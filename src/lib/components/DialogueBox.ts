@@ -26,6 +26,7 @@ export interface DialogueLine {
 export interface DialogueBoxOptions extends BaseOptions {
   /** Characters revealed per second. Set 0 to disable the typewriter. */
   speed?: number;
+  /** Width in pixels, or any CSS length such as `'100%'`. */
   width?: number | string;
   /** Show a blinking "click to continue" chevron when a line finishes. */
   continueHint?: boolean;

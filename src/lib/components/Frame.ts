@@ -10,7 +10,9 @@ export interface FrameOptions extends BaseOptions {
   slice?: [number, number, number, number] | number;
   /** Multiplier applied to `slice` to get on-screen border width. */
   scale?: number;
+  /** Width in pixels, or any CSS length such as `'100%'`. */
   width?: number | string;
+  /** Height in pixels, or any CSS length such as `'60vh'`. */
   height?: number | string;
   /** Padding between the frame ornament and the content. */
   pad?: number | string;

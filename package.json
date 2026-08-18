@@ -8,10 +8,12 @@
     "ingest": "node scripts/ingest.mjs",
     "gen": "node scripts/generate.mjs",
     "dev": "npm run gen && vite",
-    "build": "npm run ingest && npm run gen && vite build",
+    "build": "npm run ingest && npm run gen && npm run audit && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "shots": "node scripts/screenshot.mjs"
+    "shots": "node scripts/screenshot.mjs",
+    "audit": "node scripts/audit.mjs",
+    "smoke": "node scripts/smoke.mjs"
   },
   "devDependencies": {
     "linkedom": "^0.18.5",

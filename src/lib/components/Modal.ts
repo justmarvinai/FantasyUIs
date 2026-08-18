@@ -20,6 +20,7 @@ export interface ModalOptions extends BaseOptions {
   content?: Child | Child[];
   actions?: ModalAction[];
   variant?: PanelVariant;
+  /** Width in pixels. */
   width?: number;
   closable?: boolean;
   /** Dismiss when the dimmed backdrop is clicked. Default true. */
@@ -40,7 +41,7 @@ export interface ModalOptions extends BaseOptions {
  *     actions: [{ label: 'Abandon' }, { label: 'Keep', variant: 'ghost' }],
  *   });
  *   m.open();
- *   m.on('close', () => m.destroy());
+ *   m.on('modal:close', () => m.destroy());
  */
 export class Modal extends FuiComponent<ModalOptions> {
   readonly panel: Panel;
@@ -64,7 +65,7 @@ export class Modal extends FuiComponent<ModalOptions> {
       closable: opts.closable,
       class: 'fui-modal__panel',
     });
-    this.panel.on('close', () => this.close());
+    this.panel.on('panel:close', () => this.close());
 
     if (opts.message) {
       this.panel.add(h('p', { class: 'fui-modal__message fui-body', text: opts.message }));
@@ -82,7 +83,7 @@ export class Modal extends FuiComponent<ModalOptions> {
           variant: action.variant ?? 'primary',
           onClick: () => {
             const keepOpen = action.onClick?.() === false;
-            this.emit('action', action.label);
+            this.emit('modal:action', action.label);
             if (!keepOpen) this.close();
           },
         });
@@ -108,13 +109,13 @@ export class Modal extends FuiComponent<ModalOptions> {
     if (!this.el.parentNode) (parent ?? this.el.ownerDocument.body).appendChild(this.el);
     // Next frame, so the entrance transition actually runs.
     requestAnimationFrame(() => this.el.classList.add('is-open'));
-    this.emit('open');
+    this.emit('modal:open');
     return this;
   }
 
   close(): this {
     this.el.classList.remove('is-open');
-    this.emit('close');
+    this.emit('modal:close');
     return this;
   }
 }

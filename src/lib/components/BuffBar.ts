@@ -18,6 +18,7 @@ export interface Buff {
 
 export interface BuffBarOptions extends BaseOptions {
   buffs?: Buff[];
+  /** Size in pixels. */
   size?: number;
   /** Tick timers down automatically and drop expired entries. Default true. */
   autoTick?: boolean;

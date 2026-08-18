@@ -15,7 +15,9 @@ export interface PanelOptions extends BaseOptions {
    * `bare`    — no art at all; useful when you only want the layout.
    */
   variant?: PanelVariant;
+  /** Width in pixels, or any CSS length such as `'100%'`. */
   width?: number | string;
+  /** Height in pixels, or any CSS length such as `'60vh'`. */
   height?: number | string;
   /** Render a close button in the title bar; emits `close`. */
   closable?: boolean;
@@ -34,7 +36,7 @@ export interface PanelOptions extends BaseOptions {
  * over it, and a title / body / footer layout.
  *
  *   const p = new Panel({ title: 'Inventory', width: 520, closable: true });
- *   p.on('close', () => p.destroy());
+ *   p.on('panel:close', () => p.destroy());
  *   p.setContent(myGrid.el);
  */
 export class Panel extends FuiComponent<PanelOptions> {
@@ -88,7 +90,7 @@ export class Panel extends FuiComponent<PanelOptions> {
           h('button', {
             class: 'fui-panel__close',
             attrs: { type: 'button', 'aria-label': 'Close' },
-            on: { click: () => this.emit('close') },
+            on: { click: () => this.emit('panel:close') },
           }),
         );
       }

@@ -1,0 +1,152 @@
+/* SocketPanel — gem and rune sockets, where colours have to agree. */
+
+.fui-sockets {
+  --fui-socket-size: 48px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--fui-gap-sm);
+  padding: var(--fui-gap);
+  border: 1px solid rgba(0, 0, 0, 0.55);
+  border-radius: var(--fui-radius);
+  background: rgba(0, 0, 0, 0.32);
+}
+
+.fui-sockets__head {
+  --fui-socket-rarity: var(--fui-rarity-common);
+  display: flex;
+  align-items: center;
+  gap: var(--fui-gap-sm);
+  padding-bottom: var(--fui-gap-sm);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.fui-sockets__head[data-rarity='rare'] { --fui-socket-rarity: var(--fui-rarity-rare); }
+.fui-sockets__head[data-rarity='epic'] { --fui-socket-rarity: var(--fui-rarity-epic); }
+.fui-sockets__head[data-rarity='legendary'] { --fui-socket-rarity: var(--fui-rarity-legendary); }
+.fui-sockets__head[data-rarity='mythic'] { --fui-socket-rarity: var(--fui-rarity-mythic); }
+
+.fui-sockets__item-art {
+  width: 34px;
+  height: 34px;
+  flex: none;
+  border: 1px solid var(--fui-socket-rarity);
+  border-radius: var(--fui-radius);
+  background: rgba(0, 0, 0, 0.5) center / cover no-repeat;
+}
+
+.fui-sockets__item-name {
+  font-family: var(--fui-font-display);
+  font-size: 13px;
+  color: color-mix(in srgb, var(--fui-socket-rarity) 55%, var(--fui-ink));
+}
+
+.fui-sockets__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--fui-gap-sm);
+}
+
+.fui-sockets__socket {
+  --fui-socket-ink: rgba(255, 255, 255, 0.28);
+  --fui-socket-rarity: var(--fui-rarity-common);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: calc(var(--fui-socket-size) + 26px);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.fui-sockets__socket[data-rarity='uncommon'] { --fui-socket-rarity: var(--fui-rarity-uncommon); }
+.fui-sockets__socket[data-rarity='rare'] { --fui-socket-rarity: var(--fui-rarity-rare); }
+.fui-sockets__socket[data-rarity='epic'] { --fui-socket-rarity: var(--fui-rarity-epic); }
+.fui-sockets__socket[data-rarity='legendary'] { --fui-socket-rarity: var(--fui-rarity-legendary); }
+.fui-sockets__socket[data-rarity='mythic'] { --fui-socket-rarity: var(--fui-rarity-mythic); }
+
+/* The socket is a hexagon, which is the shape players already read as "gem
+   slot" and keeps it distinct from a square inventory cell. */
+.fui-sockets__gem {
+  position: relative;
+  width: var(--fui-socket-size);
+  height: var(--fui-socket-size);
+  clip-path: polygon(50% 0, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
+  background: rgba(0, 0, 0, 0.55) center / 78% no-repeat;
+  box-shadow:
+    0 0 0 2px var(--fui-socket-ink),
+    inset 0 0 12px rgba(0, 0, 0, 0.7);
+  transition: box-shadow var(--fui-t) var(--fui-ease), transform var(--fui-t-fast) var(--fui-ease);
+}
+
+.fui-sockets__socket:not(:disabled):hover .fui-sockets__gem {
+  transform: scale(1.06);
+}
+
+.fui-sockets__socket:not(.is-empty):not(.is-locked) .fui-sockets__gem {
+  box-shadow:
+    0 0 0 2px var(--fui-socket-rarity),
+    0 0 12px color-mix(in srgb, var(--fui-socket-rarity) 55%, transparent);
+}
+
+.fui-sockets__socket.is-empty .fui-sockets__gem::after {
+  content: '';
+  position: absolute;
+  inset: 34%;
+  border-radius: 50%;
+  background: var(--fui-socket-ink);
+  opacity: 0.4;
+}
+
+.fui-sockets__socket.is-locked {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.fui-sockets__socket.is-locked .fui-sockets__gem {
+  background-image: none;
+}
+
+/* A gem in the wrong colour is allowed but flagged — most games socket it and
+   simply withhold the match bonus. */
+.fui-sockets__socket.is-mismatch .fui-sockets__gem {
+  box-shadow:
+    0 0 0 2px var(--fui-warn),
+    0 0 10px color-mix(in srgb, var(--fui-warn) 50%, transparent);
+}
+
+.fui-sockets__label {
+  text-align: center;
+  line-height: 1.25;
+}
+
+.fui-sockets__effect {
+  font-size: 10px;
+  color: var(--fui-ink-dim);
+}
+
+.fui-sockets__socket.is-empty .fui-sockets__effect,
+.fui-sockets__socket.is-locked .fui-sockets__effect {
+  color: var(--fui-ink-faint);
+}
+
+.fui-sockets__match {
+  padding: 5px 9px;
+  border-left: 3px solid var(--fui-ink-faint);
+  border-radius: 0 var(--fui-radius) var(--fui-radius) 0;
+  background: rgba(0, 0, 0, 0.3);
+  font-size: 12px;
+  color: var(--fui-ink-faint);
+}
+
+.fui-sockets__match[data-active='true'] {
+  border-left-color: var(--fui-success);
+  color: var(--fui-success);
+}
+
+.fui-sockets__unlock {
+  font-size: 11px;
+  color: var(--fui-gold-soft);
+}

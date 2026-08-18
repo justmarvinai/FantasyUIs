@@ -6,6 +6,7 @@ export interface DividerOptions extends BaseOptions {
   variant?: 'art' | 'rule';
   /** Optional caption sitting in the middle of a `rule`, e.g. `'Equipment'`. */
   label?: string;
+  /** Width in pixels, or any CSS length such as `'100%'`. */
   width?: number | string;
   /** Scales the ornament art. Default 0.34. */
   scale?: number;
