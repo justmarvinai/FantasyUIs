@@ -1,0 +1,141 @@
+/* Minimap — masked scrolling map with a player arrow and clamped pins. */
+
+.fui-minimap {
+  position: relative;
+  flex: none;
+}
+
+.fui-minimap__viewport {
+  position: absolute;
+  inset: 8%;
+  overflow: hidden;
+  background: #12161a;
+  cursor: crosshair;
+}
+
+.fui-minimap[data-shape='round'] .fui-minimap__viewport {
+  border-radius: 50%;
+}
+
+.fui-minimap[data-shape='square'] .fui-minimap__viewport {
+  inset: 6%;
+  border-radius: 2px;
+}
+
+.fui-minimap__surface {
+  position: absolute;
+  background: center / 100% 100% no-repeat;
+  image-rendering: auto;
+  /* A faint parchment wash so an unset map still reads as terrain. */
+  background-color: #23292b;
+}
+
+.fui-minimap__frame {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background: var(--fui-round-frame-img) center / contain no-repeat;
+}
+
+.fui-minimap[data-shape='square'] .fui-minimap__frame {
+  background: none;
+  border-style: solid;
+  border-color: transparent;
+  border-width: var(--fui-frame-sm-bw);
+  border-image-source: var(--fui-frame-sm-src);
+  border-image-slice: var(--fui-frame-sm-sl);
+  border-image-repeat: stretch;
+}
+
+/* Player arrow, pinned dead centre. */
+.fui-minimap__arrow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 2;
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 13px solid var(--fui-gold-soft);
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.9));
+}
+
+/* ── Pins ─────────────────────────────────────────────────────────────────── */
+.fui-minimap__pins {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.fui-minimap__pin {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border: 1px solid rgba(0, 0, 0, 0.75);
+  border-radius: 50%;
+  background: var(--fui-pin, var(--fui-ink-dim));
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 5px var(--fui-pin, var(--fui-ink-dim));
+  cursor: pointer;
+}
+
+.fui-minimap__pin.has-icon {
+  width: 18px;
+  height: 18px;
+  border: 0;
+  border-radius: 0;
+  background: center / contain no-repeat;
+  box-shadow: none;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.9));
+}
+
+/* Off-screen pins shrink and lose their glow so they read as directional hints. */
+.fui-minimap__pin.is-edge {
+  width: 6px;
+  height: 6px;
+  opacity: 0.75;
+  box-shadow: none;
+}
+
+.fui-minimap__pin[data-kind='quest'] {
+  --fui-pin: var(--fui-gold);
+}
+.fui-minimap__pin[data-kind='objective'] {
+  --fui-pin: var(--fui-gold-soft);
+  animation: fui-pulse 1.4s ease-in-out infinite;
+}
+.fui-minimap__pin[data-kind='vendor'] {
+  --fui-pin: var(--fui-accent);
+}
+.fui-minimap__pin[data-kind='enemy'] {
+  --fui-pin: var(--fui-danger);
+}
+.fui-minimap__pin[data-kind='ally'] {
+  --fui-pin: var(--fui-success);
+}
+.fui-minimap__pin[data-kind='poi'] {
+  --fui-pin: #c9c2b2;
+}
+
+/* ── Zone label ───────────────────────────────────────────────────────────── */
+.fui-minimap__zone {
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  z-index: 4;
+  padding: 1px 12px;
+  border-radius: 9px;
+  background: rgba(0, 0, 0, 0.72);
+  font-family: var(--fui-font-display);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--fui-ink-dim);
+  transform: translateX(-50%);
+  text-shadow: 0 1px 2px #000;
+}
