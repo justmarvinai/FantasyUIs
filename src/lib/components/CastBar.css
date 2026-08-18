@@ -1,0 +1,100 @@
+/* CastBar — timed spell fill with name, icon and countdown. */
+
+.fui-cast {
+  position: relative;
+  height: var(--fui-bar-h);
+  opacity: 0;
+  transition: opacity var(--fui-t-fast) var(--fui-ease);
+}
+
+.fui-cast.is-casting,
+.fui-cast.is-interrupted {
+  opacity: 1;
+}
+
+.fui-cast__track {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  border-style: solid;
+  border-color: transparent;
+  border-width: var(--fui-bar-track-bw);
+  border-image-source: var(--fui-bar-track-src);
+  border-image-slice: var(--fui-bar-track-sl) fill;
+  border-image-repeat: stretch;
+}
+
+.fui-cast__well {
+  position: absolute;
+  inset: var(--fui-bar-inset-y) var(--fui-bar-inset-x);
+  z-index: 1;
+  overflow: hidden;
+  border-radius: 999px;
+}
+
+.fui-cast__fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0;
+  background: linear-gradient(
+    180deg,
+    var(--fui-gold-soft),
+    color-mix(in srgb, var(--fui-gold) 75%, #000)
+  );
+  box-shadow: 0 0 9px color-mix(in srgb, var(--fui-gold) 65%, transparent);
+}
+
+/* An uninterruptible cast reads in the accent colour, not gold. */
+.fui-cast.is-locked .fui-cast__fill {
+  background: linear-gradient(
+    180deg,
+    var(--fui-accent-soft),
+    color-mix(in srgb, var(--fui-accent) 75%, #000)
+  );
+  box-shadow: 0 0 9px color-mix(in srgb, var(--fui-accent) 65%, transparent);
+}
+
+.fui-cast.is-interrupted .fui-cast__fill {
+  background: linear-gradient(180deg, #d9695e, var(--fui-danger));
+}
+
+.fui-cast.is-interrupted {
+  animation: fui-shake 320ms var(--fui-ease);
+}
+
+.fui-cast__text {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 12px;
+  pointer-events: none;
+  font-size: 12px;
+  text-shadow: 0 1px 2px #000, 0 0 5px rgba(0, 0, 0, 0.9);
+}
+
+.fui-cast__icon {
+  width: 17px;
+  height: 17px;
+  background: center / contain no-repeat;
+}
+
+.fui-cast__name {
+  flex: 1 1 auto;
+  overflow: hidden;
+  font-family: var(--fui-font-display);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--fui-ink);
+}
+
+.fui-cast__time {
+  flex: none;
+  font-size: 11px;
+  color: var(--fui-ink-dim);
+}

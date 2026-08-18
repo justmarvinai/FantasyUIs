@@ -1,0 +1,256 @@
+/**
+ * FantasyUIs — asset ingest
+ * ---------------------------------------------------------------------------
+ * Reads raw art from `new_assets/`, resolves it through `catalog/packs.mjs`,
+ * writes web-optimised PNGs to `public/fui/<pack>/<id>.png`, gallery thumbnails
+ * to `public/fui/<pack>/thumb/<id>.webp`, and regenerates the typed manifest at
+ * `src/data/assets.generated.ts`.
+ *
+ *   npm run ingest
+ *
+ * Safe to re-run; it is fully deterministic and overwrites its own output.
+ */
+import { readdir, mkdir, writeFile, stat } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
+import path from 'node:path';
+import sharp from 'sharp';
+import { packs } from '../catalog/packs.mjs';
+
+const ROOT = path.resolve(import.meta.dirname, '..');
+const RAW = path.join(ROOT, 'new_assets');
+const OUT = path.join(ROOT, 'public', 'fui');
+const THUMB_MAX = 320;
+
+/** Recursively list every file under a directory. */
+async function walk(dir) {
+  const out = [];
+  for (const entry of await readdir(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) out.push(...(await walk(full)));
+    else out.push(full);
+  }
+  return out;
+}
+
+/**
+ * Resolve a catalog `src` against the raw pack directory. Asset packs are often
+ * shipped double-nested (`Pack/Pack/file.png`), so match on path suffix rather
+ * than demanding an exact relative path.
+ */
+function resolveSrc(files, src) {
+  const needle = src.split('/').join(path.sep);
+  const hits = files.filter((f) => f.endsWith(path.sep + needle) || f.endsWith(needle));
+  if (hits.length === 0) return null;
+  // Prefer the shallowest match so `a/b.png` beats `deep/nest/a/b.png`.
+  return hits.sort((a, b) => a.split(path.sep).length - b.split(path.sep).length)[0];
+}
+
+/** Scale a [t,r,b,l] slice by `factor` and clamp so opposite insets never overlap. */
+function scaleSlice(slice, factor, w, h) {
+  if (!slice) return null;
+  const [t, r, b, l] = slice.map((n) => Math.max(0, Math.round(n * factor)));
+  const fitV = t + b >= h ? (h - 1) / (t + b) : 1;
+  const fitH = l + r >= w ? (w - 1) / (l + r) : 1;
+  return [
+    Math.floor(t * fitV),
+    Math.floor(r * fitH),
+    Math.floor(b * fitV),
+    Math.floor(l * fitH),
+  ];
+}
+
+async function main() {
+  if (!existsSync(RAW)) {
+    console.error(`✗ No new_assets/ directory found at ${RAW}`);
+    process.exit(1);
+  }
+
+  const manifest = [];
+  const warnings = [];
+  let totalBytes = 0;
+  let sourceBytes = 0;
+
+  for (const pack of packs) {
+    const packRaw = path.join(RAW, pack.dir);
+    if (!existsSync(packRaw)) {
+      warnings.push(`pack "${pack.id}": missing source directory new_assets/${pack.dir}`);
+      continue;
+    }
+    const files = await walk(packRaw);
+    const packOut = path.join(OUT, pack.id);
+    await mkdir(path.join(packOut, 'thumb'), { recursive: true });
+
+    for (const asset of pack.assets) {
+      const src = resolveSrc(files, asset.src);
+      if (!src) {
+        warnings.push(`pack "${pack.id}": could not resolve "${asset.src}"`);
+        continue;
+      }
+
+      sourceBytes += (await stat(src)).size;
+
+      const image = sharp(src);
+      const meta = await image.metadata();
+      const srcW = meta.width;
+      const srcH = meta.height;
+
+      const targetW = Math.min(asset.maxW ?? srcW, srcW);
+      const factor = targetW / srcW;
+      const outW = Math.round(srcW * factor);
+      const outH = Math.round(srcH * factor);
+
+      const pipeline = sharp(src).resize({
+        width: outW,
+        height: outH,
+        fit: 'fill',
+        kernel: 'lanczos3',
+      });
+
+      const outFile = path.join(packOut, `${asset.id}.png`);
+      const info = await pipeline
+        .clone()
+        .png({ compressionLevel: 9, effort: 10 })
+        .toFile(outFile);
+      totalBytes += info.size;
+
+      // Gallery thumbnail — site-only, never shipped into a game.
+      await pipeline
+        .clone()
+        .resize({
+          width: Math.min(THUMB_MAX, outW),
+          height: Math.min(THUMB_MAX, outH),
+          fit: 'inside',
+          withoutEnlargement: true,
+        })
+        .webp({ quality: 82, effort: 6 })
+        .toFile(path.join(packOut, 'thumb', `${asset.id}.webp`));
+
+      manifest.push({
+        id: asset.id,
+        pack: pack.id,
+        name: asset.name,
+        category: asset.category,
+        tags: asset.tags ?? [],
+        file: `${pack.id}/${asset.id}.png`,
+        thumb: `${pack.id}/thumb/${asset.id}.webp`,
+        width: outW,
+        height: outH,
+        slice: scaleSlice(asset.slice, factor, outW, outH),
+        bytes: info.size,
+      });
+    }
+  }
+
+  manifest.sort((a, b) => a.pack.localeCompare(b.pack) || a.id.localeCompare(b.id));
+
+  const packMeta = packs.map((p) => ({
+    id: p.id,
+    name: p.name,
+    blurb: p.blurb,
+    accent: p.accent,
+    count: manifest.filter((a) => a.pack === p.id).length,
+  }));
+
+  const ts = `// AUTO-GENERATED by scripts/ingest.mjs — do not edit by hand.
+// Run \`npm run ingest\` after dropping new art into new_assets/.
+
+/** 9-slice inset in output pixels, ordered [top, right, bottom, left]. */
+export type Slice = [number, number, number, number];
+
+export type AssetCategory =
+${[...new Set(manifest.map((a) => a.category))].sort().map((c) => `  | '${c}'`).join('\n')};
+
+export interface AssetRecord {
+  /** Stable identifier, unique within its pack. */
+  id: string;
+  /** Owning pack / theme id. */
+  pack: string;
+  /** Human-readable label. */
+  name: string;
+  category: AssetCategory;
+  tags: string[];
+  /** Path relative to the asset base, e.g. "stone-vine/panel-stone.png". */
+  file: string;
+  /** Small WebP preview, site gallery only. */
+  thumb: string;
+  width: number;
+  height: number;
+  /** 9-slice insets, or null when the art must keep its natural aspect ratio. */
+  slice: Slice | null;
+  bytes: number;
+}
+
+export interface PackRecord {
+  id: string;
+  name: string;
+  blurb: string;
+  accent: string;
+  count: number;
+}
+
+export const PACKS: PackRecord[] = ${JSON.stringify(packMeta, null, 2)};
+
+export const ASSETS: AssetRecord[] = ${JSON.stringify(manifest, null, 2)};
+
+export const ASSETS_BY_ID: Record<string, AssetRecord> = Object.fromEntries(
+  ASSETS.map((a) => [a.id, a]),
+);
+`;
+
+  await mkdir(path.join(ROOT, 'src', 'data'), { recursive: true });
+  await writeFile(path.join(ROOT, 'src', 'data', 'assets.generated.ts'), ts, 'utf8');
+
+  // ── CSS variable layer ────────────────────────────────────────────────
+  // Every asset becomes a set of custom properties. Components reference the
+  // variables, never a path — so switching between the hosted CDN and a
+  // self-hosted copy is a one-line import swap with no component changes.
+  const emitCss = (assetBase, note) => {
+    const lines = [
+      '/* AUTO-GENERATED by scripts/ingest.mjs — do not edit by hand. */',
+      `/* ${note} */`,
+      '',
+      ':root {',
+    ];
+    for (const a of manifest) {
+      const url = `${assetBase}/${a.file}`;
+      lines.push(`  --fui-img-${a.id}: url("${url}");`);
+      lines.push(`  --fui-ar-${a.id}: ${a.width} / ${a.height};`);
+      if (a.slice) {
+        lines.push(`  --fui-slice-${a.id}: ${a.slice.join(' ')};`);
+        lines.push(
+          `  --fui-bw-${a.id}: ${a.slice
+            .map((n) => `calc(${n}px * var(--fui-ui-scale, 0.5))`)
+            .join(' ')};`,
+        );
+      }
+    }
+    lines.push('}', '');
+    return lines.join('\n');
+  };
+
+  await writeFile(
+    path.join(ROOT, 'src', 'lib', 'styles', 'assets.css'),
+    emitCss('/fui', 'Self-hosted paths — copy public/fui/ into your own project.'),
+    'utf8',
+  );
+  await mkdir(path.join(ROOT, 'public', 'dist'), { recursive: true });
+  await writeFile(
+    path.join(ROOT, 'public', 'dist', 'fantasyuis.assets.css'),
+    emitCss(
+      'https://fantasyuis.vercel.app/fui',
+      'Hosted CDN paths — works with zero setup, no files to copy.',
+    ),
+    'utf8',
+  );
+
+  const mb = (n) => (n / 1024 / 1024).toFixed(2);
+  console.log(`✓ ingested ${manifest.length} assets across ${packMeta.length} packs`);
+  console.log(`  source ${mb(sourceBytes)} MB → web ${mb(totalBytes)} MB`);
+  for (const w of warnings) console.warn(`  ! ${w}`);
+  if (warnings.length) process.exitCode = 1;
+}
+
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

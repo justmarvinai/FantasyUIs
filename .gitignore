@@ -1,0 +1,22 @@
+node_modules/
+dist/
+.vercel/
+.DS_Store
+*.log
+*.tsbuildinfo
+
+# Produced by `npm run gen` on every build — never hand-edited, never committed.
+/components/
+/index.html
+/start.html
+/assets.html
+/public/registry.json
+/public/llms.txt
+/public/sitemap.xml
+/public/robots.txt
+/public/r/
+/public/dist/fantasyuis.css
+
+# Note: `npm run ingest` output IS committed — public/fui/ (web-ready art),
+# src/data/assets.generated.ts and the assets CSS — so a fresh clone can run
+# `npm run dev` without reprocessing every PNG.

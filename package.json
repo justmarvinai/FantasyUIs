@@ -1,0 +1,23 @@
+{
+  "name": "fantasyuis",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A growing database of ready-to-use UI assets & components for Fantasy/RPG web games (Vite + TypeScript).",
+  "scripts": {
+    "ingest": "node scripts/ingest.mjs",
+    "gen": "node scripts/generate.mjs",
+    "dev": "npm run gen && vite",
+    "build": "npm run ingest && npm run gen && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "shots": "node scripts/screenshot.mjs"
+  },
+  "devDependencies": {
+    "linkedom": "^0.18.5",
+    "playwright": "^1.62.1",
+    "sharp": "^0.33.5",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.10"
+  }
+}

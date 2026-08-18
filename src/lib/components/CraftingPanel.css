@@ -1,0 +1,225 @@
+/* CraftingPanel — recipe list plus ingredient checklist and craft button. */
+
+.fui-craft {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.fui-craft__fill {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  border-style: solid;
+  border-color: transparent;
+  border-width: var(--fui-panel-fill-bw);
+  border-image-source: var(--fui-panel-fill-src);
+  border-image-slice: var(--fui-panel-fill-sl) fill;
+  border-image-repeat: stretch;
+}
+
+.fui-craft__title {
+  position: relative;
+  z-index: 1;
+  padding: 20px 24px 10px;
+  font-size: 17px;
+}
+
+.fui-craft__cols {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 210px 1fr;
+  padding: 0 22px 22px;
+}
+
+/* ── Recipe list ──────────────────────────────────────────────────────────── */
+.fui-craft__list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 340px;
+  padding-right: 12px;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.fui-craft__row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 3px;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--fui-t-fast) var(--fui-ease);
+}
+
+.fui-craft__row:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.fui-craft__row.is-selected {
+  background: color-mix(in srgb, var(--fui-accent) 20%, transparent);
+}
+
+.fui-craft__row.is-short {
+  opacity: 0.55;
+}
+
+.fui-craft__rowicon {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  background: center / contain no-repeat;
+}
+
+.fui-craft__rowbody {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.fui-craft__rowname {
+  overflow: hidden;
+  font-family: var(--fui-font-display);
+  font-size: 12.5px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--fui-craft-rarity, var(--fui-ink));
+}
+
+.fui-craft__row[data-rarity='uncommon'] {
+  --fui-craft-rarity: var(--fui-rarity-uncommon);
+}
+.fui-craft__row[data-rarity='rare'] {
+  --fui-craft-rarity: var(--fui-rarity-rare);
+}
+.fui-craft__row[data-rarity='epic'] {
+  --fui-craft-rarity: var(--fui-rarity-epic);
+}
+.fui-craft__row[data-rarity='legendary'] {
+  --fui-craft-rarity: var(--fui-rarity-legendary);
+}
+
+.fui-craft__rowtype {
+  font-size: 10.5px;
+  color: var(--fui-ink-faint);
+}
+
+/* ── Detail ───────────────────────────────────────────────────────────────── */
+.fui-craft__detail {
+  padding-left: 22px;
+  text-align: center;
+}
+
+.fui-craft__result {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.fui-craft__dname {
+  font-size: 15px;
+  color: var(--fui-gold-soft);
+}
+
+.fui-craft__dtype {
+  margin-top: 2px;
+  font-size: 10.5px;
+}
+
+.fui-craft__sub {
+  margin: 16px 0 7px;
+  font-size: 10.5px;
+  text-align: left;
+  color: var(--fui-accent-soft);
+}
+
+.fui-craft__ingredients {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  text-align: left;
+}
+
+.fui-craft__ingredient {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 7px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.035);
+  font-size: 12px;
+  color: var(--fui-ink-dim);
+}
+
+.fui-craft__ingicon {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  background: center / contain no-repeat;
+}
+
+.fui-craft__ingname {
+  flex: 1 1 auto;
+}
+
+.fui-craft__ingcount {
+  flex: none;
+  font-weight: 700;
+  color: var(--fui-success);
+}
+
+.fui-craft__ingredient.is-short .fui-craft__ingcount {
+  color: var(--fui-danger);
+}
+
+.fui-craft__ingredient.is-short .fui-craft__ingicon {
+  filter: grayscale(1) brightness(0.65);
+}
+
+.fui-craft__meta {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 12px;
+  font-size: 11px;
+  color: var(--fui-ink-faint);
+}
+
+.fui-craft__chance {
+  color: var(--fui-warn);
+}
+
+.fui-craft__button {
+  width: 100%;
+  margin-top: 16px;
+  padding: 10px;
+  border: 1px solid color-mix(in srgb, var(--fui-accent) 50%, transparent);
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--fui-accent) 20%, rgba(0, 0, 0, 0.45));
+  font-family: var(--fui-font-display);
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fui-ink);
+  cursor: pointer;
+  transition: filter var(--fui-t-fast) var(--fui-ease);
+}
+
+.fui-craft__button:hover:not(:disabled) {
+  filter: brightness(1.28);
+}
+
+.fui-craft__button:disabled {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.4);
+  color: var(--fui-ink-faint);
+  cursor: not-allowed;
+}

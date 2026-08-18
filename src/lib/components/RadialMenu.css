@@ -1,0 +1,100 @@
+/* RadialMenu — quick-select wheel for consumables, emotes and weapon swaps. */
+
+.fui-radial {
+  position: relative;
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0.82);
+  transition:
+    opacity var(--fui-t) var(--fui-ease),
+    transform var(--fui-t) var(--fui-ease),
+    visibility var(--fui-t) var(--fui-ease);
+}
+
+.fui-radial.is-open {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1);
+}
+
+/* Darkened disc behind the wedges, with a hole punched in the middle. */
+.fui-radial__ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at center,
+    transparent calc(var(--fui-radial-hole, 0.38) * 100%),
+    rgba(6, 8, 12, 0.86) calc(var(--fui-radial-hole, 0.38) * 100% + 1px),
+    rgba(6, 8, 12, 0.86) 100%
+  );
+  box-shadow:
+    inset 0 0 30px rgba(0, 0, 0, 0.9),
+    0 0 24px rgba(0, 0, 0, 0.6);
+}
+
+.fui-radial__item {
+  position: absolute;
+  width: 54px;
+  height: 54px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--fui-round-bg-img) center / 100% 100% no-repeat;
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+  transition:
+    transform var(--fui-t-fast) var(--fui-ease),
+    filter var(--fui-t-fast) var(--fui-ease);
+}
+
+.fui-radial__item::after {
+  content: '';
+  position: absolute;
+  inset: -5px;
+  pointer-events: none;
+  background: var(--fui-round-frame-img) center / contain no-repeat;
+}
+
+.fui-radial__item:hover:not(:disabled) {
+  transform: translate(-50%, -50%) scale(1.16);
+  filter: brightness(1.3) drop-shadow(0 0 10px var(--fui-accent));
+}
+
+.fui-radial__item:disabled {
+  cursor: not-allowed;
+  filter: grayscale(1) brightness(0.45);
+}
+
+.fui-radial__icon {
+  position: absolute;
+  inset: 22%;
+  background: center / contain no-repeat;
+}
+
+.fui-radial__count {
+  position: absolute;
+  right: 2px;
+  bottom: 0;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--fui-ink);
+  text-shadow: 0 1px 2px #000, 0 0 3px #000;
+}
+
+.fui-radial__center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 70%;
+  font-family: var(--fui-font-display);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--fui-ink);
+  transform: translate(-50%, -50%);
+  text-shadow: 0 2px 4px #000;
+  pointer-events: none;
+}
