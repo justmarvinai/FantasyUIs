@@ -15,6 +15,7 @@ import { existsSync } from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
 import { packs } from '../catalog/packs.mjs';
+import { ASSET_BASE } from '../catalog/site.mjs';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
 const RAW = path.join(ROOT, 'new_assets');
@@ -273,10 +274,7 @@ export const ASSETS_BY_ID: Record<string, AssetRecord> = Object.fromEntries(
   await mkdir(path.join(ROOT, 'public', 'dist'), { recursive: true });
   await writeFile(
     path.join(ROOT, 'public', 'dist', 'fantasyuis.assets.css'),
-    emitCss(
-      'https://fantasyuis.vercel.app/fui',
-      'Hosted CDN paths — works with zero setup, no files to copy.',
-    ),
+    emitCss(ASSET_BASE, 'Hosted CDN paths — works with zero setup, no files to copy.'),
     'utf8',
   );
 

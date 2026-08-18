@@ -10,7 +10,7 @@
  *   setAssetBase('/fui');      // now resolves to /fui/stone-vine/panel-stone.png
  */
 
-export const CDN_BASE = 'https://fantasyuis.vercel.app/fui';
+export const CDN_BASE = 'https://fantasy-u-is.vercel.app/fui';
 
 let base = CDN_BASE;
 

@@ -20,15 +20,12 @@ import path from 'node:path';
 import { createServer } from 'vite';
 import { parseHTML } from 'linkedom';
 import { genLib } from './gen-lib.mjs';
+import { SITE, ASSET_BASE } from '../catalog/site.mjs';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
 const OUT_COMPONENTS = path.join(ROOT, 'components');
 const OUT_PUBLIC = path.join(ROOT, 'public');
-const SITE = {
-  name: 'FantasyUIs',
-  tagline: 'Ready-to-use UI components for Fantasy & RPG web games',
-  origin: 'https://fantasyuis.vercel.app',
-};
+
 
 // ── HTML helpers ───────────────────────────────────────────────────────────
 const esc = (s) =>
@@ -269,6 +266,17 @@ ${body}
 // ── Main ───────────────────────────────────────────────────────────────────
 async function main() {
   const lib = await genLib();
+
+  // `core/assets.ts` is hand-written (it is part of the copy-paste surface), so
+  // its default base cannot be generated from the site config. Check it instead
+  // — a mismatch would ship snippets pointing at a domain that isn't ours.
+  const assetsTs = await readFile(path.join(ROOT, 'src', 'lib', 'core', 'assets.ts'), 'utf8');
+  const declared = assetsTs.match(/CDN_BASE = '([^']+)'/)?.[1];
+  if (declared !== ASSET_BASE) {
+    console.warn(
+      `  ! CDN_BASE in src/lib/core/assets.ts is "${declared}" but catalog/site.mjs says "${ASSET_BASE}" — update assets.ts.`,
+    );
+  }
 
   // Fresh output every run so deleted components never linger.
   if (existsSync(OUT_COMPONENTS)) await rm(OUT_COMPONENTS, { recursive: true });

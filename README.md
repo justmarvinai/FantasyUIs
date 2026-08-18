@@ -7,7 +7,7 @@ collections. Vanilla TypeScript and CSS — zero runtime dependencies, no
 framework, no build plugin. Drops into any Vite project, React or not, or
 straight over a Phaser canvas as a DOM layer.
 
-🔗 **[fantasyuis.vercel.app](https://fantasyuis.vercel.app)**
+🔗 **[fantasy-u-is.vercel.app](https://fantasy-u-is.vercel.app)**
 
 ---
 
@@ -65,7 +65,7 @@ entire subtree with no code change:
 
 ```html
 <!-- 1. One stylesheet: tokens, both themes, every component, artwork included -->
-<link rel="stylesheet" href="https://fantasyuis.vercel.app/dist/fantasyuis.css" />
+<link rel="stylesheet" href="https://fantasy-u-is.vercel.app/dist/fantasyuis.css" />
 ```
 
 ```ts
@@ -103,8 +103,8 @@ demo markup already rendered, so nothing needs JavaScript to be understood.
 
 | Endpoint | What it gives you |
 | --- | --- |
-| [`/llms.txt`](https://fantasyuis.vercel.app/llms.txt) | The whole library summarised for an LLM — every component, its purpose, its options, every asset id |
-| [`/registry.json`](https://fantasyuis.vercel.app/registry.json) | Machine-readable index of all components and assets |
+| [`/llms.txt`](https://fantasy-u-is.vercel.app/llms.txt) | The whole library summarised for an LLM — every component, its purpose, its options, every asset id |
+| [`/registry.json`](https://fantasy-u-is.vercel.app/registry.json) | Machine-readable index of all components and assets |
 | `/r/<Component>.json` | One component's full record, **including its complete TypeScript and CSS source** |
 | `/components/<Component>.html` | The human-readable page, pre-rendered |
 | `/fui/<pack>/<assetId>.<ext>` | The raw artwork — `.png`, `.webp` or `.svg` depending on the asset |
@@ -112,9 +112,9 @@ demo markup already rendered, so nothing needs JavaScript to be understood.
 Point an agent at the site root and it can discover and copy anything:
 
 ```
-Use the UI library at https://fantasyuis.vercel.app.
-Read https://fantasyuis.vercel.app/llms.txt first, then fetch
-https://fantasyuis.vercel.app/r/<Component>.json for the source of anything you need.
+Use the UI library at https://fantasy-u-is.vercel.app.
+Read https://fantasy-u-is.vercel.app/llms.txt first, then fetch
+https://fantasy-u-is.vercel.app/r/<Component>.json for the source of anything you need.
 ```
 
 ## Adding new art
