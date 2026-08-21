@@ -1,0 +1,157 @@
+/* StorySlide — one beat of a cutscene. */
+
+.fui-story {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  width: 100%;
+  min-height: 380px;
+  border-radius: var(--fui-radius);
+  background: #06060a;
+  overflow: hidden;
+  cursor: pointer;
+  user-select: none;
+}
+
+.fui-story__art {
+  position: absolute;
+  inset: 0;
+  background: var(--fui-story-art, none) center / cover no-repeat;
+  filter: brightness(1.1);
+}
+
+.fui-story__art::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(120% 90% at 50% 35%, transparent 25%, rgba(3, 3, 7, 0.8) 100%),
+    linear-gradient(180deg, rgba(3, 3, 7, 0.5) 0%, transparent 30%, rgba(3, 3, 7, 0.92) 88%);
+}
+
+.fui-story__stage {
+  position: absolute;
+  top: 4%;
+  bottom: 22%;
+  width: 40%;
+}
+
+.fui-story[data-figure='right'] .fui-story__stage { right: 4%; }
+.fui-story[data-figure='left'] .fui-story__stage { left: 4%; }
+
+.fui-story__figure {
+  position: absolute;
+  inset: 0;
+  background: var(--fui-story-figure, none) center bottom / contain no-repeat;
+  filter: drop-shadow(0 8px 26px rgba(0, 0, 0, 0.85));
+  animation: fui-rise var(--fui-t-slow) var(--fui-ease);
+}
+
+/* The theme's tall frame, 9-sliced around the figure rather than scaled, so it
+   stays crisp whatever the slide's aspect ratio is. */
+.fui-story__frame {
+  position: absolute;
+  inset: -4%;
+  border-style: solid;
+  border-color: transparent;
+  border-width: 46px;
+  border-image-source: var(--fui-story-frame);
+  border-image-slice: 120 90 120 90;
+  border-image-repeat: stretch;
+  pointer-events: none;
+  opacity: 0.9;
+}
+
+.fui-story__chapter {
+  position: absolute;
+  top: var(--fui-gap-lg);
+  left: 0;
+  right: 0;
+  z-index: 1;
+  font-size: 13px;
+  letter-spacing: 0.22em;
+  text-align: center;
+  color: var(--fui-gold-soft);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9);
+}
+
+.fui-story__box {
+  position: relative;
+  z-index: 1;
+  margin: var(--fui-gap-lg);
+  padding: var(--fui-gap);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: var(--fui-radius);
+  background: rgba(8, 8, 12, 0.86);
+  backdrop-filter: blur(3px);
+}
+
+.fui-story__speaker {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 13px;
+  color: var(--fui-gold-soft);
+}
+
+.fui-story__text {
+  /* Reserve three lines so the box does not resize as the typewriter fills it. */
+  min-height: 4.3em;
+  max-width: 74ch;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--fui-ink);
+}
+
+.fui-story__foot {
+  display: flex;
+  align-items: center;
+  gap: var(--fui-gap-sm);
+  margin-top: var(--fui-gap);
+}
+
+.fui-story__pips {
+  display: flex;
+  gap: 5px;
+}
+
+.fui-story__pip {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.fui-story__pip.is-done { background: var(--fui-gold-soft); opacity: 0.5; }
+.fui-story__pip.is-on { background: var(--fui-gold); box-shadow: 0 0 6px var(--fui-gold); }
+
+.fui-story__skip {
+  margin-left: auto;
+  border: 0;
+  background: none;
+  color: var(--fui-ink-faint);
+  font-size: 12px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.fui-story__skip:hover { color: var(--fui-ink); }
+
+.fui-story__next {
+  margin-left: auto;
+  padding: 8px 22px;
+  border: 1px solid var(--fui-gold);
+  border-radius: var(--fui-radius);
+  background: linear-gradient(180deg, rgba(217, 164, 65, 0.4), rgba(217, 164, 65, 0.14));
+  color: var(--fui-gold-soft);
+  font-family: var(--fui-font-display);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: filter var(--fui-t-fast) var(--fui-ease);
+}
+
+.fui-story__skip + .fui-story__next { margin-left: 0; }
+
+.fui-story__next:hover { filter: brightness(1.25); }

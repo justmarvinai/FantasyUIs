@@ -1,0 +1,118 @@
+/* KeybindInput — the key-capture row a controls screen is made of. */
+
+.fui-keybind {
+  --fui-keybind-h: 32px;
+  display: flex;
+  align-items: center;
+  gap: var(--fui-gap-sm);
+  width: 100%;
+  padding: 4px 0;
+}
+
+.fui-keybind[data-size='sm'] { --fui-keybind-h: 26px; font-size: 12px; }
+
+.fui-keybind__label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex: 1;
+  min-width: 0;
+}
+
+.fui-keybind__glyph {
+  width: 17px;
+  height: 17px;
+  flex: none;
+  background-color: var(--fui-ink-faint);
+  mask: var(--fui-glyph-src) center / contain no-repeat;
+  -webkit-mask: var(--fui-glyph-src) center / contain no-repeat;
+}
+
+.fui-keybind__action {
+  font-size: 13px;
+  color: var(--fui-ink-dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* The slot is drawn as a physical keycap: a lighter face over a darker base
+   with a hard bottom edge, which is the shape players read as "a key". */
+.fui-keybind__slot {
+  min-width: 92px;
+  min-height: var(--fui-keybind-h);
+  padding: 0 12px;
+  flex: none;
+  border: 1px solid rgba(0, 0, 0, 0.65);
+  border-bottom-width: 3px;
+  border-radius: 5px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.13), rgba(0, 0, 0, 0.3));
+  color: var(--fui-ink);
+  font-family: var(--fui-font-mono);
+  font-size: 12px;
+  cursor: pointer;
+  transition:
+    border-color var(--fui-t-fast) var(--fui-ease),
+    background var(--fui-t-fast) var(--fui-ease),
+    transform var(--fui-t-fast) var(--fui-ease);
+}
+
+.fui-keybind__slot:hover {
+  border-color: var(--fui-accent);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(0, 0, 0, 0.26));
+}
+
+.fui-keybind__slot:active {
+  transform: translateY(1px);
+  border-bottom-width: 2px;
+}
+
+.fui-keybind__slot[data-slot='secondary'] {
+  min-width: 76px;
+  opacity: 0.8;
+}
+
+.fui-keybind__slot.is-empty .fui-keybind__key {
+  color: var(--fui-ink-faint);
+  font-style: italic;
+}
+
+.fui-keybind__slot.is-capturing {
+  border-color: var(--fui-gold);
+  background: rgba(217, 164, 65, 0.2);
+  color: var(--fui-gold-soft);
+  animation: fui-pulse 1.1s var(--fui-ease) infinite;
+}
+
+/* A conflicting binding still binds — it is just flagged, because refusing the
+   press without saying why is worse than showing the clash. */
+.fui-keybind__slot.is-conflict {
+  border-color: var(--fui-warn);
+  color: var(--fui-warn);
+}
+
+.fui-keybind__slot.is-conflict::after {
+  content: '!';
+  margin-left: 6px;
+  font-weight: 700;
+}
+
+.fui-keybind__clear {
+  width: var(--fui-keybind-h);
+  height: var(--fui-keybind-h);
+  flex: none;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: var(--fui-radius);
+  background: rgba(0, 0, 0, 0.35);
+  color: var(--fui-ink-faint);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  transition: color var(--fui-t-fast) var(--fui-ease), border-color var(--fui-t-fast) var(--fui-ease);
+}
+
+.fui-keybind__clear:hover {
+  color: var(--fui-danger);
+  border-color: var(--fui-danger);
+}

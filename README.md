@@ -2,7 +2,7 @@
 
 **A growing database of ready-to-use UI components for Fantasy & RPG web games.**
 
-120 components built from 494 art assets across 2 swappable themes, 2 icon
+142 components built from 494 art assets across 2 swappable themes, 2 icon
 collections and a tintable ornament set. Vanilla TypeScript and CSS — zero
 runtime dependencies, no framework, no build plugin. Drops into any Vite
 project, React or not, or straight over a Phaser canvas as a DOM layer.
@@ -15,21 +15,30 @@ project, React or not, or straight over a Phaser canvas as a DOM layer.
 
 | Group | Components |
 | --- | --- |
-| **Surfaces & Framing** | Panel, **TintFrame**, Frame, Divider, Banner, **Carousel** |
-| **Controls** | Button, Tabs, Toggle, Slider, Select, TextInput, ContextMenu, RadialMenu, SegmentedControl, NumberStepper, ConfirmSlider, Accordion, FilterBar, SortBar, **SideNav** |
-| **Data display** | Icon, Glyph, StatBar, Slot, Portrait, Tooltip, Badge, ItemCard, ProgressRing, StatChip, CompareStats, StatRadar, **HealthPips** |
-| **Game widgets** | InventoryGrid, ActionBar, UnitFrame, PartyFrame, BuffBar, CastBar, DialogueBox, QuestLog, QuestTracker, ShopPanel, LootWindow, CraftingPanel, SkillTree, StatsPanel, Paperdoll, Minimap, CurrencyBar, Leaderboard, **WorldMap**, **CodexEntry**, **AchievementList**, **PatchNotes** |
-| **Combat & battle** | BossHealthBar, ShieldBar, WaveTracker, DamageMeter, BattleLog, ComboCounter, ArenaMatchup, **MatchHistory**, **LootRoll** |
-| **Collection & live-ops** | ChampionCard, StarRating, AffinityBadge, SummonResult, TeamSlots, TurnMeter, EnergyBar, RewardTrack, DailyRewards, UpgradePanel, StageSelect, OfferCard, CountdownTimer, BottomNav, BattleControls, TierBadge, **ChampionList**, **SkillCard**, **MasteryGrid**, **ArtifactCard**, **ArtifactSet**, **RankUpPanel**, **ShardCounter**, **PowerRating**, **PityCounter**, **BannerCarousel**, **TopBar**, **VipProgress**, EventBanner, StreakMeter, **FormationGrid**, **SocketPanel**, **CollectionProgress** |
-| **Social & clan** | ClanCard, MailInbox, ChatPanel, **FriendList**, **LeaderboardPodium** |
-| **Feedback** | ToastStack, FloatingText, AchievementPopup, RewardPopup, EmptyState, LoadingDots, TutorialTip, **Ticker** |
-| **Screens & overlays** | MainMenu, PauseMenu, SettingsScreen, CharacterSelect, LoadingScreen, ResultScreen, LevelUpModal, Modal, HUD |
+| **Surfaces & Framing** | Panel, Frame, Divider, Banner, TintFrame, Carousel, **Scroll**, **OrnateHeader**, **SceneBackdrop** |
+| **Controls** | Button, Tabs, Toggle, Slider, Select, TextInput, ContextMenu, SegmentedControl, NumberStepper, Accordion, ConfirmSlider, **CheckList**, **RangeSlider**, **KeybindInput**, RadialMenu, FilterBar, SortBar, SideNav |
+| **Data display** | Icon, StatBar, Slot, Portrait, Tooltip, Badge, ProgressRing, StatChip, **Sparkline**, **Gauge**, **Timeline**, ItemCard, Glyph, CompareStats, StatRadar, HealthPips |
+| **Game widgets** | InventoryGrid, ActionBar, UnitFrame, PartyFrame, BuffBar, CastBar, DialogueBox, QuestLog, QuestTracker, ShopPanel, LootWindow, CraftingPanel, SkillTree, StatsPanel, Paperdoll, Minimap, CurrencyBar, Leaderboard, WorldMap, CodexEntry, AchievementList, PatchNotes, **TradePanel**, **QuestBoard**, **Compass** |
+| **Combat & battle** | BossHealthBar, ShieldBar, WaveTracker, DamageMeter, BattleLog, ComboCounter, ArenaMatchup, MatchHistory, LootRoll, **TargetSelector**, **ThreatMeter** |
+| **Collection & live-ops** | PityCounter, BannerCarousel, TopBar, VipProgress, EventBanner, StreakMeter, StarRating, AffinityBadge, ChampionCard, SummonResult, TeamSlots, TurnMeter, EnergyBar, RewardTrack, DailyRewards, UpgradePanel, StageSelect, OfferCard, CountdownTimer, BottomNav, BattleControls, TierBadge, ChampionList, SkillCard, MasteryGrid, ArtifactCard, ArtifactSet, RankUpPanel, ShardCounter, PowerRating, FormationGrid, SocketPanel, CollectionProgress, **FusionPanel**, **BondMeter** |
+| **Social & clan** | ClanCard, MailInbox, ChatPanel, FriendList, LeaderboardPodium, **ClanRoster**, **PlayerProfile** |
+| **Feedback** | LoadingDots, EmptyState, TutorialTip, RewardPopup, Ticker, **ConnectionStatus**, **SpeechBubble**, ToastStack, FloatingText, AchievementPopup |
+| **Screens & overlays** | Modal, **TitleGate**, **StorySlide**, MainMenu, PauseMenu, SettingsScreen, CharacterSelect, LoadingScreen, ResultScreen, LevelUpModal, HUD |
+
+Bold marks the newest additions.
 
 These are not static skins. The inventory grid does real drag-and-drop and
 stacking, the action bar runs cooldown sweeps and greys out what you cannot
 afford, the dialogue box types text out and branches, the skill tree gates nodes
 behind prerequisites and draws its own dependency lines, and the turn meter
 reorders itself live as each unit's speed fills its bar.
+
+Where a rule protects the player it lives in the component, not in the code
+that calls it. `TradePanel` clears both accepts on any change to the offer,
+`TargetSelector` says out loud that a taunt will eat your click, `QuestBoard`
+labels a full board instead of failing the accept on the server, `FusionPanel`
+counts the slots you are still missing rather than going quietly grey, and
+`TitleGate` refuses a full realm with a reason attached.
 
 The **Collection & live-ops**, **Combat** and **Social** sets target browser and
 mobile squad-RPGs of the Raid: Shadow Legends shape — gacha banners with visible

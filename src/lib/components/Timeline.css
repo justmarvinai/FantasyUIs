@@ -1,0 +1,194 @@
+/* Timeline — an ordered run of events on a rail. */
+
+.fui-timeline {
+  --fui-tl-node: 24px;
+  --fui-tl-ink: var(--fui-accent);
+  width: 100%;
+}
+
+.fui-timeline--compact { --fui-tl-node: 16px; font-size: 12px; }
+
+.fui-timeline__list {
+  display: flex;
+  flex-direction: column;
+}
+
+.fui-timeline__item {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--fui-tl-node) 1fr;
+  gap: 0 var(--fui-gap);
+  padding-bottom: var(--fui-gap);
+}
+
+.fui-timeline--stamps .fui-timeline__item {
+  grid-template-columns: 64px var(--fui-tl-node) 1fr;
+}
+
+.fui-timeline__item[data-state='future'] { --fui-tl-ink: rgba(255, 255, 255, 0.2); }
+.fui-timeline__item[data-state='done'] { --fui-tl-ink: var(--fui-success); }
+.fui-timeline__item[data-state='current'] { --fui-tl-ink: var(--fui-gold); }
+.fui-timeline__item[data-state='failed'] { --fui-tl-ink: var(--fui-danger); }
+
+/* Each item draws the rail below its own node, so a segment is coloured by the
+   state of the entry it leads away from. One element behind the whole list
+   could not do that without a second pass. */
+.fui-timeline__item::before {
+  content: '';
+  position: absolute;
+  top: var(--fui-tl-node);
+  bottom: 0;
+  left: calc(var(--fui-tl-node) / 2 - 1px);
+  width: 2px;
+  background: var(--fui-tl-ink);
+  opacity: 0.55;
+}
+
+.fui-timeline--stamps .fui-timeline__item::before {
+  left: calc(64px + var(--fui-gap) + var(--fui-tl-node) / 2 - 1px);
+}
+
+.fui-timeline__item.is-last::before {
+  display: none;
+}
+
+.fui-timeline__item[data-state='future']::before {
+  background: repeating-linear-gradient(
+    180deg,
+    var(--fui-tl-ink) 0 4px,
+    transparent 4px 8px
+  );
+}
+
+.fui-timeline__when {
+  padding-top: 2px;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-align: right;
+  color: var(--fui-ink-faint);
+}
+
+.fui-timeline__item[data-state='current'] .fui-timeline__when {
+  color: var(--fui-gold-soft);
+}
+
+.fui-timeline__node {
+  position: relative;
+  z-index: 1;
+  width: var(--fui-tl-node);
+  height: var(--fui-tl-node);
+  border: 2px solid var(--fui-tl-ink);
+  border-radius: 50%;
+  background: var(--fui-slate, #22222a);
+}
+
+.fui-timeline__node::after {
+  content: '';
+  position: absolute;
+  inset: 22%;
+  background-color: var(--fui-tl-ink);
+  mask: var(--fui-glyph-src, var(--fui-mask-none)) center / contain no-repeat;
+  -webkit-mask: var(--fui-glyph-src, var(--fui-mask-none)) center / contain no-repeat;
+}
+
+.fui-timeline__item[data-state='done'] .fui-timeline__node {
+  background: var(--fui-tl-ink);
+}
+
+.fui-timeline__item[data-state='done'] .fui-timeline__node::after {
+  background-color: var(--fui-ink-inverse);
+}
+
+.fui-timeline__item[data-state='current'] .fui-timeline__node {
+  box-shadow: 0 0 10px var(--fui-tl-ink);
+  animation: fui-pulse 2s var(--fui-ease) infinite;
+}
+
+.fui-timeline__body {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  padding-bottom: 2px;
+}
+
+.fui-timeline__head {
+  display: flex;
+  align-items: center;
+  gap: var(--fui-gap-sm);
+}
+
+.fui-timeline__art {
+  width: 34px;
+  height: 34px;
+  flex: none;
+  border: 1px solid rgba(0, 0, 0, 0.6);
+  border-radius: var(--fui-radius);
+  background: rgba(0, 0, 0, 0.4) center / cover no-repeat;
+}
+
+.fui-timeline__titles {
+  display: flex;
+  align-items: baseline;
+  gap: var(--fui-gap-sm);
+  min-width: 0;
+}
+
+.fui-timeline__title {
+  font-family: var(--fui-font-display);
+  font-size: 13.5px;
+  letter-spacing: 0.03em;
+  color: var(--fui-ink);
+}
+
+.fui-timeline__item[data-state='future'] .fui-timeline__title {
+  color: var(--fui-ink-faint);
+}
+
+.fui-timeline__stamp {
+  font-size: 10.5px;
+  color: var(--fui-ink-faint);
+}
+
+.fui-timeline__text {
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.fui-timeline__extra {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 3px;
+}
+
+/* ── horizontal: the same rail turned on its side ─────────────────────────── */
+.fui-timeline[data-orientation='horizontal'] .fui-timeline__list {
+  flex-direction: row;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.fui-timeline[data-orientation='horizontal'] .fui-timeline__item {
+  grid-template-columns: none;
+  grid-template-rows: var(--fui-tl-node) 1fr;
+  flex: 1 0 150px;
+  padding: 0 var(--fui-gap) 0 0;
+}
+
+.fui-timeline[data-orientation='horizontal'] .fui-timeline__item::before {
+  top: calc(var(--fui-tl-node) / 2 - 1px);
+  bottom: auto;
+  left: var(--fui-tl-node);
+  right: 0;
+  width: auto;
+  height: 2px;
+}
+
+.fui-timeline[data-orientation='horizontal'] .fui-timeline__item[data-state='future']::before {
+  background: repeating-linear-gradient(90deg, var(--fui-tl-ink) 0 4px, transparent 4px 8px);
+}
+
+.fui-timeline[data-orientation='horizontal'] .fui-timeline__body {
+  padding-top: 6px;
+}

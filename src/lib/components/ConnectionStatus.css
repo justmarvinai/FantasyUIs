@@ -1,0 +1,138 @@
+/* ConnectionStatus — latency as signal bars, and a banner when it drops. */
+
+.fui-net {
+  --fui-net-strength: 4;
+  --fui-net-ink: var(--fui-success);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--fui-gap-sm);
+}
+
+.fui-net[data-state='unstable'] { --fui-net-ink: var(--fui-warn); }
+.fui-net[data-state='reconnecting'] { --fui-net-ink: var(--fui-warn); }
+.fui-net[data-state='offline'] { --fui-net-ink: var(--fui-danger); }
+
+.fui-net__bars {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 16px;
+}
+
+/* Each bar is taller than the last. A bar lights when the strength reaches its
+   own index: the difference is multiplied up so anything positive saturates to
+   1 and anything else clamps to the dim floor — one declaration instead of a
+   selector per level. */
+.fui-net__bar {
+  width: 3px;
+  height: calc(5px + var(--fui-net-i) * 3.6px);
+  border-radius: 1px;
+  background: var(--fui-net-ink);
+  opacity: clamp(0.16, calc((var(--fui-net-strength) - var(--fui-net-min) + 1) * 100), 1);
+  transition: opacity var(--fui-t) var(--fui-ease), background var(--fui-t) var(--fui-ease);
+}
+
+.fui-net__bar:nth-child(1) { --fui-net-min: 1; }
+.fui-net__bar:nth-child(2) { --fui-net-min: 2; }
+.fui-net__bar:nth-child(3) { --fui-net-min: 3; }
+.fui-net__bar:nth-child(4) { --fui-net-min: 4; }
+
+.fui-net[data-state='reconnecting'] .fui-net__bar {
+  animation: fui-pulse 0.9s var(--fui-ease) infinite;
+  animation-delay: calc(var(--fui-net-i) * 0.12s);
+}
+
+.fui-net__text {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 11px;
+}
+
+.fui-net__server {
+  color: var(--fui-ink-dim);
+}
+
+.fui-net__ping {
+  color: var(--fui-net-ink);
+  font-weight: 700;
+}
+
+.fui-net__retry {
+  padding: 3px 10px;
+  border: 1px solid var(--fui-net-ink);
+  border-radius: var(--fui-radius);
+  background: color-mix(in srgb, var(--fui-net-ink) 18%, transparent);
+  color: var(--fui-net-ink);
+  font-family: var(--fui-font-ui);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.fui-net__retry:hover {
+  background: color-mix(in srgb, var(--fui-net-ink) 36%, transparent);
+  color: var(--fui-ink);
+}
+
+/* ── dot: the smallest possible readout ───────────────────────────────────── */
+.fui-net[data-variant='dot'] .fui-net__bars {
+  width: 10px;
+  height: 10px;
+  gap: 0;
+  border-radius: 50%;
+  background: var(--fui-net-ink);
+  box-shadow: 0 0 6px var(--fui-net-ink);
+  overflow: hidden;
+}
+
+.fui-net[data-variant='dot'] .fui-net__bar {
+  display: none;
+}
+
+.fui-net[data-variant='dot'][data-state='reconnecting'] .fui-net__bars {
+  animation: fui-pulse 0.9s var(--fui-ease) infinite;
+}
+
+/* ── banner: a full-width strip for a real outage ─────────────────────────── */
+.fui-net[data-variant='banner'] {
+  display: flex;
+  width: 100%;
+  padding: 8px var(--fui-gap);
+  border: 1px solid color-mix(in srgb, var(--fui-net-ink) 45%, rgba(0, 0, 0, 0.6));
+  border-radius: var(--fui-radius);
+  background: linear-gradient(
+    100deg,
+    color-mix(in srgb, var(--fui-net-ink) 18%, transparent),
+    rgba(0, 0, 0, 0.42) 65%
+  );
+}
+
+.fui-net[data-variant='banner'] .fui-net__text {
+  flex: 1;
+  align-items: center;
+  font-size: 12.5px;
+}
+
+.fui-net[data-variant='banner'] .fui-net__message {
+  color: var(--fui-ink);
+}
+
+.fui-net[data-variant='banner'] .fui-net__server {
+  order: 2;
+  margin-left: auto;
+  font-size: 11px;
+}
+
+.fui-net__orb {
+  width: 26px;
+  height: 34px;
+  flex: none;
+  background: center / contain no-repeat;
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--fui-net-ink) 60%, transparent));
+}
+
+.fui-net[data-state='offline'] .fui-net__orb {
+  filter: grayscale(1) brightness(0.6);
+}

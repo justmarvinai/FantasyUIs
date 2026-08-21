@@ -1,0 +1,124 @@
+/* ThreatMeter — who the boss is looking at, and who is about to take it. */
+
+.fui-threat {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: var(--fui-gap-sm) var(--fui-gap);
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  border-radius: var(--fui-radius);
+  background: rgba(0, 0, 0, 0.34);
+}
+
+.fui-threat--compact { padding: 5px 8px; font-size: 12px; }
+
+.fui-threat__title { font-size: 10px; }
+
+.fui-threat__list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fui-threat__row {
+  --fui-threat-p: 0;
+  --fui-threat-ink: var(--fui-ink-dim);
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 7px;
+  border-radius: var(--fui-radius);
+  background: rgba(0, 0, 0, 0.3);
+  font-size: 12px;
+  overflow: hidden;
+}
+
+/* The bar is the row's own background so text always sits on its own colour. */
+.fui-threat__row::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: calc(var(--fui-threat-p) * 100%);
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--fui-threat-ink) 55%, transparent),
+    color-mix(in srgb, var(--fui-threat-ink) 20%, transparent)
+  );
+  transition: width var(--fui-t) var(--fui-ease);
+}
+
+.fui-threat__row[data-state='tank'] { --fui-threat-ink: var(--fui-info); }
+.fui-threat__row[data-state='safe'] { --fui-threat-ink: var(--fui-ink-dim); }
+.fui-threat__row[data-state='warn'] { --fui-threat-ink: var(--fui-warn); }
+.fui-threat__row[data-state='danger'] { --fui-threat-ink: var(--fui-danger); }
+.fui-threat__row[data-state='pulled'] { --fui-threat-ink: var(--fui-danger); }
+
+.fui-threat__row[data-state='danger'],
+.fui-threat__row[data-state='pulled'] {
+  box-shadow: inset 0 0 0 1px var(--fui-danger);
+}
+
+.fui-threat__row[data-state='danger'] {
+  animation: fui-pulse 1.1s var(--fui-ease) infinite;
+}
+
+.fui-threat__row.is-you {
+  box-shadow: inset 0 0 0 1px var(--fui-gold);
+}
+
+.fui-threat__row > * {
+  position: relative;
+}
+
+.fui-threat__rank {
+  width: 14px;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-align: right;
+  color: var(--fui-ink-faint);
+}
+
+.fui-threat__art {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.45) center / cover no-repeat;
+}
+
+.fui-threat__name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--fui-ink);
+}
+
+.fui-threat__row.is-you .fui-threat__name {
+  color: var(--fui-gold-soft);
+}
+
+.fui-threat__value {
+  font-size: 11px;
+  color: var(--fui-ink-faint);
+}
+
+.fui-threat__pct {
+  min-width: 36px;
+  text-align: right;
+  font-weight: 700;
+  color: var(--fui-threat-ink);
+}
+
+.fui-threat__row[data-state='safe'] .fui-threat__pct {
+  color: var(--fui-ink-dim);
+}
+
+.fui-threat__more {
+  padding: 2px 7px;
+  font-size: 10.5px;
+  color: var(--fui-ink-faint);
+}

@@ -1,0 +1,230 @@
+/* ClanRoster — the clan from the inside, where a leader decides who to keep. */
+
+.fui-croster {
+  --fui-croster-grid: 1fr 62px 92px 58px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(0, 0, 0, 0.55);
+  border-radius: var(--fui-radius);
+  background: rgba(0, 0, 0, 0.32);
+  overflow: hidden;
+}
+
+.fui-croster__head {
+  display: flex;
+  align-items: center;
+  gap: var(--fui-gap-sm);
+  flex-wrap: wrap;
+  padding: 7px 10px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.fui-croster__title {
+  font-size: 14px;
+  color: var(--fui-ink);
+}
+
+.fui-croster__count {
+  font-size: 11px;
+  color: var(--fui-ink-faint);
+}
+
+.fui-croster__sorts {
+  display: flex;
+  gap: 3px;
+  margin-left: auto;
+}
+
+.fui-croster__sort {
+  padding: 3px 9px;
+  border: 1px solid transparent;
+  border-radius: var(--fui-radius);
+  background: none;
+  color: var(--fui-ink-faint);
+  font-family: var(--fui-font-ui);
+  font-size: 10.5px;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: color var(--fui-t-fast) var(--fui-ease), background var(--fui-t-fast) var(--fui-ease);
+}
+
+.fui-croster__sort:hover { color: var(--fui-ink); }
+
+.fui-croster__sort.is-on {
+  border-color: color-mix(in srgb, var(--fui-accent) 50%, transparent);
+  background: color-mix(in srgb, var(--fui-accent) 18%, transparent);
+  color: var(--fui-accent-soft);
+}
+
+.fui-croster--manage {
+  --fui-croster-grid: 1fr 58px 88px 54px 68px;
+}
+
+.fui-croster__cols,
+.fui-croster__row {
+  display: grid;
+  grid-template-columns: var(--fui-croster-grid);
+  align-items: center;
+  gap: var(--fui-gap-sm);
+}
+
+.fui-croster__cols {
+  padding: 4px 10px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.22);
+}
+
+.fui-croster__col {
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fui-ink-faint);
+}
+
+.fui-croster__col:not(:first-child) { text-align: right; }
+
+.fui-croster__body {
+  display: flex;
+  flex-direction: column;
+}
+
+.fui-croster__row {
+  --fui-croster-p: 0;
+  --fui-croster-ink: var(--fui-ink-faint);
+  position: relative;
+  padding: 6px 10px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.36);
+}
+
+.fui-croster__row:last-child { border-bottom: 0; }
+
+.fui-croster__row[data-rank='leader'] { --fui-croster-ink: var(--fui-gold); }
+.fui-croster__row[data-rank='officer'] { --fui-croster-ink: var(--fui-accent); }
+.fui-croster__row[data-rank='veteran'] { --fui-croster-ink: var(--fui-rarity-rare); }
+
+/* The contribution bar is the row's own background, scaled against the top
+   contributor rather than the total. */
+.fui-croster__row::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: calc(var(--fui-croster-p) * 100%);
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--fui-croster-ink) 22%, transparent),
+    transparent
+  );
+  pointer-events: none;
+}
+
+.fui-croster__row.is-you {
+  box-shadow: inset 0 0 0 1px var(--fui-gold);
+}
+
+/* Nothing contributed this cycle is the flag a leader is actually looking for. */
+.fui-croster__row.is-idle .fui-croster__contrib {
+  color: var(--fui-danger);
+}
+
+.fui-croster__row > * {
+  position: relative;
+}
+
+.fui-croster__who {
+  display: flex;
+  align-items: center;
+  gap: var(--fui-gap-sm);
+  min-width: 0;
+}
+
+.fui-croster__avatar {
+  position: relative;
+  width: 30px;
+  height: 30px;
+  flex: none;
+  border-radius: 50%;
+  border: 1px solid var(--fui-croster-ink);
+  background: rgba(0, 0, 0, 0.45) center / cover no-repeat;
+}
+
+.fui-croster__pip {
+  position: absolute;
+  right: -1px;
+  bottom: -1px;
+  width: 9px;
+  height: 9px;
+  border: 2px solid #14141a;
+  border-radius: 50%;
+  background: var(--fui-success);
+  box-shadow: 0 0 5px var(--fui-success);
+}
+
+.fui-croster__names {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.fui-croster__name {
+  font-size: 12.5px;
+  color: var(--fui-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fui-croster__sub {
+  display: flex;
+  gap: 6px;
+  font-size: 10px;
+  color: var(--fui-ink-faint);
+}
+
+.fui-croster__rank {
+  color: var(--fui-croster-ink);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.fui-croster__power,
+.fui-croster__contrib,
+.fui-croster__seen {
+  text-align: right;
+  font-size: 12px;
+}
+
+.fui-croster__power { color: var(--fui-ink-dim); }
+.fui-croster__contrib { font-weight: 700; color: var(--fui-gold-soft); }
+.fui-croster__seen { font-size: 10.5px; color: var(--fui-ink-faint); }
+
+.fui-croster__manage {
+  display: flex;
+  gap: 2px;
+}
+
+.fui-croster__act {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.4);
+  color: var(--fui-ink-faint);
+  font-size: 10px;
+  line-height: 1;
+  cursor: pointer;
+  transition: color var(--fui-t-fast) var(--fui-ease), border-color var(--fui-t-fast) var(--fui-ease);
+}
+
+.fui-croster__act--promote:hover { color: var(--fui-success); border-color: var(--fui-success); }
+.fui-croster__act--demote:hover { color: var(--fui-warn); border-color: var(--fui-warn); }
+.fui-croster__act--kick:hover { color: var(--fui-danger); border-color: var(--fui-danger); }
+
+.fui-croster__empty {
+  padding: var(--fui-gap-lg);
+  text-align: center;
+  font-size: 13px;
+  color: var(--fui-ink-faint);
+}

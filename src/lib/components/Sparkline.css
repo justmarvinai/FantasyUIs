@@ -1,0 +1,90 @@
+/* Sparkline — a compact trend for a number that has a history. */
+
+.fui-spark {
+  --fui-spark-h: 40px;
+  --fui-spark-ink: var(--fui-accent);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 60px;
+}
+
+.fui-spark__head {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.fui-spark__label {
+  flex: 1;
+  font-size: 10px;
+}
+
+.fui-spark__last {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--fui-ink);
+}
+
+.fui-spark__delta {
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.fui-spark__delta[data-dir='up'] { color: var(--fui-success); }
+.fui-spark__delta[data-dir='down'] { color: var(--fui-danger); }
+
+.fui-spark svg {
+  display: block;
+  width: 100%;
+  height: var(--fui-spark-h);
+  overflow: visible;
+}
+
+/* `preserveAspectRatio: none` stretches the 0–100 viewBox to whatever width the
+   component gets, so the stroke has to opt out of that scaling or it would
+   thicken horizontally and thin vertically. */
+.fui-spark__line {
+  fill: none;
+  stroke: var(--fui-spark-ink);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+  filter: drop-shadow(0 0 3px color-mix(in srgb, var(--fui-spark-ink) 55%, transparent));
+}
+
+.fui-spark__area {
+  fill: color-mix(in srgb, var(--fui-spark-ink) 24%, transparent);
+  stroke: none;
+}
+
+.fui-spark__bar {
+  fill: color-mix(in srgb, var(--fui-spark-ink) 62%, transparent);
+}
+
+.fui-spark[data-variant='bars'] .fui-spark__dot {
+  display: none;
+}
+
+.fui-spark__baseline {
+  stroke: rgba(255, 255, 255, 0.24);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+  vector-effect: non-scaling-stroke;
+}
+
+.fui-spark__dot {
+  fill: var(--fui-spark-ink);
+  stroke: rgba(0, 0, 0, 0.6);
+  stroke-width: 0.8;
+  vector-effect: non-scaling-stroke;
+}
+
+.fui-spark__dot.is-high { fill: var(--fui-success); }
+.fui-spark__dot.is-low { fill: var(--fui-danger); }
+
+.fui-spark__dot--last {
+  fill: var(--fui-gold);
+  filter: drop-shadow(0 0 4px var(--fui-gold));
+}

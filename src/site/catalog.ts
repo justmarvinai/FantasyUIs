@@ -7,16 +7,20 @@ import { KIT } from './demos/kit.ts';
 import { ROSTER } from './demos/roster.ts';
 import { COMBAT } from './demos/combat.ts';
 import { WORLD } from './demos/world.ts';
+import { CHROME } from './demos/chrome.ts';
+import { SYSTEMS } from './demos/systems.ts';
 
 /** Every documented component, in the order the gallery lists them. */
 export const CATALOG: CatalogEntry[] = [
   ...PRIMITIVES,
   ...KIT,
+  ...CHROME,
   ...WIDGETS,
   ...COMBAT,
   ...GACHA,
   ...ROSTER,
   ...WORLD,
+  ...SYSTEMS,
   ...FEEDBACK,
   ...SCREENS,
 ];

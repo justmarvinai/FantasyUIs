@@ -1,0 +1,218 @@
+/* Compass — the heading band across an open-world HUD. */
+
+.fui-compass {
+  --fui-compass-size: 120px;
+  --fui-compass-ink: var(--fui-gold);
+  position: relative;
+  width: 100%;
+  min-width: 180px;
+  height: 34px;
+}
+
+.fui-compass__viewport {
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(0, 0, 0, 0.6);
+  border-radius: var(--fui-radius);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.62), rgba(0, 0, 0, 0.4));
+  overflow: hidden;
+}
+
+.fui-compass__track,
+.fui-compass__marks {
+  position: absolute;
+  inset: 0;
+}
+
+/* Fading both ends sells the illusion that the band continues past the window
+   rather than being cut off. It applies to the lettering only — the marker
+   layer above it stays sharp all the way to the edge. */
+.fui-compass__track {
+  mask: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
+  -webkit-mask: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
+}
+
+.fui-compass__cardinal {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--fui-font-display);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--fui-ink-faint);
+  white-space: nowrap;
+}
+
+.fui-compass__cardinal[data-major='true'] {
+  font-size: 14px;
+  color: var(--fui-ink);
+}
+
+.fui-compass__tick {
+  position: absolute;
+  top: 50%;
+  width: 1px;
+  height: 7px;
+  margin-top: -3px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.fui-compass__waypoint {
+  position: absolute;
+  top: 3px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.fui-compass__pip {
+  position: relative;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--fui-compass-ink);
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.fui-compass__pip::after {
+  content: '';
+  position: absolute;
+  inset: 18%;
+  background-color: var(--fui-compass-ink);
+  mask: var(--fui-glyph-src, var(--fui-mask-none)) center / contain no-repeat;
+  -webkit-mask: var(--fui-glyph-src, var(--fui-mask-none)) center / contain no-repeat;
+}
+
+.fui-compass__waypoint.is-quest {
+  --fui-compass-ink: var(--fui-gold);
+}
+
+.fui-compass__waypoint.is-quest .fui-compass__pip {
+  box-shadow: 0 0 8px var(--fui-compass-ink);
+  animation: fui-pulse 1.8s var(--fui-ease) infinite;
+}
+
+/* Off the edge, the marker becomes a chevron pointing the way to turn. */
+.fui-compass__waypoint[data-off='left'] .fui-compass__pip,
+.fui-compass__waypoint[data-off='right'] .fui-compass__pip {
+  width: 0;
+  height: 0;
+  border-radius: 0;
+  border: 6px solid transparent;
+  background: none;
+  box-shadow: none;
+}
+
+.fui-compass__waypoint[data-off='left'] { transform: translateX(2px); }
+.fui-compass__waypoint[data-off='right'] { transform: translateX(calc(-100% - 2px)); }
+
+.fui-compass__waypoint[data-off='left'] .fui-compass__pip { border-right-color: var(--fui-compass-ink); }
+.fui-compass__waypoint[data-off='right'] .fui-compass__pip { border-left-color: var(--fui-compass-ink); }
+
+.fui-compass__waypoint[data-off='left'] .fui-compass__pip::after,
+.fui-compass__waypoint[data-off='right'] .fui-compass__pip::after {
+  content: none;
+}
+
+.fui-compass__distance {
+  font-size: 9px;
+  color: var(--fui-ink-dim);
+  text-shadow: 0 1px 2px #000;
+}
+
+/* The fixed marker for "straight ahead" sits above the band, not in it. */
+.fui-compass__needle {
+  position: absolute;
+  left: 50%;
+  top: -4px;
+  width: 0;
+  height: 0;
+  margin-left: -6px;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 8px solid var(--fui-gold);
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.8));
+}
+
+.fui-compass--degrees[data-variant='strip'] .fui-compass__viewport {
+  right: 42px;
+}
+
+.fui-compass__degrees {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 10.5px;
+  color: var(--fui-ink-faint);
+}
+
+/* ── dial: the same data as a round rose ──────────────────────────────────── */
+.fui-compass[data-variant='dial'] {
+  width: var(--fui-compass-size);
+  min-width: 0;
+  height: var(--fui-compass-size);
+}
+
+.fui-compass[data-variant='dial'] .fui-compass__viewport {
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 38%, rgba(255, 255, 255, 0.07), transparent 60%),
+    rgba(0, 0, 0, 0.62);
+}
+
+/* A rose shows every bearing at once, so there is nothing to fade into. */
+.fui-compass[data-variant='dial'] .fui-compass__track {
+  mask: none;
+  -webkit-mask: none;
+}
+
+/* On the dial every marker is rotated out from the centre by its own bearing,
+   using the same signed offset the strip positions with. Each element sits at
+   the centre with a transform-origin pushed down its own half-height, so one
+   rotation places it on the rim. */
+.fui-compass[data-variant='dial'] .fui-compass__cardinal,
+.fui-compass[data-variant='dial'] .fui-compass__tick,
+.fui-compass[data-variant='dial'] .fui-compass__waypoint {
+  left: 50% !important;
+  top: 6px;
+  transform: translateX(-50%) rotate(var(--fui-compass-at));
+  transform-origin: 50% calc(var(--fui-compass-size) / 2 - 6px);
+}
+
+/* Rotating the marker put the letter on the rim; rotating the letter back by
+   the same angle is what keeps it readable. A rose whose south reads upside
+   down is a rose nobody can use. */
+.fui-compass[data-variant='dial'] .fui-compass__cardinal-text,
+.fui-compass[data-variant='dial'] .fui-compass__pip {
+  display: inline-block;
+  transform: rotate(calc(-1 * var(--fui-compass-at)));
+}
+
+.fui-compass[data-variant='dial'] .fui-compass__tick {
+  margin-top: 0;
+  height: 6px;
+}
+
+.fui-compass[data-variant='dial'] .fui-compass__waypoint {
+  top: 2px;
+  transform-origin: 50% calc(var(--fui-compass-size) / 2 - 2px);
+}
+
+.fui-compass[data-variant='dial'] .fui-compass__distance {
+  display: none;
+}
+
+.fui-compass[data-variant='dial'] .fui-compass__degrees {
+  right: auto;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--fui-font-display);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--fui-ink);
+}

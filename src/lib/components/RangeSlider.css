@@ -1,0 +1,147 @@
+/* RangeSlider — a two-handle band, built on two real range inputs. */
+
+.fui-range {
+  --fui-range-from: 0;
+  --fui-range-to: 1;
+  --fui-range-h: 8px;
+  --fui-range-knob: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  min-width: 180px;
+}
+
+.fui-range.is-disabled {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.fui-range__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--fui-gap);
+}
+
+.fui-range__label {
+  font-size: 10px;
+}
+
+.fui-range__readout {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--fui-ink);
+}
+
+.fui-range__value {
+  font-variant-numeric: tabular-nums;
+}
+
+.fui-range__dash {
+  color: var(--fui-ink-faint);
+}
+
+.fui-range__track {
+  position: relative;
+  height: var(--fui-range-knob);
+  display: flex;
+  align-items: center;
+}
+
+.fui-range__track::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: var(--fui-range-h);
+  border: 1px solid rgba(0, 0, 0, 0.6);
+  border-radius: calc(var(--fui-range-h) / 2);
+  background: rgba(0, 0, 0, 0.5);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.7);
+}
+
+/* The selected band is one element positioned from the two custom properties,
+   so it needs no measurement and follows either handle. */
+.fui-range__fill {
+  position: absolute;
+  left: calc(var(--fui-range-from) * 100%);
+  width: calc((var(--fui-range-to) - var(--fui-range-from)) * 100%);
+  height: var(--fui-range-h);
+  border-radius: calc(var(--fui-range-h) / 2);
+  background: linear-gradient(180deg, var(--fui-accent-soft), var(--fui-accent-deep));
+  box-shadow: 0 0 8px color-mix(in srgb, var(--fui-accent) 50%, transparent);
+}
+
+/* Both inputs sit on the same track. Their tracks are transparent, so only the
+   two thumbs are visible over the painted rail underneath. */
+.fui-range__input {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: var(--fui-range-knob);
+  margin: 0;
+  background: none;
+  appearance: none;
+  -webkit-appearance: none;
+  pointer-events: none;
+}
+
+.fui-range__input::-webkit-slider-runnable-track {
+  height: var(--fui-range-knob);
+  background: none;
+}
+
+.fui-range__input::-moz-range-track {
+  height: var(--fui-range-knob);
+  background: none;
+}
+
+.fui-range__input::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: var(--fui-range-knob);
+  height: var(--fui-range-knob);
+  border-radius: 50%;
+  border: 2px solid rgba(0, 0, 0, 0.6);
+  background: linear-gradient(180deg, #f2ead8, #b6ab92);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
+  cursor: grab;
+  pointer-events: auto;
+}
+
+.fui-range__input::-moz-range-thumb {
+  width: var(--fui-range-knob);
+  height: var(--fui-range-knob);
+  border-radius: 50%;
+  border: 2px solid rgba(0, 0, 0, 0.6);
+  background: linear-gradient(180deg, #f2ead8, #b6ab92);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
+  cursor: grab;
+  pointer-events: auto;
+}
+
+.fui-range__input:focus-visible::-webkit-slider-thumb {
+  outline: 2px solid var(--fui-gold-soft);
+  outline-offset: 2px;
+}
+
+.fui-range__ticks {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 5px;
+}
+
+.fui-range__tick {
+  position: absolute;
+  top: 0;
+  width: 1px;
+  height: 5px;
+  margin-left: -0.5px;
+  background: rgba(255, 255, 255, 0.22);
+}

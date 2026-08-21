@@ -1,0 +1,223 @@
+/* QuestBoard — the noticeboard a hub town pins its contracts to. */
+
+.fui-board2 {
+  --fui-board-cols: 2;
+  display: flex;
+  flex-direction: column;
+  gap: var(--fui-gap);
+  padding: var(--fui-gap);
+  border: 1px solid rgba(0, 0, 0, 0.55);
+  border-radius: var(--fui-radius);
+  background:
+    /* A wood-grain wash, so the cards read as paper pinned to a board. */
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.014) 0 3px,
+      transparent 3px 9px
+    ),
+    linear-gradient(180deg, rgba(70, 48, 26, 0.34), rgba(0, 0, 0, 0.42));
+}
+
+.fui-board2__head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--fui-gap);
+  flex-wrap: wrap;
+}
+
+.fui-board2__title {
+  font-size: 15px;
+  color: var(--fui-ink);
+}
+
+.fui-board2__count {
+  font-size: 11.5px;
+  color: var(--fui-ink-dim);
+}
+
+.fui-board2__count.is-full {
+  color: var(--fui-warn);
+}
+
+.fui-board2__timer {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--fui-ink-faint);
+}
+
+.fui-board2__reroll {
+  padding: 4px 11px;
+  border: 1px solid var(--fui-accent);
+  border-radius: var(--fui-radius);
+  background: color-mix(in srgb, var(--fui-accent) 18%, transparent);
+  color: var(--fui-accent-soft);
+  font-family: var(--fui-font-ui);
+  font-size: 10.5px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.fui-board2__reroll:disabled {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: none;
+  color: var(--fui-ink-faint);
+  cursor: not-allowed;
+}
+
+.fui-board2__grid {
+  display: grid;
+  grid-template-columns: repeat(var(--fui-board-cols), minmax(0, 1fr));
+  gap: var(--fui-gap);
+}
+
+.fui-board2__card {
+  --fui-board-ink: var(--fui-rarity-common);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: var(--fui-gap) var(--fui-gap-sm) var(--fui-gap-sm);
+  border: 1px solid color-mix(in srgb, var(--fui-board-ink) 45%, rgba(0, 0, 0, 0.6));
+  border-radius: 2px;
+  background: linear-gradient(180deg, rgba(232, 220, 190, 0.09), rgba(0, 0, 0, 0.34));
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.45);
+}
+
+.fui-board2__card[data-tier='uncommon'] { --fui-board-ink: var(--fui-rarity-uncommon); }
+.fui-board2__card[data-tier='rare'] { --fui-board-ink: var(--fui-rarity-rare); }
+.fui-board2__card[data-tier='epic'] { --fui-board-ink: var(--fui-rarity-epic); }
+.fui-board2__card[data-tier='legendary'] { --fui-board-ink: var(--fui-rarity-legendary); }
+.fui-board2__card[data-tier='mythic'] { --fui-board-ink: var(--fui-rarity-mythic); }
+
+.fui-board2__card[data-state='taken'] {
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.45), inset 0 0 0 1px var(--fui-accent);
+}
+
+.fui-board2__card[data-state='complete'] {
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.45), inset 0 0 0 1px var(--fui-success);
+}
+
+/* The pin — a small domed head with a highlight, centred on the top edge. */
+.fui-board2__pin {
+  position: absolute;
+  left: 50%;
+  top: -6px;
+  width: 12px;
+  height: 12px;
+  margin-left: -6px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 34% 30%, rgba(255, 255, 255, 0.8), transparent 55%),
+    var(--fui-board-ink);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+.fui-board2__top {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--fui-gap-sm);
+}
+
+.fui-board2__art {
+  width: 40px;
+  height: 40px;
+  flex: none;
+  border: 1px solid color-mix(in srgb, var(--fui-board-ink) 55%, transparent);
+  border-radius: var(--fui-radius);
+  background: rgba(0, 0, 0, 0.45) center / cover no-repeat;
+}
+
+.fui-board2__titles {
+  flex: 1;
+  min-width: 0;
+}
+
+.fui-board2__name {
+  font-family: var(--fui-font-display);
+  font-size: 13.5px;
+  letter-spacing: 0.03em;
+  color: color-mix(in srgb, var(--fui-board-ink) 45%, var(--fui-ink));
+}
+
+.fui-board2__objective {
+  font-family: var(--fui-font-body);
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--fui-ink-dim);
+}
+
+.fui-board2__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--fui-gap-sm);
+  font-size: 10.5px;
+}
+
+.fui-board2__req { color: var(--fui-ink-faint); }
+.fui-board2__expiry { color: var(--fui-warn); }
+
+.fui-board2__rewards {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-top: 5px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.fui-board2__reward {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  color: var(--fui-gold-soft);
+}
+
+.fui-board2__reward-glyph {
+  width: 13px;
+  height: 13px;
+  background-color: currentColor;
+  mask: var(--fui-glyph-src) center / contain no-repeat;
+  -webkit-mask: var(--fui-glyph-src) center / contain no-repeat;
+}
+
+.fui-board2__action {
+  margin-top: 3px;
+  padding: 7px;
+  border: 1px solid color-mix(in srgb, var(--fui-board-ink) 55%, transparent);
+  border-radius: var(--fui-radius);
+  background: color-mix(in srgb, var(--fui-board-ink) 18%, transparent);
+  color: var(--fui-ink);
+  font-family: var(--fui-font-ui);
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background var(--fui-t-fast) var(--fui-ease);
+}
+
+.fui-board2__action:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--fui-board-ink) 38%, transparent);
+}
+
+.fui-board2__card[data-state='complete'] .fui-board2__action {
+  border-color: var(--fui-success);
+  background: color-mix(in srgb, var(--fui-success) 24%, transparent);
+  color: var(--fui-success);
+  animation: fui-pulse 2.2s var(--fui-ease) infinite;
+}
+
+.fui-board2__action:disabled {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: none;
+  color: var(--fui-ink-faint);
+  cursor: not-allowed;
+}
+
+.fui-board2__empty {
+  grid-column: 1 / -1;
+  padding: var(--fui-gap-lg);
+  text-align: center;
+  font-size: 13px;
+  color: var(--fui-ink-faint);
+}
