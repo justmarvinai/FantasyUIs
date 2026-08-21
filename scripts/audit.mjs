@@ -72,6 +72,11 @@ for (const file of files) {
   for (const m of ts.matchAll(/classList\.(?:add|toggle)\('([^']+)'/g)) {
     if (m[1].startsWith('fui-')) emitted.add(m[1]);
   }
+  // SVG elements are built with createElementNS and take their class through
+  // setAttribute, so they never pass through h()'s `class:` prop.
+  for (const m of ts.matchAll(/setAttribute\('class',\s*'([^']+)'/g)) {
+    for (const c of m[1].split(/\s+/)) if (c.startsWith('fui-')) emitted.add(c);
+  }
   for (const m of ts.matchAll(/querySelector(?:All)?\('\.([a-z0-9-]+)'/g)) {
     if (m[1].startsWith('fui-')) emitted.add(m[1]);
   }
@@ -173,6 +178,28 @@ for (const file of files) {
   // ── 8. Components expose .el via FuiComponent ─────────────────────────────
   if (!/extends FuiComponent/.test(ts)) {
     note(name, 'does not extend FuiComponent');
+  }
+
+  // The file name is the component's identity: the catalog id, the props-table
+  // lookup, the /r/<id>.json copy bundle and the site's URL are all derived
+  // from it, so a class that disagrees with its file breaks all four at once.
+  const cls = ts.match(/export class ([A-Za-z0-9_]+)/);
+  if (cls && cls[1] !== name) {
+    fail(name, `exports class "${cls[1]}"; the class and its file must share a name`);
+  }
+}
+
+// ── 9. Every "Pairs with" chip must lead somewhere ──────────────────────────
+// A `related` id that matches no component renders as a chip linking to a 404,
+// which is invisible in a typecheck and in the browser until someone clicks it.
+{
+  const ids = new Set(manifest.components.map((c) => c.id));
+  for (const c of manifest.components) {
+    for (const rel of c.related ?? []) {
+      if (!ids.has(rel)) fail(c.id, `lists related component "${rel}", which does not exist`);
+    }
+    if (c.related?.includes(c.id)) fail(c.id, 'lists itself as a related component');
+    if (c.name !== c.id) fail(c.id, `is catalogued under the display name "${c.name}"`);
   }
 }
 

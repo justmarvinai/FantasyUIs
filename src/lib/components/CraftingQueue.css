@@ -1,0 +1,203 @@
+/* CraftingQueue — what happens after you press Craft. */
+
+.fui-craftq {
+  --fui-craftq-rarity: var(--fui-rarity-common);
+  --fui-craftq-p: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-family: var(--fui-font-ui);
+}
+
+.fui-craftq__head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--fui-gap-sm);
+}
+
+.fui-craftq__title {
+  flex: 1;
+  font-size: 14px;
+}
+
+.fui-craftq__count {
+  font-size: 11px;
+  color: var(--fui-ink-faint);
+}
+
+.fui-craftq__list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fui-craftq__slot {
+  display: flex;
+  align-items: center;
+  gap: var(--fui-gap-sm);
+  padding: 6px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--fui-radius);
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.32));
+}
+
+.fui-craftq__slot[data-rarity='uncommon'] { --fui-craftq-rarity: var(--fui-rarity-uncommon); }
+.fui-craftq__slot[data-rarity='rare'] { --fui-craftq-rarity: var(--fui-rarity-rare); }
+.fui-craftq__slot[data-rarity='epic'] { --fui-craftq-rarity: var(--fui-rarity-epic); }
+.fui-craftq__slot[data-rarity='legendary'] { --fui-craftq-rarity: var(--fui-rarity-legendary); }
+.fui-craftq__slot[data-rarity='mythic'] { --fui-craftq-rarity: var(--fui-rarity-mythic); }
+
+.fui-craftq__slot[data-state='waiting'] { opacity: 0.62; }
+
+.fui-craftq__slot[data-state='done'] {
+  border-color: var(--fui-success);
+  background: linear-gradient(90deg, rgba(82, 185, 107, 0.16), rgba(0, 0, 0, 0.32));
+}
+
+/* An empty slot is a button, and should look like an invitation rather than a
+   row that failed to load. */
+.fui-craftq__slot.is-empty {
+  justify-content: center;
+  gap: 6px;
+  border-style: dashed;
+  border-color: rgba(255, 255, 255, 0.16);
+  background: none;
+  color: var(--fui-ink-faint);
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.fui-craftq__slot.is-empty:hover {
+  border-color: var(--fui-accent);
+  color: var(--fui-ink-dim);
+}
+
+.fui-craftq__plus {
+  font-size: 15px;
+  line-height: 1;
+}
+
+.fui-craftq__slot-label {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.fui-craftq__art {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  flex: none;
+  border: 1px solid var(--fui-craftq-rarity);
+  border-radius: var(--fui-radius);
+  background: center / cover no-repeat rgba(0, 0, 0, 0.55);
+}
+
+/* The forge glow belongs to the job that is actually running. */
+.fui-craftq__slot[data-state='running'] .fui-craftq__art {
+  box-shadow: 0 0 10px color-mix(in srgb, var(--fui-craftq-rarity) 55%, transparent);
+}
+
+.fui-craftq__slot[data-state='done'] .fui-craftq__art {
+  animation: fui-pulse 1.8s var(--fui-ease) infinite;
+}
+
+.fui-craftq__qty {
+  position: absolute;
+  right: 1px;
+  bottom: 0;
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--fui-ink);
+  text-shadow: 0 1px 2px #000;
+}
+
+.fui-craftq__text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  flex: 1;
+}
+
+.fui-craftq__name {
+  font-size: 12.5px;
+  color: var(--fui-craftq-rarity);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fui-craftq__status {
+  font-size: 10px;
+  color: var(--fui-ink-faint);
+}
+
+.fui-craftq__slot[data-state='done'] .fui-craftq__status {
+  color: var(--fui-success);
+  font-weight: 700;
+}
+
+.fui-craftq__bar {
+  display: block;
+  height: 4px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.6);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+.fui-craftq__fill {
+  display: block;
+  width: calc(var(--fui-craftq-p) * 100%);
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--fui-craftq-rarity) 60%, #000 40%),
+    var(--fui-craftq-rarity)
+  );
+  transition: width 1s linear;
+}
+
+.fui-craftq__act {
+  flex: none;
+  padding: 5px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--fui-radius);
+  background: rgba(0, 0, 0, 0.4);
+  color: var(--fui-ink-dim);
+  font-family: inherit;
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.fui-craftq__act--collect {
+  border-color: var(--fui-success);
+  background: color-mix(in srgb, var(--fui-success) 22%, transparent);
+  color: var(--fui-success);
+}
+
+.fui-craftq__act--rush {
+  border-color: color-mix(in srgb, var(--fui-xp) 55%, transparent);
+  color: var(--fui-xp);
+}
+
+.fui-craftq__act--cancel {
+  width: 24px;
+  padding: 5px 0;
+  font-size: 13px;
+  line-height: 1;
+}
+
+.fui-craftq__act:hover {
+  filter: brightness(1.25);
+}
+
+.fui-craftq__empty {
+  padding: 20px;
+  font-size: 12px;
+  text-align: center;
+  color: var(--fui-ink-faint);
+}

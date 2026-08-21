@@ -9,7 +9,7 @@ import { LoadingScreen } from '../../lib/components/LoadingScreen.ts';
 import { ResultScreen } from '../../lib/components/ResultScreen.ts';
 import { LevelUpModal } from '../../lib/components/LevelUpModal.ts';
 import { HUD } from '../../lib/components/HUD.ts';
-import { ToastStack } from '../../lib/components/Toast.ts';
+import { ToastStack } from '../../lib/components/ToastStack.ts';
 import { FloatingText } from '../../lib/components/FloatingText.ts';
 import { AchievementPopup } from '../../lib/components/AchievementPopup.ts';
 
@@ -406,7 +406,7 @@ export const SCREENS: CatalogEntry[] = [
 
 export const FEEDBACK: CatalogEntry[] = [
   {
-    id: 'Toast',
+    id: 'ToastStack',
     name: 'ToastStack',
     group: 'feedback',
     blurb: 'The notification corner — item pickups, quest updates, level-ups and warnings.',
@@ -447,7 +447,7 @@ export const FEEDBACK: CatalogEntry[] = [
     group: 'feedback',
     blurb: 'Damage numbers, crits, heal ticks, XP pops and gold pickups.',
     tags: ['damage', 'numbers', 'combat', 'crit', 'heal', 'floating', 'text', 'feedback'],
-    related: ['Toast', 'UnitFrame'],
+    related: ['ToastStack', 'UnitFrame'],
     demos: [
       {
         title: 'Combat numbers',
@@ -482,7 +482,7 @@ export const FEEDBACK: CatalogEntry[] = [
     group: 'feedback',
     blurb: 'Sliding unlock banner with bronze, silver, gold and platinum treatments.',
     tags: ['achievement', 'trophy', 'unlock', 'banner', 'award', 'milestone', 'badge'],
-    related: ['Toast', 'LevelUpModal'],
+    related: ['ToastStack', 'LevelUpModal'],
     demos: [
       {
         title: 'Unlocks',

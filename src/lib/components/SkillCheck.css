@@ -1,0 +1,128 @@
+/* SkillCheck — the timing bar: stop the marker in the green. */
+
+.fui-check {
+  --fui-check-h: 22px;
+  --fui-check-ink: var(--fui-success);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 180px;
+  font-family: var(--fui-font-ui);
+}
+
+.fui-check__head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--fui-gap-sm);
+}
+
+.fui-check__label {
+  flex: 1;
+  font-size: 10px;
+}
+
+.fui-check__tally {
+  font-size: 10.5px;
+  color: var(--fui-ink-faint);
+}
+
+.fui-check__track {
+  position: relative;
+  height: var(--fui-check-h);
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.75);
+  border-radius: var(--fui-radius);
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 12px),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.45));
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.75);
+  cursor: pointer;
+  touch-action: none;
+}
+
+.fui-check__zone {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--fui-check-ink) 60%, transparent),
+    color-mix(in srgb, var(--fui-check-ink) 26%, transparent)
+  );
+  box-shadow:
+    inset 1px 0 0 color-mix(in srgb, var(--fui-check-ink) 80%, transparent),
+    inset -1px 0 0 color-mix(in srgb, var(--fui-check-ink) 80%, transparent);
+}
+
+/* The marker is a hairline, not a block: a wide marker makes "where it stopped"
+   ambiguous by exactly its own width. */
+.fui-check__marker {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  left: 0;
+  width: 3px;
+  margin-left: -1.5px;
+  background: var(--fui-ink);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.8), 0 0 2px #000;
+}
+
+.fui-check[data-state='hit'] .fui-check__marker {
+  background: var(--fui-success);
+  box-shadow: 0 0 12px var(--fui-success);
+}
+
+.fui-check[data-state='miss'] .fui-check__marker {
+  background: var(--fui-danger);
+  box-shadow: 0 0 12px var(--fui-danger);
+}
+
+/* The verdict is printed on the track itself, where the player is already
+   looking, rather than somewhere they have to go and find it. */
+.fui-check[data-result]::after {
+  content: attr(data-result);
+  position: absolute;
+  align-self: center;
+  margin-top: calc(var(--fui-check-h) * -1 - 2px);
+  font-family: var(--fui-font-display);
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fui-ink);
+  text-shadow: 0 1px 4px #000, 0 0 10px #000;
+  pointer-events: none;
+  animation: fui-pop 320ms var(--fui-ease) backwards;
+}
+
+.fui-check {
+  position: relative;
+}
+
+.fui-check[data-state='miss']::after { color: var(--fui-danger); }
+.fui-check[data-state='hit']::after { color: var(--fui-success); }
+
+.fui-check__action {
+  padding: 6px;
+  border: 1px solid var(--fui-accent);
+  border-radius: var(--fui-radius);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--fui-accent) 30%, transparent),
+    color-mix(in srgb, var(--fui-accent) 10%, transparent)
+  );
+  color: var(--fui-ink);
+  font-family: inherit;
+  font-size: 11.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.fui-check__action:hover:not(:disabled) { filter: brightness(1.28); }
+
+.fui-check__action:disabled {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: none;
+  color: var(--fui-ink-faint);
+  cursor: not-allowed;
+}

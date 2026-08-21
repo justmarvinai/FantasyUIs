@@ -1,0 +1,171 @@
+/* DungeonMap — the floor plan of a run, drawn fresh every time. */
+
+.fui-dmap {
+  --fui-dmap-size: 44px;
+  --fui-dmap-gap: 22px;
+  --fui-dmap-cols: 1;
+  --fui-dmap-rows: 1;
+  --fui-dmap-ink: var(--fui-ink-dim);
+  display: inline-flex;
+  flex-direction: column;
+  gap: var(--fui-gap-sm);
+  font-family: var(--fui-font-ui);
+}
+
+.fui-dmap__head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--fui-gap-sm);
+}
+
+.fui-dmap__title {
+  flex: 1;
+  font-size: 14px;
+}
+
+.fui-dmap__floor {
+  font-size: 11px;
+  color: var(--fui-ink-faint);
+}
+
+.fui-dmap__stage {
+  position: relative;
+  padding: var(--fui-gap-sm);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--fui-radius);
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, 0.04), transparent 70%),
+    rgba(0, 0, 0, 0.42);
+}
+
+.fui-dmap__grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(var(--fui-dmap-cols), var(--fui-dmap-size));
+  grid-template-rows: repeat(var(--fui-dmap-rows), var(--fui-dmap-size));
+  gap: var(--fui-dmap-gap);
+}
+
+/* The corridor layer stretches over the same box as the grid, so a room's
+   centre in the 0–100 viewBox lands on that room's centre on screen whatever
+   the cell size is. */
+.fui-dmap__links {
+  position: absolute;
+  left: var(--fui-gap-sm);
+  top: var(--fui-gap-sm);
+  width: calc(var(--fui-dmap-cols) * var(--fui-dmap-size) + (var(--fui-dmap-cols) - 1) * var(--fui-dmap-gap));
+  height: calc(var(--fui-dmap-rows) * var(--fui-dmap-size) + (var(--fui-dmap-rows) - 1) * var(--fui-dmap-gap));
+}
+
+.fui-dmap__link {
+  stroke: rgba(255, 255, 255, 0.22);
+  stroke-width: 3;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.fui-dmap__link.is-open {
+  stroke: var(--fui-accent);
+  stroke-width: 4;
+  filter: drop-shadow(0 0 4px var(--fui-accent));
+}
+
+.fui-dmap__link.is-fog {
+  stroke: rgba(255, 255, 255, 0.09);
+  stroke-dasharray: 4 5;
+}
+
+.fui-dmap__room {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 2px solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--fui-radius);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(0, 0, 0, 0.5));
+  color: var(--fui-dmap-ink);
+  font-family: inherit;
+  font-size: 17px;
+  line-height: 1;
+  transition:
+    transform var(--fui-t-fast) var(--fui-ease),
+    border-color var(--fui-t-fast) var(--fui-ease);
+}
+
+.fui-dmap__room[data-kind='battle'] { --fui-dmap-ink: var(--fui-danger); }
+.fui-dmap__room[data-kind='elite'] { --fui-dmap-ink: var(--fui-rage); }
+.fui-dmap__room[data-kind='boss'] { --fui-dmap-ink: var(--fui-gold); }
+.fui-dmap__room[data-kind='treasure'] { --fui-dmap-ink: var(--fui-gold-soft); }
+.fui-dmap__room[data-kind='shop'] { --fui-dmap-ink: var(--fui-info); }
+.fui-dmap__room[data-kind='rest'] { --fui-dmap-ink: var(--fui-success); }
+.fui-dmap__room[data-kind='event'] { --fui-dmap-ink: var(--fui-xp); }
+.fui-dmap__room[data-kind='start'] { --fui-dmap-ink: var(--fui-accent); }
+
+/* Fog hides what is in a room, never that the room is there — the shape of the
+   floor is information the player has earned by seeing the corridor. */
+.fui-dmap__room[data-kind='fog'] {
+  --fui-dmap-ink: var(--fui-ink-faint);
+  border-style: dashed;
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.fui-dmap__room[data-state='far'] {
+  opacity: 0.55;
+}
+
+.fui-dmap__room[data-state='cleared'] {
+  border-color: rgba(255, 255, 255, 0.1);
+  opacity: 0.6;
+}
+
+.fui-dmap__room[data-state='cleared']::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 44%, rgba(255, 255, 255, 0.24) 44% 56%, transparent 56%);
+}
+
+.fui-dmap__room[data-state='open'] {
+  border-color: var(--fui-accent);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--fui-accent) 45%, transparent);
+  cursor: pointer;
+}
+
+.fui-dmap__room[data-state='open']:hover {
+  transform: scale(1.08);
+}
+
+.fui-dmap__room[data-state='here'] {
+  border-color: var(--fui-ink);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3), 0 0 16px rgba(255, 255, 255, 0.35);
+}
+
+.fui-dmap__mark {
+  color: var(--fui-dmap-ink);
+  text-shadow: 0 1px 3px #000;
+}
+
+.fui-dmap__mark.is-glyph {
+  width: 55%;
+  height: 55%;
+  background-color: var(--fui-dmap-ink);
+  mask: var(--fui-glyph-src, var(--fui-mask-none)) center / contain no-repeat;
+  -webkit-mask: var(--fui-glyph-src, var(--fui-mask-none)) center / contain no-repeat;
+}
+
+/* The party marker sits proud of the room so it is legible over any glyph. */
+.fui-dmap__party {
+  position: absolute;
+  left: 50%;
+  top: -9px;
+  width: 10px;
+  height: 10px;
+  margin-left: -5px;
+  border-radius: 50%;
+  background: var(--fui-ink);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.9);
+  animation: fui-pulse 1.6s var(--fui-ease) infinite;
+}

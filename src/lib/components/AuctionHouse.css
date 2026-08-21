@@ -1,0 +1,264 @@
+/* AuctionHouse — the player market, where the clock is part of the price. */
+
+.fui-auction {
+  --fui-auction-cols: 1fr 76px 132px 78px 108px;
+  --fui-auction-rarity: var(--fui-rarity-common);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-family: var(--fui-font-ui);
+}
+
+.fui-auction[data-compact='true'] {
+  --fui-auction-cols: 1fr 108px 88px;
+}
+
+.fui-auction__head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--fui-gap);
+}
+
+.fui-auction__title {
+  flex: 1;
+  font-size: 14px;
+}
+
+.fui-auction__funds {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--fui-gold);
+}
+
+.fui-auction__coin {
+  width: 14px;
+  height: 14px;
+  background-color: currentColor;
+  mask: var(--fui-glyph-src, var(--fui-mask-none)) center / contain no-repeat;
+  -webkit-mask: var(--fui-glyph-src, var(--fui-mask-none)) center / contain no-repeat;
+}
+
+.fui-auction__cols,
+.fui-auction__row {
+  display: grid;
+  grid-template-columns: var(--fui-auction-cols);
+  align-items: center;
+  gap: var(--fui-gap-sm);
+}
+
+/* The rarity and time columns are the first to go in a narrow panel: price and
+   the action are the two nobody can trade without. */
+.fui-auction[data-compact='true'] .fui-auction__rarity,
+.fui-auction[data-compact='true'] .fui-auction__ends,
+.fui-auction[data-compact='true'] .fui-auction__cols > :nth-child(2),
+.fui-auction[data-compact='true'] .fui-auction__cols > :nth-child(4) {
+  display: none;
+}
+
+.fui-auction__cols {
+  padding: 0 8px 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.fui-auction__col {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--fui-ink-faint);
+  font-family: inherit;
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+  text-align: left;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+/* The price and time columns are right-aligned in the rows, so their headings
+   have to be too or the table reads as misaligned. */
+.fui-auction__cols > .fui-auction__col:nth-child(3),
+.fui-auction__cols > .fui-auction__col:nth-child(4) {
+  text-align: right;
+}
+
+.fui-auction__col.is-on {
+  color: var(--fui-accent);
+}
+
+.fui-auction__col.is-on::after {
+  content: ' ▾';
+}
+
+.fui-auction__body {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.fui-auction__row {
+  padding: 5px 8px;
+  border: 1px solid transparent;
+  border-left: 3px solid var(--fui-auction-rarity);
+  border-radius: var(--fui-radius);
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.045), rgba(0, 0, 0, 0.3));
+}
+
+.fui-auction__row[data-rarity='uncommon'] { --fui-auction-rarity: var(--fui-rarity-uncommon); }
+.fui-auction__row[data-rarity='rare'] { --fui-auction-rarity: var(--fui-rarity-rare); }
+.fui-auction__row[data-rarity='epic'] { --fui-auction-rarity: var(--fui-rarity-epic); }
+.fui-auction__row[data-rarity='legendary'] { --fui-auction-rarity: var(--fui-rarity-legendary); }
+.fui-auction__row[data-rarity='mythic'] { --fui-auction-rarity: var(--fui-rarity-mythic); }
+
+.fui-auction__row[data-state='closed'] { opacity: 0.45; }
+
+.fui-auction__row[data-state='yours'] {
+  background: linear-gradient(90deg, rgba(217, 164, 65, 0.12), rgba(0, 0, 0, 0.3));
+}
+
+.fui-auction__row.is-winning {
+  border-color: var(--fui-success);
+}
+
+.fui-auction__item {
+  display: flex;
+  align-items: center;
+  gap: var(--fui-gap-sm);
+  min-width: 0;
+}
+
+.fui-auction__art {
+  position: relative;
+  width: 34px;
+  height: 34px;
+  flex: none;
+  border: 1px solid var(--fui-auction-rarity);
+  border-radius: var(--fui-radius);
+  background: center / cover no-repeat rgba(0, 0, 0, 0.55);
+}
+
+.fui-auction__qty {
+  position: absolute;
+  right: 1px;
+  bottom: 0;
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--fui-ink);
+  text-shadow: 0 1px 2px #000;
+}
+
+.fui-auction__names {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.fui-auction__name {
+  font-size: 12.5px;
+  color: var(--fui-auction-rarity);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fui-auction__note {
+  font-size: 9.5px;
+  color: var(--fui-ink-faint);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fui-auction__rarity {
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: capitalize;
+  color: var(--fui-auction-rarity);
+}
+
+.fui-auction__prices {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1px;
+  line-height: 1.2;
+}
+
+.fui-auction__bid {
+  font-size: 9.5px;
+  color: var(--fui-ink-faint);
+}
+
+.fui-auction__buyout {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--fui-gold);
+}
+
+.fui-auction__ends {
+  font-size: 11px;
+  text-align: right;
+  color: var(--fui-ink-dim);
+}
+
+/* Under five minutes the clock is the story, so it takes the warning colour and
+   pulses rather than sitting quietly at the end of the row. */
+.fui-auction__row[data-soon='true'] .fui-auction__ends {
+  color: var(--fui-warn);
+  font-weight: 700;
+  animation: fui-pulse 1.6s var(--fui-ease) infinite;
+}
+
+.fui-auction__actions {
+  display: flex;
+  gap: 4px;
+  justify-content: flex-end;
+}
+
+.fui-auction__act {
+  padding: 4px 9px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--fui-radius);
+  background: rgba(0, 0, 0, 0.4);
+  color: var(--fui-ink-dim);
+  font-family: inherit;
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color var(--fui-t-fast) var(--fui-ease);
+}
+
+.fui-auction__act:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.34);
+  color: var(--fui-ink);
+}
+
+.fui-auction__act--buy {
+  border-color: color-mix(in srgb, var(--fui-gold) 55%, transparent);
+  color: var(--fui-gold);
+}
+
+.fui-auction__act--bid {
+  border-color: color-mix(in srgb, var(--fui-info) 45%, transparent);
+  color: var(--fui-info);
+}
+
+.fui-auction__act--cancel {
+  border-color: color-mix(in srgb, var(--fui-danger) 50%, transparent);
+  color: var(--fui-danger);
+}
+
+.fui-auction__act:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+
+.fui-auction__empty {
+  padding: 22px;
+  font-size: 12px;
+  text-align: center;
+  color: var(--fui-ink-faint);
+}

@@ -1,0 +1,160 @@
+/* ElementWheel — the affinity ring, with the arrows actually on it. */
+
+.fui-wheel {
+  --fui-wheel-size: 260px;
+  --fui-wheel-ink: var(--fui-accent);
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--fui-gap-sm);
+  font-family: var(--fui-font-ui);
+}
+
+.fui-wheel__title {
+  font-size: 13px;
+}
+
+.fui-wheel__ring {
+  position: relative;
+  width: var(--fui-wheel-size);
+  height: var(--fui-wheel-size);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0.05), transparent 62%),
+    rgba(0, 0, 0, 0.42);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07), inset 0 0 30px rgba(0, 0, 0, 0.6);
+}
+
+/* `preserveAspectRatio` is left alone: the ring is square, so the 0–100 box maps
+   onto it one-to-one and the arrows stay straight. */
+.fui-wheel__arrows {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.fui-wheel__arrow {
+  stroke: var(--fui-wheel-ink);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+  opacity: 0.75;
+  transition: opacity var(--fui-t) var(--fui-ease);
+}
+
+.fui-wheel__head {
+  fill: var(--fui-wheel-ink);
+  opacity: 0.85;
+  transition: opacity var(--fui-t) var(--fui-ease);
+}
+
+/* Selecting an element should make its own matchups legible, so the arrows it
+   owns brighten, the ones aimed at it stay readable, and the rest recede. */
+.fui-wheel__arrow.is-from,
+.fui-wheel__head.is-from {
+  opacity: 1;
+  filter: drop-shadow(0 0 4px var(--fui-wheel-ink));
+}
+
+.fui-wheel__arrow.is-to,
+.fui-wheel__head.is-to { opacity: 0.85; }
+
+.fui-wheel__arrow.is-dim,
+.fui-wheel__head.is-dim { opacity: 0.16; }
+
+.fui-wheel__node {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 0;
+  border: 0;
+  background: none;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  transition: transform var(--fui-t) var(--fui-ease);
+}
+
+.fui-wheel__node:hover { transform: translate(-50%, -50%) scale(1.07); }
+
+.fui-wheel__face {
+  position: relative;
+  width: calc(var(--fui-wheel-size) * 0.2);
+  height: calc(var(--fui-wheel-size) * 0.2);
+  border: 2px solid var(--fui-wheel-ink);
+  border-radius: 50%;
+  background: center / cover no-repeat rgba(0, 0, 0, 0.6);
+  box-shadow:
+    0 0 10px color-mix(in srgb, var(--fui-wheel-ink) 45%, transparent),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.7);
+}
+
+.fui-wheel__face.is-glyph {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.fui-wheel__face.is-glyph::after {
+  content: '';
+  position: absolute;
+  inset: 22%;
+  background-color: var(--fui-wheel-ink);
+  mask: var(--fui-glyph-src, var(--fui-mask-none)) center / contain no-repeat;
+  -webkit-mask: var(--fui-glyph-src, var(--fui-mask-none)) center / contain no-repeat;
+}
+
+.fui-wheel__node.is-on .fui-wheel__face {
+  box-shadow:
+    0 0 0 3px rgba(255, 255, 255, 0.85),
+    0 0 18px color-mix(in srgb, var(--fui-wheel-ink) 75%, transparent);
+}
+
+.fui-wheel__node.is-target .fui-wheel__face {
+  animation: fui-pulse 1.4s var(--fui-ease) infinite;
+  box-shadow:
+    0 0 0 3px var(--fui-danger),
+    0 0 18px color-mix(in srgb, var(--fui-danger) 65%, transparent);
+}
+
+.fui-wheel__label {
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fui-ink-dim);
+  text-shadow: 0 1px 3px #000;
+}
+
+.fui-wheel__node.is-on .fui-wheel__label {
+  color: var(--fui-ink);
+  font-weight: 700;
+}
+
+.fui-wheel__count {
+  position: absolute;
+  right: -2px;
+  top: -2px;
+  min-width: 16px;
+  padding: 0 3px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.88);
+  box-shadow: 0 0 0 1px var(--fui-wheel-ink);
+  font-size: 9px;
+  font-weight: 700;
+  text-align: center;
+  color: var(--fui-ink);
+}
+
+.fui-wheel__verdict {
+  /* A little wider than the ring: the verdict is a sentence, and clamping it to
+     the wheel's own width breaks it mid-clause. */
+  max-width: calc(var(--fui-wheel-size) * 1.25);
+  font-size: 11.5px;
+  line-height: 1.4;
+  text-align: center;
+  color: var(--fui-ink-dim);
+}
+
+.fui-wheel__verdict[data-result='strong'] { color: var(--fui-success); }
+.fui-wheel__verdict[data-result='weak'] { color: var(--fui-danger); }

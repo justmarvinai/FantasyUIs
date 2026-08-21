@@ -75,7 +75,7 @@ export const SYSTEMS: CatalogEntry[] = [
     description:
       '`QuestLog` tracks what you already took; this is where you take it from. The slot limit is enforced in the component, so a full board turns every Accept into a labelled "Board full" rather than letting the click fail on the server. Each contract is pinned to the surface with a paper pin — the detail that makes the grid read as a noticeboard instead of a list of cards.',
     tags: ['quest', 'bounty', 'board', 'contract', 'noticeboard', 'daily', 'task', 'hub', 'reroll'],
-    related: ['QuestLog', 'QuestTracker', 'MissionCard', 'EventBanner'],
+    related: ['QuestLog', 'QuestTracker', 'DailyRewards', 'EventBanner'],
     demos: [
       {
         title: 'A bounty board with two of three slots taken',
@@ -120,7 +120,7 @@ export const SYSTEMS: CatalogEntry[] = [
     description:
       'Waypoints are given absolute bearings and the component works out where they fall relative to where the player is looking, normalising into −180…180 so a marker behind you leaves the strip cleanly rather than wrapping across it. A marker past the edge pins to it and grows an arrow instead of vanishing — that is how a player knows to keep turning. Both variants share one render path; the dial ignores the horizontal placement and rotates by `--fui-compass-at` instead.',
     tags: ['compass', 'heading', 'bearing', 'waypoint', 'navigation', 'hud', 'open world', 'direction'],
-    related: ['Minimap', 'WorldMap', 'QuestTracker', 'HudBar'],
+    related: ['Minimap', 'WorldMap', 'QuestTracker', 'HUD'],
     demos: [
       {
         title: 'Heading strip with waypoints',
@@ -169,7 +169,7 @@ export const SYSTEMS: CatalogEntry[] = [
     description:
       'A taunting enemy is called out rather than silently redirecting the attack, because "my click did something else" is the worst thing a battle UI can do: `effectiveTarget()` returns where the hit will actually land while the selection stays where the player put it. Dead or untargetable units refuse the click instead of quietly accepting it.',
     tags: ['target', 'enemy', 'selection', 'battle', 'turn based', 'taunt', 'aggro', 'combat', 'lineup'],
-    related: ['EnemyBar', 'BattleHud', 'ThreatMeter', 'SkillBar'],
+    related: ['BossHealthBar', 'HUD', 'ThreatMeter', 'ActionBar'],
     demos: [
       {
         title: 'Four enemies, one taunting',
@@ -207,7 +207,7 @@ export const SYSTEMS: CatalogEntry[] = [
     description:
       'Percentages run against the *leader*, not the total, because the only number that matters is how close you are to the one holding the boss. A tank at the top is normal and stays calm; anyone else near the top gets the warning colour. Feed it the whole list every tick — `setEntries()` re-sorts and repaints, so callers never track row order.',
     tags: ['threat', 'aggro', 'raid', 'tank', 'boss', 'meter', 'combat', 'mmo', 'pull'],
-    related: ['PartyFrame', 'BattleHud', 'DamageMeter', 'TargetSelector'],
+    related: ['PartyFrame', 'HUD', 'DamageMeter', 'TargetSelector'],
     demos: [
       {
         title: 'A raid group, one DPS about to pull',
@@ -236,7 +236,7 @@ export const SYSTEMS: CatalogEntry[] = [
     description:
       'Distinct from `RankUpPanel`, which spends fodder to raise a champion you already own — here the reward is a *new* unit and every slot carries its own requirement. The commit button reports how many slots are still missing rather than simply greying out, because "why can’t I press this" is the question that panel always has to answer.',
     tags: ['fusion', 'summon', 'recipe', 'craft', 'combine', 'gacha', 'event', 'guaranteed', 'merge'],
-    related: ['RankUpPanel', 'SummonBanner', 'ChampionCard', 'AscensionPanel'],
+    related: ['RankUpPanel', 'BannerCarousel', 'ChampionCard', 'SummonResult'],
     demos: [
       {
         title: 'A four-piece fusion, half filled',
@@ -274,7 +274,7 @@ export const SYSTEMS: CatalogEntry[] = [
     description:
       '`gain()` carries points over into the next level rather than clamping, so one large award can push through several levels and still fire an event for each. The heart beats faster as the level nears full, which is the only animation on the component and the only one it needs.',
     tags: ['bond', 'affection', 'friendship', 'trust', 'loyalty', 'relationship', 'gacha', 'reward track'],
-    related: ['ChampionCard', 'MasteryTree', 'BattlePass', 'AscensionPanel'],
+    related: ['ChampionCard', 'MasteryGrid', 'RewardTrack', 'RankUpPanel'],
     demos: [
       {
         title: 'Bond 4, mid-level',
@@ -398,7 +398,7 @@ export const SYSTEMS: CatalogEntry[] = [
     description:
       'State is derived from the ping unless you force it, so the common case is one `setPing()` per heartbeat and nothing else. The four bars light in proportion to connection quality — a shape players already read without a legend — and each bar’s opacity is a `clamp()` on the strength, so there is no per-bar branching in script.',
     tags: ['connection', 'ping', 'latency', 'network', 'offline', 'reconnect', 'status', 'signal', 'lag'],
-    related: ['Toast', 'Banner', 'LoadingScreen', 'HudBar'],
+    related: ['ToastStack', 'Banner', 'LoadingScreen', 'HUD'],
     demos: [
       {
         title: 'Every state, side by side',
@@ -442,7 +442,7 @@ export const SYSTEMS: CatalogEntry[] = [
     description:
       '`DialogueBox` is the full conversation panel; this is one line, in the world. The typewriter runs on a single interval that clears itself on completion and on `destroy()`, and clicking the bubble calls `skip()` to finish the line at once — which is what a click during a bark should do. Pass `at` to pin it over a unit in viewport coordinates; leave it off and the bubble flows inline.',
     tags: ['speech', 'bubble', 'bark', 'dialogue', 'taunt', 'callout', 'typewriter', 'chat', 'npc'],
-    related: ['DialogueBox', 'Tooltip', 'TutorialTip', 'Toast'],
+    related: ['DialogueBox', 'Tooltip', 'TutorialTip', 'ToastStack'],
     demos: [
       {
         title: 'A boss taunt, typed out',
@@ -482,7 +482,7 @@ export const SYSTEMS: CatalogEntry[] = [
     description:
       '`MainMenu` is what you see *after* this — the gate is the screen that has to hold a queue and a broken region gracefully. A full or offline server cannot be selected and the button reports why rather than going quietly dead, which is the state that matters most on launch day. `extra` takes any nodes, so a name field or a terms checkbox slots in above the button without a variant.',
     tags: ['title', 'launch', 'login', 'server', 'realm', 'select', 'splash', 'gate', 'start'],
-    related: ['MainMenu', 'LoadingScreen', 'StorySlide', 'SettingsPanel'],
+    related: ['MainMenu', 'LoadingScreen', 'StorySlide', 'SettingsScreen'],
     demos: [
       {
         title: 'A gate with four realms',

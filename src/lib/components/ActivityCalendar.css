@@ -1,0 +1,87 @@
+/* ActivityCalendar — one cell per day, shaded by how much happened. */
+
+.fui-cal {
+  --fui-cal-size: 13px;
+  --fui-cal-rows: 7;
+  --fui-cal-ink: var(--fui-accent);
+  display: inline-flex;
+  flex-direction: column;
+  gap: 6px;
+  font-family: var(--fui-font-ui);
+}
+
+.fui-cal__title {
+  font-size: 10px;
+}
+
+.fui-cal__body {
+  display: flex;
+  gap: 5px;
+}
+
+.fui-cal__rowlabels,
+.fui-cal__grid {
+  display: grid;
+  grid-template-rows: repeat(var(--fui-cal-rows), var(--fui-cal-size));
+  gap: 3px;
+}
+
+/* Column-first flow is what makes each column a week running downward, which is
+   the reading order every activity grid uses. */
+.fui-cal__grid {
+  grid-auto-flow: column;
+  grid-auto-columns: var(--fui-cal-size);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.fui-cal__grid::-webkit-scrollbar { display: none; }
+
+.fui-cal__rowlabel {
+  display: flex;
+  align-items: center;
+  font-size: 8.5px;
+  line-height: 1;
+  color: var(--fui-ink-faint);
+}
+
+.fui-cal__cell {
+  width: var(--fui-cal-size);
+  height: var(--fui-cal-size);
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--fui-cal-ink) var(--fui-cal-mix, 0%), rgba(255, 255, 255, 0.06));
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.45);
+}
+
+.fui-cal__cell[data-level='0'] { --fui-cal-mix: 0%; }
+.fui-cal__cell[data-level='1'] { --fui-cal-mix: 26%; }
+.fui-cal__cell[data-level='2'] { --fui-cal-mix: 48%; }
+.fui-cal__cell[data-level='3'] { --fui-cal-mix: 72%; }
+.fui-cal__cell[data-level='4'] { --fui-cal-mix: 100%; }
+
+/* A day that has not happened is a hole in the grid, not a miss. */
+.fui-cal__cell[data-level='future'] {
+  background: none;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+}
+
+.fui-cal__cell.is-marked {
+  box-shadow: inset 0 0 0 1px var(--fui-gold), 0 0 6px color-mix(in srgb, var(--fui-gold) 55%, transparent);
+}
+
+.fui-cal__key {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.fui-cal__key-label {
+  padding: 0 3px;
+  font-size: 9px;
+  color: var(--fui-ink-faint);
+}
+
+.fui-cal__summary {
+  font-size: 10.5px;
+  color: var(--fui-ink-dim);
+}
