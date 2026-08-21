@@ -90,6 +90,9 @@ for (const file of files) {
   // how a misspelt class name surfaces, which is why it is reported at all.
   for (const c of emitted) {
     if (SHARED.has(c) || styled.has(c)) continue;
+    // `fui-x__act--${action}` leaves the stub `fui-x__act--` once the hole is
+    // stripped; the real modifiers are spelled out in the stylesheet.
+    if (c.endsWith('-') && [...styled].some((s) => s.startsWith(c))) continue;
     note(name, `emits class "${c}" that nothing styles (hook, or a typo)`);
   }
   for (const c of styled) {

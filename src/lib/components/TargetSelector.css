@@ -1,0 +1,177 @@
+/* TargetSelector — the enemy line-up a turn-based fight targets through. */
+
+.fui-targets {
+  --fui-target-size: 62px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.fui-targets__label {
+  font-size: 10px;
+}
+
+.fui-targets__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--fui-gap-sm);
+}
+
+.fui-targets__unit {
+  --fui-target-ink: var(--fui-danger);
+  --fui-target-hp: 1;
+  --fui-target-shield: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  width: var(--fui-target-size);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.fui-targets__unit:disabled { cursor: not-allowed; }
+
+.fui-targets__frame {
+  position: relative;
+  width: var(--fui-target-size);
+  height: var(--fui-target-size);
+  /* The theme's round icon frame, tinted per unit rather than shipped in
+     several colours. */
+  border: 2px solid var(--fui-target-ink);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.7);
+  overflow: hidden;
+  transition: box-shadow var(--fui-t) var(--fui-ease), transform var(--fui-t-fast) var(--fui-ease);
+}
+
+.fui-targets__art {
+  position: absolute;
+  inset: 0;
+  background: center / cover no-repeat;
+}
+
+.fui-targets__unit.is-elite .fui-targets__frame {
+  border-width: 3px;
+  border-color: var(--fui-rarity-legendary);
+  box-shadow:
+    inset 0 0 12px rgba(0, 0, 0, 0.7),
+    0 0 12px color-mix(in srgb, var(--fui-rarity-legendary) 55%, transparent);
+}
+
+.fui-targets__unit:not(:disabled):hover .fui-targets__frame {
+  transform: scale(1.06);
+}
+
+.fui-targets__unit.is-dead {
+  opacity: 0.4;
+}
+
+.fui-targets__unit.is-dead .fui-targets__art {
+  filter: grayscale(1) brightness(0.5);
+}
+
+/* The reticle is four corner brackets drawn with one element's borders and a
+   conic mask, so a selected target reads instantly at any size. */
+.fui-targets__reticle {
+  position: absolute;
+  inset: -5px;
+  border: 2px solid var(--fui-gold);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--fui-gold);
+  animation: fui-pulse 1.6s var(--fui-ease) infinite;
+  pointer-events: none;
+}
+
+.fui-targets__unit.is-target .fui-targets__frame {
+  box-shadow:
+    inset 0 0 12px rgba(0, 0, 0, 0.7),
+    0 0 14px color-mix(in srgb, var(--fui-gold) 60%, transparent);
+}
+
+/* A taunt is called out, never silent — "my click went somewhere else" is the
+   worst thing a battle UI can do. */
+.fui-targets__taunt {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 1px 0;
+  background: rgba(192, 57, 43, 0.9);
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-align: center;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.fui-targets__effects {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  display: flex;
+  gap: 2px;
+}
+
+.fui-targets__effect {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background-color: var(--fui-ink);
+  mask: var(--fui-glyph-src) center / 76% no-repeat, linear-gradient(#000, #000);
+  -webkit-mask: var(--fui-glyph-src) center / 76% no-repeat, linear-gradient(#000, #000);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+  filter: drop-shadow(0 1px 2px #000);
+}
+
+.fui-targets__bar {
+  position: relative;
+  width: 100%;
+  height: 5px;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+}
+
+.fui-targets__hp {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: calc(var(--fui-target-hp) * 100%);
+  background: linear-gradient(180deg, #6fd77e, var(--fui-health));
+  transition: width var(--fui-t) var(--fui-ease);
+}
+
+.fui-targets__shield {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(var(--fui-target-hp) * 100%);
+  width: calc(var(--fui-target-shield) * 100%);
+  background: repeating-linear-gradient(
+    -45deg,
+    rgba(255, 255, 255, 0.75) 0 2px,
+    rgba(180, 220, 255, 0.5) 2px 4px
+  );
+}
+
+.fui-targets__name {
+  font-size: 9.5px;
+  line-height: 1.2;
+  text-align: center;
+  color: var(--fui-ink-dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.fui-targets__unit.is-target .fui-targets__name {
+  color: var(--fui-gold-soft);
+}

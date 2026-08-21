@@ -1,0 +1,202 @@
+/* SpeechBubble — one line of dialogue, in the world. */
+
+.fui-bubble {
+  --fui-bubble-w: 260px;
+  --fui-bubble-bg: rgba(18, 17, 22, 0.96);
+  --fui-bubble-ink: var(--fui-ink);
+  --fui-bubble-edge: rgba(255, 255, 255, 0.2);
+  position: relative;
+  display: inline-block;
+  max-width: var(--fui-bubble-w);
+  animation: fui-rise var(--fui-t) var(--fui-ease);
+  cursor: default;
+}
+
+/* Pinned over a unit: fixed to the viewport and centred above the point, which
+   is where a bark belongs relative to whoever said it. */
+.fui-bubble.is-pinned {
+  position: fixed;
+  z-index: 700;
+  transform: translate(-50%, -100%);
+}
+
+.fui-bubble__body {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--fui-gap-sm);
+  padding: 8px 12px;
+  border: 1px solid var(--fui-bubble-edge);
+  border-radius: 10px;
+  background: var(--fui-bubble-bg);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
+}
+
+.fui-bubble__art {
+  width: 30px;
+  height: 30px;
+  flex: none;
+  border-radius: 50%;
+  border: 1px solid var(--fui-bubble-edge);
+  background: rgba(0, 0, 0, 0.45) center / cover no-repeat;
+}
+
+.fui-bubble__stack {
+  min-width: 0;
+}
+
+.fui-bubble__speaker {
+  display: block;
+  font-family: var(--fui-font-display);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fui-bubble-ink);
+  opacity: 0.75;
+}
+
+.fui-bubble__text {
+  font-family: var(--fui-font-body);
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--fui-bubble-ink);
+  /* A typewriter that reflows on every character is unreadable; reserving the
+     line box stops the bubble jittering as it fills. */
+  min-height: 1.45em;
+}
+
+/* The tail is a rotated square tucked under the body, so it inherits the same
+   border and background and needs no second colour to maintain. */
+.fui-bubble__tail {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border: 1px solid var(--fui-bubble-edge);
+  background: var(--fui-bubble-bg);
+  transform: rotate(45deg);
+}
+
+.fui-bubble[data-tail='bottom'] .fui-bubble__tail {
+  left: 50%;
+  bottom: -7px;
+  margin-left: -6px;
+  border-top: 0;
+  border-left: 0;
+}
+
+.fui-bubble[data-tail='top'] .fui-bubble__tail {
+  left: 50%;
+  top: -7px;
+  margin-left: -6px;
+  border-bottom: 0;
+  border-right: 0;
+}
+
+.fui-bubble[data-tail='left'] .fui-bubble__tail {
+  top: 50%;
+  left: -7px;
+  margin-top: -6px;
+  border-top: 0;
+  border-right: 0;
+}
+
+.fui-bubble[data-tail='right'] .fui-bubble__tail {
+  top: 50%;
+  right: -7px;
+  margin-top: -6px;
+  border-bottom: 0;
+  border-left: 0;
+}
+
+.fui-bubble[data-tail='none'] .fui-bubble__tail {
+  display: none;
+}
+
+/* The tail hangs outside the box. A pinned bubble floats over the world and can
+   afford that; one sitting in a normal flow has to pay for the room, or it
+   collides with the next element or is clipped by an ancestor's overflow. */
+.fui-bubble:not(.is-pinned)[data-tail='bottom'] { margin-bottom: 8px; }
+.fui-bubble:not(.is-pinned)[data-tail='top'] { margin-top: 8px; }
+.fui-bubble:not(.is-pinned)[data-tail='left'] { margin-left: 8px; }
+.fui-bubble:not(.is-pinned)[data-tail='right'] { margin-right: 8px; }
+.fui-bubble:not(.is-pinned)[data-tone='think'] { margin-bottom: 28px; }
+
+/* ── tones ────────────────────────────────────────────────────────────────── */
+.fui-bubble[data-tone='shout'] {
+  --fui-bubble-bg: rgba(46, 12, 10, 0.96);
+  --fui-bubble-edge: var(--fui-danger);
+  --fui-bubble-ink: #ffd9d2;
+}
+
+.fui-bubble[data-tone='shout'] .fui-bubble__text {
+  font-family: var(--fui-font-display);
+  font-size: 14px;
+  letter-spacing: 0.03em;
+}
+
+.fui-bubble[data-tone='whisper'] {
+  --fui-bubble-bg: rgba(14, 14, 18, 0.82);
+  --fui-bubble-ink: var(--fui-ink-dim);
+}
+
+.fui-bubble[data-tone='whisper'] .fui-bubble__text {
+  font-style: italic;
+  font-size: 12.5px;
+}
+
+.fui-bubble[data-tone='system'] {
+  --fui-bubble-bg: rgba(12, 22, 30, 0.96);
+  --fui-bubble-edge: var(--fui-info);
+  --fui-bubble-ink: #cfe6f5;
+}
+
+/* A thought bubble loses its tail for two trailing puffs instead. */
+.fui-bubble[data-tone='think'] .fui-bubble__body {
+  border-radius: 18px;
+}
+
+.fui-bubble[data-tone='think'] .fui-bubble__tail {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  transform: none;
+  border: 1px solid var(--fui-bubble-edge);
+  /* The trail of thought always drops from the bottom, whatever `tail` says —
+     without resetting `top` a top-tailed bubble grows a bubble at each end. */
+  top: auto;
+  left: 50%;
+  bottom: -12px;
+  margin-left: -12px;
+}
+
+.fui-bubble[data-tone='think'] .fui-bubble__body::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -22px;
+  width: 6px;
+  height: 6px;
+  margin-left: -2px;
+  border: 1px solid var(--fui-bubble-edge);
+  border-radius: 50%;
+  background: var(--fui-bubble-bg);
+}
+
+/* Two exits, because a pinned bubble carries a centring transform that a plain
+   inline one does not — animating the wrong one would teleport it on dismiss. */
+.fui-bubble.is-leaving {
+  animation: fui-bubble-out 280ms var(--fui-ease) forwards;
+}
+
+.fui-bubble.is-pinned.is-leaving {
+  animation: fui-bubble-out-pinned 280ms var(--fui-ease) forwards;
+}
+
+@keyframes fui-bubble-out {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to { opacity: 0; transform: translateY(-8px) scale(0.94); }
+}
+
+@keyframes fui-bubble-out-pinned {
+  from { opacity: 1; transform: translate(-50%, -100%) scale(1); }
+  to { opacity: 0; transform: translate(-50%, -110%) scale(0.94); }
+}

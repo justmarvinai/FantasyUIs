@@ -1,0 +1,199 @@
+/* FusionPanel — several specific champions consumed for a guaranteed one. */
+
+.fui-fusion {
+  --fui-fusion-size: 66px;
+  --fui-fusion-rarity: var(--fui-rarity-legendary);
+  display: flex;
+  flex-direction: column;
+  gap: var(--fui-gap-sm);
+  width: 320px;
+  padding: var(--fui-gap);
+  border: 1px solid color-mix(in srgb, var(--fui-fusion-rarity) 45%, rgba(0, 0, 0, 0.6));
+  border-radius: var(--fui-radius);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--fui-fusion-rarity) 14%, transparent),
+    rgba(0, 0, 0, 0.44)
+  );
+}
+
+.fui-fusion[data-rarity='epic'] { --fui-fusion-rarity: var(--fui-rarity-epic); }
+.fui-fusion[data-rarity='rare'] { --fui-fusion-rarity: var(--fui-rarity-rare); }
+.fui-fusion[data-rarity='mythic'] { --fui-fusion-rarity: var(--fui-rarity-mythic); }
+
+.fui-fusion__title {
+  font-size: 13px;
+  color: var(--fui-ink-dim);
+}
+
+.fui-fusion__result {
+  display: flex;
+  align-items: center;
+  gap: var(--fui-gap);
+}
+
+.fui-fusion__result-art {
+  width: 80px;
+  height: 80px;
+  flex: none;
+  border: 2px solid var(--fui-fusion-rarity);
+  border-radius: var(--fui-radius);
+  background: rgba(0, 0, 0, 0.5) center / cover no-repeat;
+  box-shadow: 0 0 18px color-mix(in srgb, var(--fui-fusion-rarity) 55%, transparent);
+  animation: fui-glow 3s var(--fui-ease) infinite;
+}
+
+.fui-fusion__result-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fui-fusion__result-name {
+  font-size: 17px;
+  color: color-mix(in srgb, var(--fui-fusion-rarity) 55%, var(--fui-ink));
+}
+
+.fui-fusion__stars {
+  font-size: 13px;
+  letter-spacing: -1px;
+  color: var(--fui-gold);
+}
+
+.fui-fusion__result-note {
+  font-size: 11.5px;
+  color: var(--fui-ink-faint);
+}
+
+.fui-fusion__ends {
+  font-size: 11px;
+  color: var(--fui-warn);
+}
+
+/* The arrow points from the recipe up to the reward, so the direction of the
+   trade is never ambiguous. */
+.fui-fusion__arrow {
+  align-self: center;
+  font-size: 13px;
+  color: color-mix(in srgb, var(--fui-fusion-rarity) 60%, transparent);
+}
+
+.fui-fusion__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--fui-fusion-size), 1fr));
+  gap: var(--fui-gap-sm);
+}
+
+.fui-fusion__slot {
+  --fui-fusion-ink: rgba(255, 255, 255, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.fui-fusion__slot-art {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  border: 2px solid var(--fui-fusion-ink);
+  border-radius: var(--fui-radius);
+  background: rgba(0, 0, 0, 0.5) center / cover no-repeat;
+  box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.65);
+  transition: border-color var(--fui-t-fast) var(--fui-ease), transform var(--fui-t-fast) var(--fui-ease);
+}
+
+.fui-fusion__slot[data-rarity='rare'] .fui-fusion__slot-art { border-color: var(--fui-rarity-rare); }
+.fui-fusion__slot[data-rarity='epic'] .fui-fusion__slot-art { border-color: var(--fui-rarity-epic); }
+.fui-fusion__slot[data-rarity='legendary'] .fui-fusion__slot-art { border-color: var(--fui-rarity-legendary); }
+.fui-fusion__slot[data-rarity='uncommon'] .fui-fusion__slot-art { border-color: var(--fui-rarity-uncommon); }
+
+.fui-fusion__slot:hover .fui-fusion__slot-art {
+  transform: scale(1.04);
+  border-color: var(--fui-gold-soft);
+}
+
+.fui-fusion__slot.is-empty .fui-fusion__slot-art {
+  border-style: dashed;
+}
+
+/* An empty slot can still show what belongs there, ghosted. */
+.fui-fusion__slot-art.is-hint {
+  opacity: 0.28;
+  filter: grayscale(1);
+}
+
+.fui-fusion__slot.is-empty .fui-fusion__slot-art::after {
+  content: '+';
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.fui-fusion__slot-stars {
+  font-size: 9px;
+  letter-spacing: -1px;
+  color: var(--fui-gold);
+}
+
+.fui-fusion__req {
+  font-size: 9.5px;
+  line-height: 1.2;
+  text-align: center;
+  color: var(--fui-ink-faint);
+}
+
+.fui-fusion__progress {
+  font-size: 11.5px;
+  text-align: center;
+  color: var(--fui-ink-dim);
+}
+
+.fui-fusion__progress.is-ready {
+  color: var(--fui-success);
+}
+
+.fui-fusion__warning {
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--fui-warn);
+}
+
+.fui-fusion__action {
+  padding: 11px;
+  border: 1px solid var(--fui-fusion-rarity);
+  border-radius: var(--fui-radius);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--fui-fusion-rarity) 40%, transparent),
+    color-mix(in srgb, var(--fui-fusion-rarity) 14%, transparent)
+  );
+  color: var(--fui-ink);
+  font-family: var(--fui-font-display);
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: filter var(--fui-t-fast) var(--fui-ease);
+}
+
+.fui-fusion__action:hover:not(:disabled) {
+  filter: brightness(1.3);
+}
+
+.fui-fusion__action:disabled {
+  border-color: rgba(255, 255, 255, 0.14);
+  background: rgba(0, 0, 0, 0.35);
+  color: var(--fui-ink-faint);
+  cursor: not-allowed;
+}

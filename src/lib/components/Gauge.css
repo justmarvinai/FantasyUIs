@@ -1,0 +1,175 @@
+/* Gauge — an arc dial that says where a value falls, not just how far along. */
+
+.fui-gauge {
+  --fui-gauge-size: 140px;
+  --fui-gauge-sweep: 200deg;
+  --fui-gauge-start: -100deg;
+  --fui-gauge-p: 0;
+  --fui-gauge-ink: var(--fui-accent);
+  --fui-gauge-band: var(--fui-gauge-ink);
+  --fui-gauge-thick: calc(var(--fui-gauge-size) * 0.11);
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  width: var(--fui-gauge-size);
+}
+
+.fui-gauge[data-kind='health'] { --fui-gauge-ink: var(--fui-health); }
+.fui-gauge[data-kind='mana'] { --fui-gauge-ink: var(--fui-mana); }
+.fui-gauge[data-kind='stamina'] { --fui-gauge-ink: var(--fui-stamina); }
+.fui-gauge[data-kind='xp'] { --fui-gauge-ink: var(--fui-xp); }
+.fui-gauge[data-kind='rage'] { --fui-gauge-ink: var(--fui-rage); }
+
+/* The dial is a full square rotated so the sweep is centred, then cropped to
+   the part of the circle the sweep actually covers. The crop height comes from
+   the component, which is the only place that can work out where a sweep of
+   arbitrary width bottoms out. */
+.fui-gauge__dial {
+  position: relative;
+  width: var(--fui-gauge-size);
+  height: var(--fui-gauge-dial-h, calc(var(--fui-gauge-size) * 0.62));
+  overflow: hidden;
+}
+
+.fui-gauge__track,
+.fui-gauge__fill,
+.fui-gauge__bands {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--fui-gauge-size);
+  height: var(--fui-gauge-size);
+  border-radius: 50%;
+  /* Rotating back by half the sweep puts its midpoint at twelve o'clock. */
+  transform: rotate(var(--fui-gauge-start));
+  mask: radial-gradient(
+    circle closest-side,
+    transparent calc(100% - var(--fui-gauge-thick) - 0.5px),
+    #000 calc(100% - var(--fui-gauge-thick))
+  );
+  -webkit-mask: radial-gradient(
+    circle closest-side,
+    transparent calc(100% - var(--fui-gauge-thick) - 0.5px),
+    #000 calc(100% - var(--fui-gauge-thick))
+  );
+}
+
+.fui-gauge__track {
+  background: conic-gradient(
+    from 0deg,
+    rgba(0, 0, 0, 0.55) 0deg var(--fui-gauge-sweep),
+    transparent var(--fui-gauge-sweep)
+  );
+}
+
+.fui-gauge__bands {
+  background: var(--fui-gauge-bands);
+  opacity: 0.42;
+}
+
+.fui-gauge__fill {
+  background: conic-gradient(
+    from 0deg,
+    var(--fui-gauge-ink) 0deg calc(var(--fui-gauge-p) * var(--fui-gauge-sweep)),
+    transparent calc(var(--fui-gauge-p) * var(--fui-gauge-sweep))
+  );
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--fui-gauge-ink) 55%, transparent));
+  transition: background var(--fui-t) linear;
+}
+
+.fui-gauge__ticks {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--fui-gauge-size) * 0.5);
+  width: 0;
+  height: 0;
+}
+
+/* Each tick is placed by rotating a zero-size origin at the dial's centre, so
+   no trigonometry is needed in JavaScript. */
+.fui-gauge__tick {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 2px;
+  height: calc(var(--fui-gauge-size) * 0.5);
+  margin-left: -1px;
+  transform-origin: 50% 100%;
+  transform: rotate(calc(var(--fui-gauge-start) + var(--fui-gauge-at)));
+}
+
+.fui-gauge__tick::before {
+  content: '';
+  position: absolute;
+  top: calc(var(--fui-gauge-thick) * -0.1);
+  left: 0;
+  width: 2px;
+  height: calc(var(--fui-gauge-thick) * 0.55);
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.fui-gauge__needle {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--fui-gauge-size) * 0.5);
+  width: 3px;
+  height: calc(var(--fui-gauge-size) * 0.42);
+  margin-top: calc(var(--fui-gauge-size) * -0.42);
+  margin-left: -1.5px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, var(--fui-gauge-band), rgba(255, 255, 255, 0.2));
+  box-shadow: 0 0 6px color-mix(in srgb, var(--fui-gauge-band) 60%, transparent);
+  transform-origin: 50% 100%;
+  transform: rotate(calc(var(--fui-gauge-start) + var(--fui-gauge-p) * var(--fui-gauge-sweep)));
+  transition: transform var(--fui-t-slow) var(--fui-ease);
+}
+
+.fui-gauge__cap {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--fui-gauge-size) * 0.5);
+  width: calc(var(--fui-gauge-size) * 0.22);
+  height: calc(var(--fui-gauge-size) * 0.22);
+  margin-top: calc(var(--fui-gauge-size) * -0.11);
+  margin-left: calc(var(--fui-gauge-size) * -0.11);
+  background: center / contain no-repeat;
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.7));
+}
+
+/* Tuck the readout up under the arc. A wide sweep bottoms out well below the
+   hub and leaves a deep well to sit in; a shallow one has no well at all, so
+   the pull-up is capped at a hair under the dial. */
+.fui-gauge__readout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: min(
+    calc(var(--fui-gauge-size) * -0.06),
+    calc(var(--fui-gauge-size) * 0.52 - var(--fui-gauge-dial-h, calc(var(--fui-gauge-size) * 0.62)))
+  );
+  line-height: 1.1;
+  text-align: center;
+}
+
+.fui-gauge--capped .fui-gauge__readout {
+  margin-top: calc(
+    var(--fui-gauge-size) * 0.64 - var(--fui-gauge-dial-h, calc(var(--fui-gauge-size) * 0.62))
+  );
+}
+
+.fui-gauge__label {
+  font-family: var(--fui-font-display);
+  font-size: calc(var(--fui-gauge-size) * 0.2);
+  font-weight: 700;
+  color: var(--fui-ink);
+  text-shadow: 0 2px 4px var(--fui-ink-shadow);
+}
+
+.fui-gauge__sub {
+  font-size: calc(var(--fui-gauge-size) * 0.095);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fui-ink-dim);
+  white-space: nowrap;
+}

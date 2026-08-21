@@ -1,0 +1,291 @@
+/* PlayerProfile — the card behind a player's name. */
+
+.fui-profile {
+  --fui-profile-xp: 0;
+  --fui-profile-ink: var(--fui-accent);
+  display: flex;
+  flex-direction: column;
+  gap: var(--fui-gap-sm);
+  width: 340px;
+  max-width: 100%;
+  padding-bottom: var(--fui-gap);
+  border: 1px solid rgba(0, 0, 0, 0.55);
+  border-radius: var(--fui-radius);
+  background: rgba(0, 0, 0, 0.36);
+  overflow: hidden;
+}
+
+.fui-profile__head {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  gap: var(--fui-gap-sm);
+  min-height: 96px;
+  padding: var(--fui-gap);
+}
+
+.fui-profile__banner {
+  position: absolute;
+  inset: 0;
+  background: var(--fui-profile-banner, none) center / cover no-repeat;
+  opacity: 0.5;
+}
+
+.fui-profile__banner::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(6, 6, 10, 0.4), rgba(6, 6, 10, 0.92));
+}
+
+.fui-profile__avatar {
+  position: relative;
+  z-index: 1;
+  flex: none;
+}
+
+/* The XP ring wraps the avatar, so level progress lives on the identity rather
+   than in a bar somewhere else on the card. */
+.fui-profile__face {
+  display: block;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55) center / cover no-repeat;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.65);
+}
+
+.fui-profile__avatar::before {
+  content: '';
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  background: conic-gradient(
+    var(--fui-xp) calc(var(--fui-profile-xp) * 360deg),
+    rgba(255, 255, 255, 0.14) calc(var(--fui-profile-xp) * 360deg)
+  );
+  mask: radial-gradient(circle closest-side, transparent calc(100% - 3px), #000 calc(100% - 2.5px));
+  -webkit-mask: radial-gradient(circle closest-side, transparent calc(100% - 3px), #000 calc(100% - 2.5px));
+}
+
+.fui-profile__level {
+  position: absolute;
+  right: -4px;
+  bottom: -3px;
+  min-width: 22px;
+  padding: 0 4px;
+  border: 1px solid rgba(0, 0, 0, 0.7);
+  border-radius: 10px;
+  background: var(--fui-slate, #22222a);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
+  color: var(--fui-gold-soft);
+}
+
+.fui-profile__ident {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.fui-profile__line {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.fui-profile__name {
+  font-size: 17px;
+  color: var(--fui-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fui-profile__clan {
+  font-family: var(--fui-font-mono);
+  font-size: 11px;
+  color: var(--fui-accent-soft);
+}
+
+.fui-profile__rank {
+  font-size: 11px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--fui-gold-soft);
+}
+
+.fui-profile__id {
+  font-size: 10px;
+  color: var(--fui-ink-faint);
+}
+
+.fui-profile__add {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  padding: 5px 12px;
+  border: 1px solid var(--fui-accent);
+  border-radius: var(--fui-radius);
+  background: color-mix(in srgb, var(--fui-accent) 22%, transparent);
+  color: var(--fui-accent-soft);
+  font-family: var(--fui-font-ui);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background var(--fui-t-fast) var(--fui-ease);
+}
+
+.fui-profile__add:hover {
+  background: color-mix(in srgb, var(--fui-accent) 44%, transparent);
+}
+
+.fui-profile__motto {
+  padding: 0 var(--fui-gap);
+  font-family: var(--fui-font-body);
+  font-size: 12.5px;
+  font-style: italic;
+  line-height: 1.45;
+  color: var(--fui-ink-dim);
+}
+
+.fui-profile__stats {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 1px;
+  margin: 0 var(--fui-gap);
+  border-radius: var(--fui-radius);
+  background: rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
+
+.fui-profile__stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  padding: 7px 4px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.fui-profile__stat-value {
+  font-family: var(--fui-font-display);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--fui-ink);
+}
+
+.fui-profile__stat-label {
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fui-ink-faint);
+}
+
+.fui-profile__showcase,
+.fui-profile__badges {
+  display: flex;
+  flex-direction: column;
+}
+
+.fui-profile__section {
+  display: block;
+  margin: 0 var(--fui-gap) 4px;
+  font-size: 10px;
+}
+
+.fui-profile__units {
+  display: flex;
+  gap: 6px;
+  padding: 0 var(--fui-gap);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.fui-profile__units::-webkit-scrollbar { display: none; }
+
+/* The showcase is the one place a player composes how they are seen, so it gets
+   the biggest, best-framed cells on the card. */
+.fui-profile__unit {
+  --fui-profile-rarity: var(--fui-rarity-common);
+  position: relative;
+  width: 62px;
+  height: 62px;
+  flex: none;
+  border: 2px solid var(--fui-profile-rarity);
+  border-radius: var(--fui-radius);
+  background: rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--fui-profile-rarity) 35%, transparent);
+  overflow: hidden;
+}
+
+.fui-profile__unit[data-rarity='uncommon'] { --fui-profile-rarity: var(--fui-rarity-uncommon); }
+.fui-profile__unit[data-rarity='rare'] { --fui-profile-rarity: var(--fui-rarity-rare); }
+.fui-profile__unit[data-rarity='epic'] { --fui-profile-rarity: var(--fui-rarity-epic); }
+.fui-profile__unit[data-rarity='legendary'] { --fui-profile-rarity: var(--fui-rarity-legendary); }
+.fui-profile__unit[data-rarity='mythic'] { --fui-profile-rarity: var(--fui-rarity-mythic); }
+
+.fui-profile__unit-art {
+  position: absolute;
+  inset: 0;
+  background: center / cover no-repeat;
+}
+
+.fui-profile__unit-level {
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  padding: 0 3px;
+  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.82);
+  font-size: 9.5px;
+  font-weight: 700;
+  color: var(--fui-ink);
+}
+
+.fui-profile__unit-stars {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.85));
+  font-size: 8px;
+  letter-spacing: -1px;
+  text-align: center;
+  color: var(--fui-gold);
+}
+
+.fui-profile__badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 0 var(--fui-gap);
+}
+
+.fui-profile__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px;
+  border: 1px solid color-mix(in srgb, var(--fui-profile-ink) 50%, transparent);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--fui-profile-ink) 16%, transparent);
+  font-size: 10.5px;
+  color: color-mix(in srgb, var(--fui-profile-ink) 55%, var(--fui-ink));
+}
+
+.fui-profile__badge-glyph {
+  width: 12px;
+  height: 12px;
+  background-color: currentColor;
+  mask: var(--fui-glyph-src) center / contain no-repeat;
+  -webkit-mask: var(--fui-glyph-src) center / contain no-repeat;
+}

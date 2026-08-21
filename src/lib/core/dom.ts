@@ -98,7 +98,10 @@ export function abbreviate(n: number): string {
   if (abs >= 1e9) return (n / 1e9).toFixed(2).replace(/\.?0+$/, '') + 'B';
   if (abs >= 1e6) return (n / 1e6).toFixed(2).replace(/\.?0+$/, '') + 'M';
   if (abs >= 1e4) return (n / 1e3).toFixed(1).replace(/\.?0+$/, '') + 'K';
-  return String(n);
+  // Below the abbreviation threshold a whole number still wants its thousands
+  // separator — "1842" reads as an id, "1,842" reads as a count. Fractions are
+  // left alone, because rounding a crit rate to lose the decimal is worse.
+  return Number.isInteger(n) ? commas(n) : String(n);
 }
 
 /** Group thousands: 1234567 → "1,234,567". */

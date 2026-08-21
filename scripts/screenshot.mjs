@@ -65,6 +65,30 @@ const SHOTS = [
   { name: 'health-pips', url: '/components/HealthPips.html', height: 1100 },
   { name: 'loot-roll', url: '/components/LootRoll.html', height: 1400 },
   { name: 'patch-notes', url: '/components/PatchNotes.html', height: 1300 },
+  { name: 'scroll', url: '/components/Scroll.html', height: 1300 },
+  { name: 'ornate-header', url: '/components/OrnateHeader.html', height: 1400 },
+  { name: 'scene-backdrop', url: '/components/SceneBackdrop.html', height: 1400 },
+  { name: 'checklist', url: '/components/CheckList.html', height: 1200 },
+  { name: 'range-slider', url: '/components/RangeSlider.html', height: 1200 },
+  { name: 'keybind', url: '/components/KeybindInput.html', height: 1200 },
+  { name: 'sparkline', url: '/components/Sparkline.html', height: 1300 },
+  { name: 'gauge', url: '/components/Gauge.html', height: 1200 },
+  { name: 'gauge-dark', url: '/components/Gauge.html', height: 1200, theme: 'dark-ember' },
+  { name: 'timeline', url: '/components/Timeline.html', height: 1400 },
+  { name: 'trade-panel', url: '/components/TradePanel.html', height: 1400 },
+  { name: 'quest-board', url: '/components/QuestBoard.html', height: 1500 },
+  { name: 'compass', url: '/components/Compass.html', height: 1200 },
+  { name: 'target-selector', url: '/components/TargetSelector.html', height: 1200 },
+  { name: 'threat-meter', url: '/components/ThreatMeter.html', height: 1200 },
+  { name: 'fusion-panel', url: '/components/FusionPanel.html', height: 1400 },
+  { name: 'bond-meter', url: '/components/BondMeter.html', height: 1300 },
+  { name: 'clan-roster', url: '/components/ClanRoster.html', height: 1400 },
+  { name: 'player-profile', url: '/components/PlayerProfile.html', height: 1400 },
+  { name: 'connection', url: '/components/ConnectionStatus.html', height: 1200 },
+  { name: 'speech-bubble', url: '/components/SpeechBubble.html', height: 1200 },
+  { name: 'title-gate', url: '/components/TitleGate.html', height: 1600 },
+  { name: 'title-gate-dark', url: '/components/TitleGate.html', height: 1600, theme: 'dark-ember' },
+  { name: 'story-slide', url: '/components/StorySlide.html', height: 1500 },
 ];
 
 async function main() {
@@ -86,9 +110,9 @@ async function main() {
   for (const shot of SHOTS) {
     await page.setViewportSize({ width: 1400, height: shot.height ?? 1000 });
     await page.goto(BASE + shot.url, { waitUntil: 'networkidle', timeout: 60000 });
-    if (shot.theme) {
-      await page.click(`[data-theme-set="${shot.theme}"]`);
-    }
+    // The site persists the chosen theme to localStorage, so a single dark shot
+    // would silently darken every shot after it. Set it explicitly every time.
+    await page.click(`[data-theme-set="${shot.theme ?? 'stone-vine'}"]`);
     await page.waitForTimeout(900);
     await page.screenshot({ path: path.join(OUT, `${shot.name}.png`) });
     console.log(`✓ ${shot.name}.png`);

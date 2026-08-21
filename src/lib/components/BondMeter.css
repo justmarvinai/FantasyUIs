@@ -1,0 +1,199 @@
+/* BondMeter — the affection track a collection game hangs extras off. */
+
+.fui-bond {
+  --fui-bond-ink: #e05a7a;
+  --fui-bond-p: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--fui-gap);
+  padding: var(--fui-gap-sm) var(--fui-gap);
+  border: 1px solid color-mix(in srgb, var(--fui-bond-ink) 38%, rgba(0, 0, 0, 0.6));
+  border-radius: var(--fui-radius);
+  background: linear-gradient(
+    100deg,
+    color-mix(in srgb, var(--fui-bond-ink) 14%, transparent),
+    rgba(0, 0, 0, 0.4) 60%
+  );
+}
+
+.fui-bond--compact {
+  gap: var(--fui-gap-sm);
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
+.fui-bond__who {
+  position: relative;
+  flex: none;
+}
+
+.fui-bond__art {
+  display: block;
+  width: 52px;
+  height: 52px;
+  border: 2px solid color-mix(in srgb, var(--fui-bond-ink) 55%, transparent);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5) center / cover no-repeat;
+}
+
+.fui-bond--compact .fui-bond__art {
+  width: 38px;
+  height: 38px;
+}
+
+/* The heart pips on the portrait rather than sitting in the row, so the bond
+   stays attached to the champion when the layout wraps. */
+.fui-bond__heart {
+  position: absolute;
+  right: -4px;
+  bottom: -2px;
+  width: 20px;
+  height: 20px;
+  background-color: var(--fui-bond-ink);
+  mask: var(--fui-bond-heart) center / contain no-repeat;
+  -webkit-mask: var(--fui-bond-heart) center / contain no-repeat;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.8));
+  /* Beats faster the closer the level is to full. */
+  animation: fui-bond-beat calc(2.4s - var(--fui-bond-p) * 1.2s) var(--fui-ease) infinite;
+}
+
+.fui-bond__main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fui-bond__head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--fui-gap-sm);
+}
+
+.fui-bond__name {
+  flex: 1;
+  font-family: var(--fui-font-display);
+  font-size: 13px;
+  letter-spacing: 0.03em;
+  color: var(--fui-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fui-bond__level {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: color-mix(in srgb, var(--fui-bond-ink) 60%, var(--fui-ink));
+}
+
+.fui-bond__track {
+  position: relative;
+  height: 14px;
+  border: 1px solid rgba(0, 0, 0, 0.6);
+  border-radius: 7px;
+  background: rgba(0, 0, 0, 0.5);
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.65);
+  overflow: hidden;
+}
+
+.fui-bond__fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 7px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--fui-bond-ink) 70%, white),
+    var(--fui-bond-ink)
+  );
+  transition: width var(--fui-t-slow) var(--fui-ease);
+}
+
+.fui-bond.is-max .fui-bond__fill {
+  background: linear-gradient(180deg, var(--fui-gold-soft), var(--fui-gold));
+  box-shadow: 0 0 10px var(--fui-gold);
+}
+
+.fui-bond__count {
+  position: relative;
+  display: block;
+  line-height: 12px;
+  font-size: 9.5px;
+  font-weight: 700;
+  text-align: center;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+}
+
+.fui-bond__rewards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+}
+
+.fui-bond__reward {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10.5px;
+  color: var(--fui-ink-faint);
+}
+
+.fui-bond__reward-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fui-bond__reward-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.fui-bond__reward[data-state='ready'] {
+  color: var(--fui-gold-soft);
+}
+
+.fui-bond__reward[data-state='ready'] .fui-bond__reward-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fui-bond__reward-dot {
+  background: var(--fui-gold);
+  box-shadow: 0 0 6px var(--fui-gold);
+  animation: fui-pulse 1.6s var(--fui-ease) infinite;
+}
+
+.fui-bond__reward[data-state='claimed'] {
+  color: var(--fui-success);
+}
+
+.fui-bond__reward[data-state='claimed'] .fui-bond__reward-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fui-bond__reward-dot {
+  background: var(--fui-success);
+}
+
+.fui-bond__hint {
+  font-size: 10.5px;
+  color: var(--fui-ink-faint);
+}
+
+@keyframes fui-bond-beat {
+  0%, 100% { transform: scale(1); }
+  12% { transform: scale(1.22); }
+  24% { transform: scale(1); }
+  36% { transform: scale(1.14); }
+}
