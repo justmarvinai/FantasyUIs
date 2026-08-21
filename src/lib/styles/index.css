@@ -113,6 +113,7 @@
 @import '../components/RangeSlider.css';
 @import '../components/RankUpPanel.css';
 @import '../components/RateTable.css';
+@import '../components/RegionAtlas.css';
 @import '../components/ReorderList.css';
 @import '../components/ResultScreen.css';
 @import '../components/RewardPopup.css';
@@ -139,6 +140,7 @@
 @import '../components/SpeechBubble.css';
 @import '../components/SpinWheel.css';
 @import '../components/StageSelect.css';
+@import '../components/StageTrail.css';
 @import '../components/StarRating.css';
 @import '../components/StatChip.css';
 @import '../components/StatRadar.css';

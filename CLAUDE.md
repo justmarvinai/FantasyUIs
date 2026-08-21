@@ -58,7 +58,7 @@ build me more components."* That workflow is:
 
 4. **Write a theme file** if the pack is a new visual style: copy
    `src/lib/styles/theme-stone-vine.css` and rebind every semantic slot. A theme
-   that fills in all the slots gets all 162 existing components for free.
+   that fills in all the slots gets all 164 existing components for free.
 
 5. **Build new components** for what the art newly makes possible, plus demos in
    `src/site/demos/`.

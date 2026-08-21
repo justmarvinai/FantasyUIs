@@ -2,7 +2,7 @@
 
 **A growing database of ready-to-use UI components for Fantasy & RPG web games.**
 
-162 components built from 494 art assets across 2 swappable themes, 2 icon
+164 components built from 494 art assets across 2 swappable themes, 2 icon
 collections and a tintable ornament set. Vanilla TypeScript and CSS — zero
 runtime dependencies, no framework, no build plugin. Drops into any Vite
 project, React or not, or straight over a Phaser canvas as a DOM layer.
@@ -15,17 +15,26 @@ project, React or not, or straight over a Phaser canvas as a DOM layer.
 
 | Group | Components |
 | --- | --- |
-| **Surfaces & Framing** | Panel, Frame, Divider, Banner, TintFrame, Carousel, Scroll, OrnateHeader, SceneBackdrop, **Ribbon**, **SceneTransition** |
-| **Controls** | Button, Tabs, Toggle, Slider, Select, TextInput, ContextMenu, SegmentedControl, NumberStepper, Accordion, ConfirmSlider, CheckList, RangeSlider, KeybindInput, RadialMenu, FilterBar, SortBar, SideNav, **Pagination**, **ReorderList**, **DyePicker** |
-| **Data display** | Icon, StatBar, Slot, Portrait, Tooltip, Badge, ProgressRing, StatChip, Sparkline, Gauge, Timeline, ItemCard, Glyph, CompareStats, StatRadar, HealthPips, **ShareBar**, **ActivityCalendar**, **ElementWheel** |
-| **Game widgets** | InventoryGrid, ActionBar, UnitFrame, PartyFrame, BuffBar, CastBar, DialogueBox, QuestLog, QuestTracker, ShopPanel, LootWindow, CraftingPanel, SkillTree, StatsPanel, Paperdoll, Minimap, CurrencyBar, Leaderboard, WorldMap, CodexEntry, AchievementList, PatchNotes, TradePanel, QuestBoard, Compass, **AuctionHouse**, **CraftingQueue**, **AutoBattleRules** |
-| **Combat & battle** | BossHealthBar, ShieldBar, WaveTracker, DamageMeter, BattleLog, ComboCounter, ArenaMatchup, MatchHistory, LootRoll, TargetSelector, ThreatMeter, **SkillCheck**, **DungeonMap** |
-| **Collection & live-ops** | PityCounter, BannerCarousel, TopBar, VipProgress, EventBanner, StreakMeter, StarRating, AffinityBadge, ChampionCard, SummonResult, TeamSlots, TurnMeter, EnergyBar, RewardTrack, DailyRewards, UpgradePanel, StageSelect, OfferCard, CountdownTimer, BottomNav, BattleControls, TierBadge, ChampionList, SkillCard, MasteryGrid, ArtifactCard, ArtifactSet, RankUpPanel, ShardCounter, PowerRating, FormationGrid, SocketPanel, CollectionProgress, FusionPanel, BondMeter, **SpinWheel**, **RateTable**, **IdleRewards** |
-| **Social & clan** | ClanCard, MailInbox, ChatPanel, FriendList, LeaderboardPodium, ClanRoster, PlayerProfile, **PartyFinder**, **WarBoard** |
-| **Feedback** | LoadingDots, EmptyState, TutorialTip, RewardPopup, Ticker, ConnectionStatus, SpeechBubble, **DamageVignette**, ToastStack, FloatingText, AchievementPopup |
-| **Screens & overlays** | Modal, TitleGate, StorySlide, **DeathScreen**, MainMenu, PauseMenu, SettingsScreen, CharacterSelect, LoadingScreen, ResultScreen, LevelUpModal, HUD |
+| **Surfaces & Framing** | Panel, Frame, Divider, Banner, TintFrame, Carousel, Scroll, OrnateHeader, SceneBackdrop, Ribbon, SceneTransition |
+| **Controls** | Button, Tabs, Toggle, Slider, Select, TextInput, ContextMenu, SegmentedControl, NumberStepper, Accordion, ConfirmSlider, CheckList, RangeSlider, KeybindInput, RadialMenu, FilterBar, SortBar, SideNav, Pagination, ReorderList, DyePicker |
+| **Data display** | Icon, StatBar, Slot, Portrait, Tooltip, Badge, ProgressRing, StatChip, Sparkline, Gauge, Timeline, ItemCard, Glyph, CompareStats, StatRadar, HealthPips, ShareBar, ActivityCalendar, ElementWheel |
+| **Game widgets** | InventoryGrid, ActionBar, UnitFrame, PartyFrame, BuffBar, CastBar, DialogueBox, QuestLog, QuestTracker, ShopPanel, LootWindow, CraftingPanel, SkillTree, StatsPanel, Paperdoll, Minimap, CurrencyBar, Leaderboard, WorldMap, CodexEntry, AchievementList, PatchNotes, TradePanel, QuestBoard, Compass, AuctionHouse, CraftingQueue, AutoBattleRules, **RegionAtlas** |
+| **Combat & battle** | BossHealthBar, ShieldBar, WaveTracker, DamageMeter, BattleLog, ComboCounter, ArenaMatchup, MatchHistory, LootRoll, TargetSelector, ThreatMeter, SkillCheck, DungeonMap |
+| **Collection & live-ops** | PityCounter, BannerCarousel, TopBar, VipProgress, EventBanner, StreakMeter, StarRating, AffinityBadge, ChampionCard, SummonResult, TeamSlots, TurnMeter, EnergyBar, RewardTrack, DailyRewards, UpgradePanel, StageSelect, OfferCard, CountdownTimer, BottomNav, BattleControls, TierBadge, ChampionList, SkillCard, MasteryGrid, ArtifactCard, ArtifactSet, RankUpPanel, ShardCounter, PowerRating, FormationGrid, SocketPanel, CollectionProgress, FusionPanel, BondMeter, SpinWheel, RateTable, IdleRewards, **StageTrail** |
+| **Social & clan** | ClanCard, MailInbox, ChatPanel, FriendList, LeaderboardPodium, ClanRoster, PlayerProfile, PartyFinder, WarBoard |
+| **Feedback** | LoadingDots, EmptyState, TutorialTip, RewardPopup, Ticker, ConnectionStatus, SpeechBubble, DamageVignette, ToastStack, FloatingText, AchievementPopup |
+| **Screens & overlays** | Modal, TitleGate, StorySlide, DeathScreen, MainMenu, PauseMenu, SettingsScreen, CharacterSelect, LoadingScreen, ResultScreen, LevelUpModal, HUD |
 
 Bold marks the newest additions.
+
+Some jobs get two components rather than one, because the same data wants a
+different shape at a different size. `StageSelect` is a row of numbered discs
+that drops into a panel; `StageTrail` is the same campaign as a full-screen path
+you scroll down, with chapters and milestone chests. `WorldMap` puts a chapter's
+nodes on painted art; `RegionAtlas` draws the world as territory you can pan and
+zoom, coloured by who holds it. Each pair speaks the same vocabulary — stages,
+stars, lock state, regions — so swapping one for the other is a layout decision,
+not a rewrite.
 
 These are not static skins. The inventory grid does real drag-and-drop and
 stacking, the action bar runs cooldown sweeps and greys out what you cannot
