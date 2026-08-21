@@ -11,6 +11,7 @@ import { CHROME } from './demos/chrome.ts';
 import { SYSTEMS } from './demos/systems.ts';
 import { STATION } from './demos/station.ts';
 import { ECONOMY } from './demos/economy.ts';
+import { ATLAS } from './demos/atlas.ts';
 
 /** Every documented component, in the order the gallery lists them. */
 export const CATALOG: CatalogEntry[] = [
@@ -25,6 +26,7 @@ export const CATALOG: CatalogEntry[] = [
   ...SYSTEMS,
   ...STATION,
   ...ECONOMY,
+  ...ATLAS,
   ...FEEDBACK,
   ...SCREENS,
 ];

@@ -111,6 +111,10 @@ const SHOTS = [
   { name: 'damage-vignette', url: '/components/DamageVignette.html', height: 1200 },
   { name: 'death-screen', url: '/components/DeathScreen.html', height: 1500 },
   { name: 'death-screen-dark', url: '/components/DeathScreen.html', height: 1500, theme: 'dark-ember' },
+  { name: 'stage-trail', url: '/components/StageTrail.html', height: 1600 },
+  { name: 'stage-trail-dark', url: '/components/StageTrail.html', height: 1600, theme: 'dark-ember' },
+  { name: 'region-atlas', url: '/components/RegionAtlas.html', height: 1600 },
+  { name: 'region-atlas-dark', url: '/components/RegionAtlas.html', height: 1600, theme: 'dark-ember' },
 ];
 
 async function main() {
