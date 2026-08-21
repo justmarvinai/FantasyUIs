@@ -647,7 +647,7 @@ export const COMBAT: CatalogEntry[] = [
     description:
       'Unread is a dot on the leading edge rather than a bold row, so it survives theming and stays legible over artwork. `remove()` takes a claimed message out without a rebuild, which is what the claim handler calls once the server confirms.',
     tags: ['mail', 'inbox', 'messages', 'compensation', 'gifts', 'claim', 'attachments'],
-    related: ['ChatPanel', 'RewardPopup', 'EmptyState', 'Toast'],
+    related: ['ChatPanel', 'RewardPopup', 'EmptyState', 'ToastStack'],
     demos: [
       {
         title: 'An inbox with attachments',

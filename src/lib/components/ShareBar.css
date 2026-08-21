@@ -1,0 +1,105 @@
+/* ShareBar — one bar split into parts that add up. */
+
+.fui-share {
+  --fui-share-h: 16px;
+  --fui-share-ink: var(--fui-accent);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-family: var(--fui-font-ui);
+}
+
+.fui-share__title {
+  font-size: 10px;
+}
+
+.fui-share__track {
+  display: flex;
+  height: var(--fui-share-h);
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.7);
+  border-radius: calc(var(--fui-share-h) / 2);
+  background:
+    repeating-linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.04) 0 4px,
+      transparent 4px 8px
+    ),
+    rgba(0, 0, 0, 0.55);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.7);
+}
+
+.fui-share__seg {
+  height: 100%;
+  flex: none;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--fui-share-ink) 88%, #fff 12%),
+    color-mix(in srgb, var(--fui-share-ink) 72%, #000 28%)
+  );
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  transition: width var(--fui-t-slow) var(--fui-ease);
+}
+
+/* Segments butt against each other, so the divider has to be drawn by one of
+   them — an inset shadow on the left edge of every slice but the first. */
+.fui-share__seg + .fui-share__seg {
+  box-shadow: inset 1px 0 0 rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.fui-share__seg.is-you {
+  background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--fui-share-ink) 96%, #fff 20%),
+      color-mix(in srgb, var(--fui-share-ink) 80%, #000 20%)
+    );
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.fui-share__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px 14px;
+}
+
+.fui-share__key {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--fui-ink-dim);
+}
+
+.fui-share__key.is-you .fui-share__key-label {
+  color: var(--fui-ink);
+  font-weight: 700;
+}
+
+.fui-share__key-dot {
+  width: 9px;
+  height: 9px;
+  flex: none;
+  border-radius: 2px;
+  background: var(--fui-share-ink);
+  box-shadow: 0 0 5px color-mix(in srgb, var(--fui-share-ink) 55%, transparent);
+}
+
+.fui-share__key-glyph {
+  width: 13px;
+  height: 13px;
+  flex: none;
+  background-color: var(--fui-share-ink);
+  mask: var(--fui-glyph-src, var(--fui-mask-none)) center / contain no-repeat;
+  -webkit-mask: var(--fui-glyph-src, var(--fui-mask-none)) center / contain no-repeat;
+}
+
+.fui-share__key-value {
+  color: var(--fui-ink-faint);
+}
+
+.fui-share__key-pct {
+  font-weight: 700;
+  color: var(--fui-ink);
+}

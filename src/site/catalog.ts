@@ -9,6 +9,8 @@ import { COMBAT } from './demos/combat.ts';
 import { WORLD } from './demos/world.ts';
 import { CHROME } from './demos/chrome.ts';
 import { SYSTEMS } from './demos/systems.ts';
+import { STATION } from './demos/station.ts';
+import { ECONOMY } from './demos/economy.ts';
 
 /** Every documented component, in the order the gallery lists them. */
 export const CATALOG: CatalogEntry[] = [
@@ -21,6 +23,8 @@ export const CATALOG: CatalogEntry[] = [
   ...ROSTER,
   ...WORLD,
   ...SYSTEMS,
+  ...STATION,
+  ...ECONOMY,
   ...FEEDBACK,
   ...SCREENS,
 ];

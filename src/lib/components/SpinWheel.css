@@ -1,0 +1,146 @@
+/* SpinWheel — the prize wheel. The odds live in script; this just turns. */
+
+.fui-spin {
+  --fui-spin-size: 260px;
+  --fui-spin-ms: 3600ms;
+  --fui-spin-dead: #3a3730;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--fui-gap-sm);
+  font-family: var(--fui-font-ui);
+}
+
+.fui-spin__stage {
+  position: relative;
+  width: var(--fui-spin-size);
+  height: var(--fui-spin-size);
+}
+
+.fui-spin__disc {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--fui-spin-wedges, conic-gradient(#444, #222));
+  box-shadow:
+    0 0 0 4px rgba(0, 0, 0, 0.7),
+    0 0 0 7px var(--fui-gold),
+    0 8px 24px rgba(0, 0, 0, 0.6),
+    inset 0 0 40px rgba(0, 0, 0, 0.5);
+  /* A long ease-out is the whole feel of a prize wheel: fast, then agonising. */
+  transition: transform var(--fui-spin-ms) cubic-bezier(0.16, 0.9, 0.2, 1);
+}
+
+/* Each label rides a full-height strip rotated into its slice, so no per-segment
+   trigonometry is needed. The strip carries the label out to the right radius;
+   the label then counter-rotates by the same angle to sit upright. */
+.fui-spin__seg {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 0;
+  height: 50%;
+  transform-origin: 50% 100%;
+  transform: rotate(var(--fui-spin-at, 0deg));
+}
+
+.fui-spin__seg-inner {
+  position: absolute;
+  left: calc(var(--fui-spin-size) * -0.15);
+  top: calc(var(--fui-spin-size) * 0.17);
+  display: flex;
+  width: calc(var(--fui-spin-size) * 0.3);
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  text-align: center;
+  transform: translateY(-50%) rotate(calc(-1 * var(--fui-spin-at, 0deg)));
+}
+
+.fui-spin__seg[data-taken='true'] .fui-spin__seg-inner {
+  opacity: 0.4;
+}
+
+.fui-spin__seg-art {
+  width: calc(var(--fui-spin-size) * 0.11);
+  height: calc(var(--fui-spin-size) * 0.11);
+  border-radius: var(--fui-radius);
+  background: center / contain no-repeat;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.8));
+}
+
+.fui-spin__seg-label {
+  font-size: calc(var(--fui-spin-size) * 0.04);
+  line-height: 1.1;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95);
+}
+
+.fui-spin__seg-odds {
+  font-size: calc(var(--fui-spin-size) * 0.034);
+  color: rgba(255, 255, 255, 0.7);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+}
+
+/* The pointer stays put while the wheel turns under it — the fixed reference a
+   player reads the result against. */
+.fui-spin__pointer {
+  position: absolute;
+  left: 50%;
+  top: -8px;
+  width: 20px;
+  height: 26px;
+  margin-left: -10px;
+  background: linear-gradient(180deg, var(--fui-gold-soft), var(--fui-gold));
+  clip-path: polygon(50% 100%, 0 0, 100% 0);
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.8));
+  z-index: 2;
+}
+
+.fui-spin__hub {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 15%;
+  height: 15%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle at 36% 32%, #6b6355, #2a271f);
+  box-shadow: 0 0 0 3px var(--fui-gold), 0 3px 8px rgba(0, 0, 0, 0.7);
+  z-index: 2;
+}
+
+.fui-spin__foot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.fui-spin__action {
+  padding: 8px 26px;
+  border: 1px solid var(--fui-gold);
+  border-radius: var(--fui-radius);
+  background: linear-gradient(180deg, rgba(217, 164, 65, 0.4), rgba(217, 164, 65, 0.12));
+  color: var(--fui-ink);
+  font-family: var(--fui-font-display);
+  font-size: 14px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.fui-spin__action:hover:not(:disabled) { filter: brightness(1.3); }
+
+.fui-spin__action:disabled {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: none;
+  color: var(--fui-ink-faint);
+  cursor: not-allowed;
+}
+
+.fui-spin__tally {
+  font-size: 10.5px;
+  color: var(--fui-ink-faint);
+}

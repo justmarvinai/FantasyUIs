@@ -1,0 +1,200 @@
+/* ReorderList — the priority list a player drags into the order they want. */
+
+.fui-reorder {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-family: var(--fui-font-ui);
+}
+
+.fui-reorder__title {
+  font-size: 10px;
+}
+
+.fui-reorder__list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fui-reorder__row {
+  --fui-reorder-ink: var(--fui-accent);
+  display: flex;
+  align-items: center;
+  gap: var(--fui-gap-sm);
+  padding: 6px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-left: 3px solid var(--fui-reorder-ink);
+  border-radius: var(--fui-radius);
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.32));
+  transition:
+    background var(--fui-t-fast) var(--fui-ease),
+    box-shadow var(--fui-t-fast) var(--fui-ease);
+}
+
+.fui-reorder__row:focus-visible {
+  outline: 2px solid var(--fui-accent);
+  outline-offset: 1px;
+}
+
+/* The dragged row rides above its neighbours and stops animating its own
+   position, or it would fight the transform the pointer is writing. */
+.fui-reorder__row.is-dragging {
+  position: relative;
+  z-index: 3;
+  border-color: var(--fui-reorder-ink);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
+  transition: none;
+  cursor: grabbing;
+}
+
+.fui-reorder__row.is-off {
+  opacity: 0.5;
+  border-left-color: var(--fui-ink-faint);
+}
+
+.fui-reorder__row.is-locked {
+  border-left-color: var(--fui-gold);
+  background: linear-gradient(90deg, rgba(217, 164, 65, 0.14), rgba(0, 0, 0, 0.32));
+}
+
+/* Six dots, drawn from one repeating gradient rather than six elements. */
+.fui-reorder__handle {
+  width: 10px;
+  height: 16px;
+  flex: none;
+  background-image: radial-gradient(circle, var(--fui-ink-faint) 1px, transparent 1.2px);
+  background-size: 5px 5px;
+  cursor: grab;
+  touch-action: none;
+}
+
+.fui-reorder__row.is-locked .fui-reorder__handle {
+  background-image: radial-gradient(circle, var(--fui-gold) 1px, transparent 1.2px);
+  cursor: default;
+}
+
+.fui-reorder__index {
+  min-width: 15px;
+  flex: none;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: right;
+  color: var(--fui-ink-faint);
+}
+
+.fui-reorder__art {
+  width: 26px;
+  height: 26px;
+  flex: none;
+  border-radius: var(--fui-radius);
+  background: center / cover no-repeat rgba(0, 0, 0, 0.5);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.6);
+}
+
+.fui-reorder__glyph {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  background-color: var(--fui-reorder-ink);
+  mask: var(--fui-glyph-src, var(--fui-mask-none)) center / contain no-repeat;
+  -webkit-mask: var(--fui-glyph-src, var(--fui-mask-none)) center / contain no-repeat;
+}
+
+.fui-reorder__text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  flex: 1;
+}
+
+.fui-reorder__label {
+  font-size: 12.5px;
+  color: var(--fui-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fui-reorder__note {
+  font-size: 10px;
+  color: var(--fui-ink-faint);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fui-reorder__toggle {
+  position: relative;
+  width: 30px;
+  height: 16px;
+  flex: none;
+  border: 1px solid rgba(0, 0, 0, 0.6);
+  border-radius: 9px;
+  background: rgba(0, 0, 0, 0.55);
+  cursor: pointer;
+  transition: background var(--fui-t-fast) var(--fui-ease);
+}
+
+.fui-reorder__toggle[aria-checked='true'] {
+  background: color-mix(in srgb, var(--fui-reorder-ink) 55%, transparent);
+}
+
+.fui-reorder__toggle::after {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 1px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--fui-ink);
+  transition: transform var(--fui-t-fast) var(--fui-ease);
+}
+
+.fui-reorder__toggle[aria-checked='true']::after {
+  transform: translateX(14px);
+}
+
+.fui-reorder__nudges {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: none;
+}
+
+.fui-reorder__nudge {
+  width: 18px;
+  height: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+}
+
+.fui-reorder__nudge::before {
+  content: '';
+  display: block;
+  width: 7px;
+  height: 5px;
+  margin: 0 auto;
+  background: var(--fui-ink-dim);
+}
+
+.fui-reorder__nudge--up::before { clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+.fui-reorder__nudge--down::before { clip-path: polygon(0 0, 100% 0, 50% 100%); }
+
+.fui-reorder__nudge:hover:not(:disabled)::before { background: var(--fui-ink); }
+
+.fui-reorder__nudge:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.fui-reorder__empty {
+  padding: 14px;
+  font-size: 11.5px;
+  text-align: center;
+  color: var(--fui-ink-faint);
+}

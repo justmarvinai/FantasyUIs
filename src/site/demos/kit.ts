@@ -522,7 +522,7 @@ export const KIT: CatalogEntry[] = [
     description:
       'The spotlight is a single `box-shadow` spread over the whole viewport with a hole where the anchor is, so it costs one element and no canvas. The dimmed area stays click-through, which means a tutorial can never trap the player.',
     tags: ['tutorial', 'onboarding', 'coach mark', 'tooltip', 'spotlight', 'ftue', 'hint'],
-    related: ['Tooltip', 'Modal', 'TutorialTip'],
+    related: ['Tooltip', 'Modal'],
     demos: [
       {
         title: 'Step two of four',

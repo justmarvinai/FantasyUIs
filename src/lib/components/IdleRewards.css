@@ -1,0 +1,191 @@
+/* IdleRewards — the haul that piled up while the player was away. */
+
+.fui-idle {
+  --fui-idle-rarity: var(--fui-rarity-common);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--fui-gap-sm);
+  padding: var(--fui-gap);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--fui-radius);
+  background: rgba(0, 0, 0, 0.45);
+  font-family: var(--fui-font-ui);
+  text-align: center;
+}
+
+.fui-idle::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: var(--fui-idle-art, none) center / cover no-repeat;
+  opacity: 0.35;
+  mask: linear-gradient(180deg, #000, transparent 78%);
+  -webkit-mask: linear-gradient(180deg, #000, transparent 78%);
+}
+
+.fui-idle > * {
+  position: relative;
+  z-index: 1;
+}
+
+.fui-idle__head {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.fui-idle__title {
+  font-size: 15px;
+}
+
+.fui-idle__source {
+  font-size: 10.5px;
+  color: var(--fui-ink-faint);
+}
+
+.fui-idle__clock {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.fui-idle__away {
+  font-family: var(--fui-font-display);
+  font-size: 26px;
+  line-height: 1;
+  color: var(--fui-gold);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+}
+
+.fui-idle__clock[data-capped='true'] .fui-idle__away {
+  color: var(--fui-warn);
+}
+
+.fui-idle__away-label {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fui-ink-faint);
+}
+
+/* A cap that is not stated is a cap that reads as a bug. */
+.fui-idle__lost {
+  padding: 4px 8px;
+  border-radius: var(--fui-radius);
+  background: color-mix(in srgb, var(--fui-warn) 14%, transparent);
+  font-size: 10.5px;
+  color: var(--fui-warn);
+}
+
+.fui-idle__grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--fui-gap-sm);
+  justify-content: center;
+}
+
+.fui-idle__reward {
+  display: flex;
+  width: 74px;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 7px 4px;
+  border: 1px solid var(--fui-idle-rarity);
+  border-radius: var(--fui-radius);
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.fui-idle__reward[data-rarity='uncommon'] { --fui-idle-rarity: var(--fui-rarity-uncommon); }
+.fui-idle__reward[data-rarity='rare'] { --fui-idle-rarity: var(--fui-rarity-rare); }
+.fui-idle__reward[data-rarity='epic'] { --fui-idle-rarity: var(--fui-rarity-epic); }
+.fui-idle__reward[data-rarity='legendary'] { --fui-idle-rarity: var(--fui-rarity-legendary); }
+.fui-idle__reward[data-rarity='mythic'] { --fui-idle-rarity: var(--fui-rarity-mythic); }
+
+.fui-idle__art {
+  width: 30px;
+  height: 30px;
+  background: center / contain no-repeat;
+}
+
+.fui-idle__art.is-glyph {
+  background: none;
+  background-color: var(--fui-gold);
+  mask: var(--fui-glyph-src, var(--fui-mask-none)) center / contain no-repeat;
+  -webkit-mask: var(--fui-glyph-src, var(--fui-mask-none)) center / contain no-repeat;
+}
+
+.fui-idle__amount {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--fui-ink);
+}
+
+/* Taking the multiplier has to visibly change the number, or the player has no
+   way to tell it worked. */
+.fui-idle[data-boosted='true'] .fui-idle__amount {
+  color: var(--fui-gold);
+  animation: fui-pop 400ms var(--fui-ease) backwards;
+}
+
+.fui-idle__label {
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--fui-ink-faint);
+}
+
+.fui-idle__actions {
+  display: flex;
+  gap: var(--fui-gap-sm);
+}
+
+.fui-idle__boost,
+.fui-idle__collect {
+  flex: 1;
+  padding: 8px;
+  border-radius: var(--fui-radius);
+  font-family: inherit;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.fui-idle__boost {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  border: 1px solid var(--fui-xp);
+  background: color-mix(in srgb, var(--fui-xp) 20%, transparent);
+  color: var(--fui-ink);
+}
+
+.fui-idle__boost-label {
+  font-weight: 700;
+}
+
+.fui-idle__boost-cost {
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: var(--fui-ink-faint);
+}
+
+.fui-idle__boost:disabled {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: none;
+  color: var(--fui-ink-faint);
+  cursor: not-allowed;
+}
+
+.fui-idle__collect {
+  border: 1px solid var(--fui-gold);
+  background: linear-gradient(180deg, rgba(217, 164, 65, 0.38), rgba(217, 164, 65, 0.12));
+  color: var(--fui-ink);
+}
+
+.fui-idle__collect:hover { filter: brightness(1.28); }

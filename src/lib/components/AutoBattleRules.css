@@ -1,0 +1,222 @@
+/* AutoBattleRules — "if this, then that", written as one sentence per row. */
+
+.fui-rules {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-family: var(--fui-font-ui);
+}
+
+.fui-rules__head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--fui-gap-sm);
+}
+
+.fui-rules__title {
+  flex: 1;
+  font-size: 14px;
+}
+
+.fui-rules__count {
+  font-size: 11px;
+  color: var(--fui-ink-faint);
+}
+
+.fui-rules__hint {
+  font-size: 10.5px;
+  line-height: 1.4;
+  color: var(--fui-ink-faint);
+}
+
+.fui-rules__list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fui-rules__row {
+  display: flex;
+  align-items: center;
+  gap: var(--fui-gap-sm);
+  padding: 6px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--fui-radius);
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.3));
+}
+
+.fui-rules__row.is-off {
+  opacity: 0.48;
+}
+
+.fui-rules__index {
+  min-width: 14px;
+  flex: none;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: right;
+  color: var(--fui-ink-faint);
+}
+
+/* The row is a sentence first and a form second, so it wraps like prose rather
+   than collapsing into a grid of unlabelled boxes. */
+.fui-rules__sentence {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+}
+
+.fui-rules__word {
+  font-size: 11.5px;
+  color: var(--fui-ink-faint);
+}
+
+.fui-rules__unit {
+  margin-left: -3px;
+  font-size: 11.5px;
+  color: var(--fui-ink-dim);
+}
+
+.fui-rules__select,
+.fui-rules__value {
+  padding: 3px 6px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--fui-radius);
+  background: rgba(0, 0, 0, 0.5);
+  color: var(--fui-ink);
+  font-family: inherit;
+  font-size: 11.5px;
+}
+
+.fui-rules__select {
+  max-width: 190px;
+}
+
+.fui-rules__select:focus-visible,
+.fui-rules__value:focus-visible {
+  outline: 2px solid var(--fui-accent);
+  outline-offset: 0;
+}
+
+.fui-rules__value {
+  width: 46px;
+  text-align: center;
+}
+
+.fui-rules__art {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  border-radius: var(--fui-radius);
+  background: center / cover no-repeat rgba(0, 0, 0, 0.5);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.6);
+}
+
+.fui-rules__tools {
+  display: flex;
+  gap: 2px;
+  flex: none;
+}
+
+.fui-rules__tool {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+}
+
+.fui-rules__tool::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 8px;
+  height: 8px;
+  background: var(--fui-ink-dim);
+}
+
+.fui-rules__tool:hover:not(:disabled)::before { background: var(--fui-ink); }
+
+.fui-rules__tool:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.fui-rules__tool--up::before { clip-path: polygon(50% 12%, 100% 88%, 0 88%); }
+.fui-rules__tool--down::before { clip-path: polygon(0 12%, 100% 12%, 50% 88%); }
+
+/* An eye for "switched off", a cross for "gone" — the two need to be
+   distinguishable at 8px, so one is round and one is angular. The pupil is what
+   makes the lens read as an eye rather than as a dot. */
+.fui-rules__tool--off::before {
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  clip-path: none;
+}
+
+.fui-rules__tool--off::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.85);
+}
+
+/* A struck-through eye on a rule that is already off, so the button says which
+   way it will go rather than only what it is. */
+.fui-rules__row.is-off .fui-rules__tool--off::after {
+  width: 11px;
+  height: 2px;
+  border-radius: 0;
+  background: var(--fui-danger);
+  transform: rotate(-40deg);
+}
+
+.fui-rules__tool--del::before {
+  clip-path: polygon(
+    16% 0, 50% 34%, 84% 0, 100% 16%, 66% 50%, 100% 84%,
+    84% 100%, 50% 66%, 16% 100%, 0 84%, 34% 50%, 0 16%
+  );
+}
+
+.fui-rules__tool--del:hover::before { background: var(--fui-danger); }
+
+.fui-rules__add {
+  padding: 7px;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  border-radius: var(--fui-radius);
+  background: none;
+  color: var(--fui-ink-dim);
+  font-family: inherit;
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color var(--fui-t-fast) var(--fui-ease);
+}
+
+.fui-rules__add:hover:not(:disabled) {
+  border-color: var(--fui-accent);
+  color: var(--fui-ink);
+}
+
+.fui-rules__add:disabled {
+  border-style: solid;
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.fui-rules__empty {
+  padding: 16px;
+  font-size: 11.5px;
+  text-align: center;
+  color: var(--fui-ink-faint);
+}

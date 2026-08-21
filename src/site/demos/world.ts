@@ -411,7 +411,7 @@ export const WORLD: CatalogEntry[] = [
     description:
       'The one piece of a game’s UI that exists purely to make other players’ luck visible. The scroll is a CSS animation over a duplicated track translated by exactly one run’s width, so it loops with no seam, needs no timer, and stops dead under `prefers-reduced-motion`.',
     tags: ['ticker', 'marquee', 'announcements', 'scroll', 'news', 'broadcast', 'world chat'],
-    related: ['ChatPanel', 'Toast', 'EventBanner', 'SummonResult'],
+    related: ['ChatPanel', 'ToastStack', 'EventBanner', 'SummonResult'],
     demos: [
       {
         title: 'World announcements',
