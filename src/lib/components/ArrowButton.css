@@ -1,0 +1,110 @@
+/* ArrowButton — carousel arrows, page turns, chapter steps. */
+
+.fui-arrowbtn {
+  --fui-arrow-size: 40px;
+  --fui-arrow-ink: var(--fui-btn-ink, #eaf6f3);
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-width: var(--fui-arrow-size);
+  height: var(--fui-arrow-size);
+  padding: 0 var(--fui-gap-sm, 7px);
+  border: 0;
+  background: none;
+  color: var(--fui-arrow-ink);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  transition:
+    filter var(--fui-t-fast, 120ms) var(--fui-ease, ease-out),
+    transform var(--fui-t-fast, 120ms) var(--fui-ease, ease-out);
+}
+
+.fui-arrowbtn__plate {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.fui-arrowbtn[data-shape='round'] .fui-arrowbtn__plate {
+  border: 1px solid color-mix(in srgb, var(--fui-arrow-ink) 32%, transparent);
+  border-radius: calc(var(--fui-arrow-size) / 2);
+  background:
+    radial-gradient(circle at 50% 25%, color-mix(in srgb, var(--fui-arrow-ink) 14%, transparent), transparent 70%),
+    color-mix(in srgb, var(--fui-panel-ink, #14100c) 76%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, #fff 12%, transparent);
+}
+
+.fui-arrowbtn[data-shape='square'] .fui-arrowbtn__plate {
+  border-style: solid;
+  border-color: transparent;
+  border-width: var(--fui-btn-sq-bw);
+  border-image-source: var(--fui-btn-sq-src);
+  border-image-slice: var(--fui-btn-sq-sl) fill;
+  border-image-repeat: stretch;
+}
+
+.fui-arrowbtn[data-shape='bare'] .fui-arrowbtn__plate { display: none; }
+
+/* A CSS chevron, not a glyph asset: sharp at any size, takes the button's
+   colour, and can never be the thing still loading when a player wants to page.
+   Two borders on a rotated square, which stays crisp where a triangle would
+   alias on its hypotenuse. */
+.fui-arrowbtn__chevron {
+  position: relative;
+  z-index: 1;
+  width: calc(var(--fui-arrow-size) * 0.26);
+  height: calc(var(--fui-arrow-size) * 0.26);
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  pointer-events: none;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.6));
+}
+
+.fui-arrowbtn[data-direction='right'] .fui-arrowbtn__chevron { transform: translateX(-15%) rotate(-45deg); }
+.fui-arrowbtn[data-direction='left'] .fui-arrowbtn__chevron { transform: translateX(15%) rotate(135deg); }
+.fui-arrowbtn[data-direction='down'] .fui-arrowbtn__chevron { transform: translateY(-15%) rotate(45deg); }
+.fui-arrowbtn[data-direction='up'] .fui-arrowbtn__chevron { transform: translateY(15%) rotate(-135deg); }
+
+.fui-arrowbtn__label {
+  position: relative;
+  z-index: 1;
+  font-family: var(--fui-font-ui, system-ui, sans-serif);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* With a label the plate has to grow past the arrow's square. */
+.fui-arrowbtn:has(.fui-arrowbtn__label) { padding: 0 14px; }
+
+/* The chevron leads on a back button and trails on a forward one — "‹ Chapter 3"
+   and "Chapter 5 ›" — which is the convention every player already reads. */
+.fui-arrowbtn[data-direction='right'] .fui-arrowbtn__chevron,
+.fui-arrowbtn[data-direction='down'] .fui-arrowbtn__chevron { order: 2; }
+
+.fui-arrowbtn:hover:not(:disabled) { filter: brightness(1.25); }
+.fui-arrowbtn:active:not(:disabled) { transform: scale(0.93); }
+
+.fui-arrowbtn:disabled {
+  cursor: default;
+  opacity: 0.32;
+}
+
+.fui-arrowbtn:focus-visible {
+  outline: 2px solid var(--fui-accent, #d8c9a6);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fui-arrowbtn { transition: none; }
+  .fui-arrowbtn:active:not(:disabled) { transform: none; }
+}

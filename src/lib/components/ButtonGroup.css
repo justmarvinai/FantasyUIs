@@ -1,0 +1,63 @@
+/* ButtonGroup — puts buttons in a row and makes them behave as one control. */
+
+.fui-btngroup {
+  display: flex;
+  align-items: stretch;
+}
+
+.fui-btngroup[data-axis='y'] { flex-direction: column; }
+.fui-btngroup[data-wrap='on'] { flex-wrap: wrap; }
+
+.fui-btngroup[data-gap='joined'] { gap: 0; }
+.fui-btngroup[data-gap='tight'] { gap: var(--fui-gap-sm, 8px); }
+.fui-btngroup[data-gap='loose'] { gap: var(--fui-gap, 16px); }
+
+.fui-btngroup[data-align='start'] { justify-content: flex-start; }
+.fui-btngroup[data-align='center'] { justify-content: center; }
+.fui-btngroup[data-align='end'] { justify-content: flex-end; }
+.fui-btngroup[data-align='between'] { justify-content: space-between; }
+
+/* `fill` is what a dialog footer wants: every button shares the width evenly,
+   so a two-word label and a six-word one still make a symmetrical pair. The
+   basis is zero so the labels cannot bias the split. */
+.fui-btngroup[data-fill='on'] > * {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* Joined squares off the inner corners so the row reads as one bar. The art is
+   9-sliced, so this only reshapes the plate's own rounding — the ornament keeps
+   its painted ends at both extremes of the group. */
+.fui-btngroup[data-gap='joined'][data-axis='x'] > *:not(:last-child) {
+  margin-right: -1px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.fui-btngroup[data-gap='joined'][data-axis='x'] > *:not(:first-child) {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.fui-btngroup[data-gap='joined'][data-axis='y'] > *:not(:last-child) {
+  margin-bottom: -1px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.fui-btngroup[data-gap='joined'][data-axis='y'] > *:not(:first-child) {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+/* A hovered or focused button in a joined bar has to come forward, or its
+   neighbour's plate clips its outline. */
+.fui-btngroup[data-gap='joined'] > *:hover,
+.fui-btngroup[data-gap='joined'] > *:focus-visible {
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 420px) {
+  .fui-btngroup[data-axis='x'][data-fill='on'] { flex-wrap: wrap; }
+}

@@ -21,10 +21,12 @@ import { VAULT } from './demos/vault.ts';
 import { GUILD } from './demos/guild.ts';
 import { SIGNALS } from './demos/signals.ts';
 import { CHAPTERS } from './demos/chapters.ts';
+import { BUTTONS } from './demos/buttons.ts';
 
 /** Every documented component, in the order the gallery lists them. */
 export const CATALOG: CatalogEntry[] = [
   ...PRIMITIVES,
+  ...BUTTONS,
   ...KIT,
   ...CHROME,
   ...WIDGETS,

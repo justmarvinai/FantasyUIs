@@ -1,0 +1,118 @@
+/* TintButton — a button whose ornament is a mask, so its colour is data. */
+
+.fui-tintbtn {
+  --fui-tb-scale: 0.6;
+  --fui-tb-tint: var(--fui-gold, #e0b04a);
+  --fui-tb-corner: calc(32px * var(--fui-tb-scale));
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 9px calc(14px + var(--fui-tb-corner) * 0.4);
+  border: 0;
+  background: none;
+  color: var(--fui-text, #e8e0cd);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  isolation: isolate;
+  transition:
+    filter var(--fui-t-fast, 120ms) var(--fui-ease, ease-out),
+    transform var(--fui-t-fast, 120ms) var(--fui-ease, ease-out);
+}
+
+.fui-tintbtn--block { display: flex; width: 100%; }
+
+/* Fallback path: the raw white ornament through border-image. Correct
+   everywhere, just not tintable. */
+.fui-tintbtn__art {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  border-style: solid;
+  border-color: transparent;
+  border-width: var(--fui-tb-corner);
+  border-image-source: var(--fui-tb-src);
+  border-image-slice: 32 fill;
+  border-image-repeat: stretch;
+}
+
+/* Enhanced path: the same art 9-sliced as a mask over an arbitrary paint, which
+   is what lets a gradient work where a recoloured PNG could not. Only the
+   prefixed property ships anywhere today; the standard one is listed for the
+   day it does. */
+@supports (-webkit-mask-box-image: url('a') 32 stretch) {
+  .fui-tintbtn__art {
+    border: 0;
+    background: var(--fui-tb-tint);
+    -webkit-mask-box-image: var(--fui-tb-src) 32 stretch;
+    -webkit-mask-box-image-width: var(--fui-tb-corner);
+    mask-border: var(--fui-tb-src) 32 fill stretch;
+    mask-border-width: var(--fui-tb-corner);
+  }
+}
+
+.fui-tintbtn--glow .fui-tintbtn__art {
+  filter: drop-shadow(0 0 calc(var(--fui-tb-corner) * 0.4) var(--fui-tb-tint));
+}
+
+/* A filled button needs its own dark ground so the label stays readable over
+   whatever colour the ornament happens to be. */
+.fui-tintbtn[data-fill='solid']::before {
+  content: '';
+  position: absolute;
+  inset: calc(var(--fui-tb-corner) * 0.28);
+  z-index: 0;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--fui-panel-ink, #14100c) 82%, transparent);
+  pointer-events: none;
+}
+
+.fui-tintbtn__face {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.fui-tintbtn__glyph {
+  width: 16px;
+  height: 16px;
+  background-color: var(--fui-tb-tint);
+  mask: var(--fui-tb-glyph, var(--fui-mask-none)) center / contain no-repeat;
+  -webkit-mask: var(--fui-tb-glyph, var(--fui-mask-none)) center / contain no-repeat;
+}
+
+.fui-tintbtn__label {
+  font-family: var(--fui-font-display, system-ui, sans-serif);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.8);
+  white-space: nowrap;
+}
+
+.fui-tintbtn:hover:not(:disabled) { filter: brightness(1.2); transform: translateY(-1px); }
+.fui-tintbtn:active:not(:disabled) { transform: translateY(1px); }
+
+.fui-tintbtn:disabled {
+  cursor: not-allowed;
+  filter: grayscale(0.85) brightness(0.6);
+}
+
+.fui-tintbtn:focus-visible {
+  outline: 2px solid var(--fui-tb-tint);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fui-tintbtn { transition: none; }
+  .fui-tintbtn:hover:not(:disabled),
+  .fui-tintbtn:active:not(:disabled) { transform: none; }
+}

@@ -1,0 +1,180 @@
+/* RibbonButton — the banner-shaped call to action a screen is built around. */
+
+.fui-ribbonbtn {
+  --fui-ribbon-ink: var(--fui-btn-ink, #eaf6f3);
+  --fui-ribbon-wash: transparent;
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 54px;
+  padding: 8px 30px 8px 22px;
+  overflow: hidden;
+  border: 0;
+  background: none;
+  color: var(--fui-ribbon-ink);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  transition:
+    filter var(--fui-t-fast, 120ms) var(--fui-ease, ease-out),
+    transform var(--fui-t-fast, 120ms) var(--fui-ease, ease-out);
+}
+
+.fui-ribbonbtn[data-tone='gold'] { --fui-ribbon-wash: color-mix(in srgb, var(--fui-gold, #e0b04a) 78%, transparent); }
+.fui-ribbonbtn[data-tone='danger'] { --fui-ribbon-wash: color-mix(in srgb, var(--fui-danger, #d8543f) 78%, transparent); }
+.fui-ribbonbtn[data-tone='success'] { --fui-ribbon-wash: color-mix(in srgb, var(--fui-success, #7fb069) 78%, transparent); }
+.fui-ribbonbtn[data-tone='info'] { --fui-ribbon-wash: color-mix(in srgb, var(--fui-info, #6fa8dc) 78%, transparent); }
+
+/* ── Art ────────────────────────────────────────────────────────────────── */
+
+/* 9-sliced so the pointed end keeps the shape it was painted at any width — a
+   scaled background stretches the point into a wedge. */
+.fui-ribbonbtn__art {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  border-style: solid;
+  border-color: transparent;
+  border-width: calc(40px * 0.3) calc(150px * 0.3) calc(40px * 0.3) calc(40px * 0.3);
+  border-image-source: var(--fui-img-banner-arrow);
+  border-image-slice: 40 150 40 40 fill;
+  border-image-repeat: stretch;
+}
+
+.fui-ribbonbtn[data-variant='banner'] .fui-ribbonbtn__art {
+  border-width: calc(40px * 0.3);
+  border-image-source: var(--fui-img-banner-dark);
+  border-image-slice: 40 40 40 40 fill;
+}
+
+.fui-ribbonbtn[data-variant='plain'] .fui-ribbonbtn__art {
+  border-width: calc(40px * 0.3);
+  border-image-source: var(--fui-img-banner-plain);
+  border-image-slice: 40 40 40 40 fill;
+}
+
+/* The arrow art points right; pointing left is the same art mirrored, with the
+   padding swapped so the label stays clear of the point. */
+.fui-ribbonbtn[data-variant='arrow'][data-direction='left'] {
+  padding: 8px 22px 8px 30px;
+}
+
+.fui-ribbonbtn[data-variant='arrow'][data-direction='left'] .fui-ribbonbtn__art {
+  transform: scaleX(-1);
+}
+
+/* The tone is a wash *over* the art rather than a replacement for it, so the
+   painted texture survives being recoloured. `color` blends hue and saturation
+   while leaving luminosity alone, which is what keeps the ribbon's highlights,
+   grain and shadow intact — `overlay` barely shifts a dark plate at all, and
+   flat opacity paints over the texture that makes it worth using art here. */
+.fui-ribbonbtn__art::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--fui-ribbon-wash);
+  mix-blend-mode: color;
+}
+
+/* `color` keeps the plate's luminosity, which is right for the texture and
+   wrong for a light tone: gold over dark red comes out olive. A brightness lift
+   on the whole art layer brings the value up to match the hue. */
+.fui-ribbonbtn[data-tone='gold'] .fui-ribbonbtn__art,
+.fui-ribbonbtn[data-tone='success'] .fui-ribbonbtn__art,
+.fui-ribbonbtn[data-tone='info'] .fui-ribbonbtn__art {
+  filter: brightness(1.5) saturate(1.15);
+}
+
+/* ── Face ───────────────────────────────────────────────────────────────── */
+
+.fui-ribbonbtn__face {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.fui-ribbonbtn__glyph {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  background-color: currentColor;
+  mask: var(--fui-ribbon-glyph, var(--fui-mask-none)) center / contain no-repeat;
+  -webkit-mask: var(--fui-ribbon-glyph, var(--fui-mask-none)) center / contain no-repeat;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.7));
+}
+
+.fui-ribbonbtn__stack {
+  display: grid;
+  gap: 1px;
+  text-align: left;
+}
+
+.fui-ribbonbtn__label {
+  font-family: var(--fui-font-display, system-ui, sans-serif);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.85);
+  white-space: nowrap;
+}
+
+.fui-ribbonbtn__note {
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: color-mix(in srgb, var(--fui-ribbon-ink) 72%, transparent);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
+  white-space: nowrap;
+}
+
+/* ── Shine ──────────────────────────────────────────────────────────────── */
+
+.fui-ribbonbtn__shine {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    104deg,
+    transparent 38%,
+    rgba(255, 255, 255, 0.28) 47%,
+    rgba(255, 255, 255, 0.05) 52%,
+    transparent 60%
+  );
+  background-size: 260% 100%;
+  animation: fui-ribbon-shine 3.4s var(--fui-ease, ease-out) infinite;
+}
+
+/* ── States ─────────────────────────────────────────────────────────────── */
+
+.fui-ribbonbtn:hover:not(:disabled) { filter: brightness(1.14); transform: translateY(-1px); }
+.fui-ribbonbtn:active:not(:disabled) { filter: brightness(0.92); transform: translateY(1px); }
+
+.fui-ribbonbtn:disabled {
+  cursor: not-allowed;
+  filter: grayscale(0.8) brightness(0.6);
+}
+
+.fui-ribbonbtn:disabled .fui-ribbonbtn__shine { animation: none; opacity: 0; }
+
+.fui-ribbonbtn:focus-visible {
+  outline: 2px solid var(--fui-accent, #d8c9a6);
+  outline-offset: 3px;
+}
+
+@keyframes fui-ribbon-shine {
+  0% { background-position: 170% 0; }
+  55%, 100% { background-position: -70% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fui-ribbonbtn { transition: none; }
+  .fui-ribbonbtn__shine { animation: none; opacity: 0; }
+  .fui-ribbonbtn:hover:not(:disabled),
+  .fui-ribbonbtn:active:not(:disabled) { transform: none; }
+}
