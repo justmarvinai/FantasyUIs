@@ -1,0 +1,188 @@
+/* SynergyPanel — team traits and their breakpoints. */
+
+.fui-synergy {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  width: 100%;
+  max-width: 300px;
+  background: var(--fui-panel-fill-src, none) center / 100% 100%;
+  background-color: color-mix(in srgb, var(--fui-panel-ink, #14100c) 78%, transparent);
+  border-radius: 6px;
+  color: var(--fui-text, #e8e0cd);
+}
+
+.fui-synergy__title {
+  margin: 0;
+  font: var(--fui-font-title, 700 14px/1.2 system-ui, sans-serif);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 78%, transparent);
+}
+
+.fui-synergy__list { display: grid; gap: 5px; }
+
+.fui-synergy__row {
+  --fui-synergy-ink: var(--fui-accent, #d8c9a6);
+
+  display: grid;
+  gap: 5px;
+  padding: 6px 8px;
+  border-radius: 4px;
+  border: 1px solid color-mix(in srgb, var(--fui-synergy-ink) 22%, transparent);
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--fui-synergy-ink) 12%, transparent),
+    transparent 65%
+  );
+  transition: border-color 160ms ease-out, background 160ms ease-out;
+}
+
+/* An inactive trait is information, not decoration: it stays readable but loses
+   its colour so the working traits are the ones that catch the eye. */
+.fui-synergy__row[data-state='idle'] {
+  --fui-synergy-ink: color-mix(in srgb, var(--fui-text, #e8e0cd) 40%, transparent);
+  background: none;
+  opacity: 0.72;
+}
+
+.fui-synergy__row[data-state='max'] {
+  border-color: var(--fui-synergy-ink);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--fui-synergy-ink) 25%, transparent);
+}
+
+.fui-synergy__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 0;
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.fui-synergy__head:focus-visible {
+  outline: 2px solid var(--fui-synergy-ink);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+.fui-synergy__badge {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  /* A diamond, so a trait badge never reads as an item slot. */
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+  background: color-mix(in srgb, var(--fui-synergy-ink) 30%, var(--fui-panel-ink, #14100c));
+  color: var(--fui-synergy-ink);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.fui-synergy__badge[data-glyph='on']::before {
+  content: '';
+  width: 14px;
+  height: 14px;
+  background-color: currentColor;
+  mask: var(--fui-synergy-glyph, var(--fui-mask-none)) no-repeat center / contain;
+  -webkit-mask: var(--fui-synergy-glyph, var(--fui-mask-none)) no-repeat center / contain;
+}
+
+.fui-synergy__row[data-state='max'] .fui-synergy__badge {
+  background: var(--fui-synergy-ink);
+  color: #16120a;
+  box-shadow: 0 0 10px color-mix(in srgb, var(--fui-synergy-ink) 60%, transparent);
+}
+
+.fui-synergy__label { flex: 1; display: grid; gap: 1px; min-width: 0; }
+
+.fui-synergy__name {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--fui-synergy-ink);
+}
+
+.fui-synergy__effect {
+  font-size: 10px;
+  line-height: 1.25;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 62%, transparent);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fui-synergy__count {
+  flex: none;
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 80%, transparent);
+}
+
+/* ── Pips ───────────────────────────────────────────────────────────────── */
+
+.fui-synergy__pips {
+  display: flex;
+  gap: 3px;
+  padding-left: 34px;
+}
+
+.fui-synergy__pip {
+  min-width: 16px;
+  padding: 0 3px;
+  border-radius: 2px;
+  text-align: center;
+  font-size: 9px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  background: color-mix(in srgb, #000 45%, transparent);
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 40%, transparent);
+  border: 1px solid color-mix(in srgb, var(--fui-text, #e8e0cd) 12%, transparent);
+}
+
+.fui-synergy__pip[data-on='on'] {
+  background: var(--fui-synergy-ink);
+  border-color: var(--fui-synergy-ink);
+  color: #16120a;
+}
+
+/* ── Body ───────────────────────────────────────────────────────────────── */
+
+.fui-synergy__body {
+  display: none;
+  gap: 2px;
+  padding: 4px 0 2px 34px;
+  border-top: 1px solid color-mix(in srgb, var(--fui-text, #e8e0cd) 10%, transparent);
+}
+
+.fui-synergy__row[data-open='on'] .fui-synergy__body { display: grid; }
+
+.fui-synergy__tier {
+  margin: 0;
+  font-size: 10px;
+  line-height: 1.35;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 45%, transparent);
+}
+
+.fui-synergy__tier[data-on='on'] {
+  color: var(--fui-synergy-ink);
+  font-weight: 600;
+}
+
+.fui-synergy__units {
+  margin: 3px 0 0;
+  font-size: 10px;
+  font-style: italic;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 55%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fui-synergy__row { transition: none; }
+}

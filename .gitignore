@@ -12,6 +12,7 @@ dist/
 /assets.html
 /public/registry.json
 /public/llms.txt
+/public/llms-full.txt
 /public/sitemap.xml
 /public/robots.txt
 /public/r/

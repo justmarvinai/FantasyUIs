@@ -1,0 +1,189 @@
+/* DiceRoller — a pool, a modifier, a target, and a tumble over a decided result. */
+
+.fui-dice {
+  --fui-dice-size: 46px;
+  --fui-dice-ink: var(--fui-ink-dim);
+  display: flex;
+  flex-direction: column;
+  gap: var(--fui-gap-sm);
+  font-family: var(--fui-font-ui);
+}
+
+.fui-dice__head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--fui-gap-sm);
+}
+
+.fui-dice__label {
+  flex: 1;
+  font-size: 10px;
+}
+
+.fui-dice__formula {
+  font-size: 11px;
+  color: var(--fui-ink-faint);
+}
+
+.fui-dice__tray {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--fui-gap-sm);
+  align-items: center;
+  justify-content: center;
+  min-height: calc(var(--fui-dice-size) + 12px);
+  padding: var(--fui-gap-sm);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--fui-radius);
+  background:
+    radial-gradient(ellipse at 50% 30%, rgba(255, 255, 255, 0.05), transparent 70%),
+    rgba(0, 0, 0, 0.42);
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.6);
+}
+
+/* Each die is a clipped polygon, so a d4 is a triangle, a d8 a diamond and a
+   d20 a hexagon without a single image. */
+.fui-dice__die {
+  position: relative;
+  display: grid;
+  width: var(--fui-dice-size);
+  height: var(--fui-dice-size);
+  place-items: center;
+  background: linear-gradient(
+    155deg,
+    color-mix(in srgb, var(--fui-dice-ink) 70%, #fff 30%) 0%,
+    var(--fui-dice-ink) 45%,
+    color-mix(in srgb, var(--fui-dice-ink) 60%, #000) 100%
+  );
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.65));
+}
+
+.fui-dice__die[data-sides='4'] { clip-path: polygon(50% 2%, 98% 96%, 2% 96%); }
+.fui-dice__die[data-sides='6'] { border-radius: 8px; }
+.fui-dice__die[data-sides='8'] { clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); }
+.fui-dice__die[data-sides='10'] { clip-path: polygon(50% 0, 96% 34%, 78% 100%, 22% 100%, 4% 34%); }
+.fui-dice__die[data-sides='12'] { clip-path: polygon(50% 0, 95% 32%, 78% 92%, 22% 92%, 5% 32%); }
+.fui-dice__die[data-sides='20'] {
+  clip-path: polygon(50% 0, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
+}
+
+.fui-dice[data-state='rolling'] .fui-dice__die {
+  animation: fui-dice-tumble 240ms var(--fui-ease) var(--fui-dice-delay, 0s) infinite;
+}
+
+@keyframes fui-dice-tumble {
+  0% { transform: translateY(0) rotate(0deg); }
+  40% { transform: translateY(-9px) rotate(-14deg); }
+  70% { transform: translateY(2px) rotate(9deg); }
+  100% { transform: translateY(0) rotate(0deg); }
+}
+
+/* The two results that matter get their own colour on the die itself, not just
+   in the verdict line — a natural 20 should be visible from across the room. */
+.fui-dice__die[data-max='true'] {
+  --fui-dice-ink: var(--fui-gold);
+  filter: drop-shadow(0 0 10px var(--fui-gold));
+}
+
+.fui-dice__die[data-one='true'] {
+  --fui-dice-ink: var(--fui-danger);
+  filter: drop-shadow(0 0 10px var(--fui-danger));
+}
+
+.fui-dice__face {
+  font-family: var(--fui-font-display);
+  font-size: calc(var(--fui-dice-size) * 0.42);
+  line-height: 1;
+  color: #14110c;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+
+.fui-dice__die[data-sides='4'] .fui-dice__face { margin-top: 22%; }
+
+.fui-dice__sides {
+  position: absolute;
+  bottom: 3px;
+  font-size: 7.5px;
+  letter-spacing: 0.06em;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.fui-dice__die[data-sides='4'] .fui-dice__sides { display: none; }
+
+.fui-dice__foot {
+  display: flex;
+  align-items: center;
+  gap: var(--fui-gap-sm);
+}
+
+.fui-dice__total {
+  min-width: 52px;
+  font-family: var(--fui-font-display);
+  font-size: 26px;
+  line-height: 1;
+  color: var(--fui-ink);
+}
+
+.fui-dice[data-state='critical'] .fui-dice__total,
+.fui-dice[data-state='hit'] .fui-dice__total { color: var(--fui-success); }
+
+.fui-dice[data-state='fumble'] .fui-dice__total,
+.fui-dice[data-state='miss'] .fui-dice__total { color: var(--fui-danger); }
+
+.fui-dice__verdict {
+  flex: 1;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--fui-ink-dim);
+}
+
+.fui-dice[data-state='critical'] .fui-dice__verdict {
+  color: var(--fui-gold);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.fui-dice[data-state='fumble'] .fui-dice__verdict {
+  color: var(--fui-danger);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.fui-dice__roll {
+  padding: 7px 18px;
+  border: 1px solid var(--fui-accent);
+  border-radius: var(--fui-radius);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--fui-accent) 32%, transparent),
+    color-mix(in srgb, var(--fui-accent) 10%, transparent)
+  );
+  color: var(--fui-ink);
+  font-family: inherit;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.fui-dice__roll:hover:not(:disabled) { filter: brightness(1.3); }
+
+.fui-dice__roll:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+.fui-dice__log {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.fui-dice__log-row {
+  font-size: 10px;
+  color: var(--fui-ink-faint);
+}
+
+.fui-dice__log-row[data-verdict='critical'] { color: var(--fui-gold); }
+.fui-dice__log-row[data-verdict='fumble'],
+.fui-dice__log-row[data-verdict='miss'] { color: color-mix(in srgb, var(--fui-danger) 70%, transparent); }

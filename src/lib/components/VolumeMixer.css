@@ -1,0 +1,226 @@
+/* VolumeMixer — music, effects, voice and ambience under one master. */
+
+.fui-mixer {
+  --fui-mixer-h: 130px;
+  --fui-mixer-ink: var(--fui-accent);
+  --fui-mixer-p: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--fui-gap-sm);
+  font-family: var(--fui-font-ui);
+}
+
+.fui-mixer__title {
+  font-size: 14px;
+}
+
+.fui-mixer__list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.fui-mixer[data-variant='faders'] .fui-mixer__list {
+  flex-direction: row;
+  gap: var(--fui-gap);
+  align-items: flex-end;
+}
+
+.fui-mixer__channel {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 7px 9px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--fui-radius);
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.3));
+}
+
+/* The master scales everything under it, so it reads as the heavier control. */
+.fui-mixer__channel[data-master='true'] {
+  --fui-mixer-ink: var(--fui-gold);
+  border-color: color-mix(in srgb, var(--fui-gold) 35%, transparent);
+}
+
+.fui-mixer__channel[data-muted='true'] {
+  opacity: 0.5;
+}
+
+.fui-mixer__head {
+  display: flex;
+  align-items: center;
+  gap: var(--fui-gap-sm);
+}
+
+.fui-mixer__mute {
+  position: relative;
+  width: 26px;
+  height: 26px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--fui-radius);
+  background: rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+}
+
+.fui-mixer__mute[aria-checked='true'] {
+  border-color: var(--fui-mixer-ink);
+  background: color-mix(in srgb, var(--fui-mixer-ink) 18%, transparent);
+}
+
+/* A speaker drawn from a clipped block, with a slash when muted — no icon font
+   and no second asset. */
+.fui-mixer__mute::before {
+  content: '';
+  width: 12px;
+  height: 12px;
+  background: var(--fui-mixer-ink);
+  clip-path: polygon(0 34%, 32% 34%, 62% 6%, 62% 94%, 32% 66%, 0 66%);
+}
+
+.fui-mixer__mute[aria-checked='false']::after {
+  content: '';
+  position: absolute;
+  width: 17px;
+  height: 2px;
+  background: var(--fui-danger);
+  transform: rotate(-38deg);
+}
+
+.fui-mixer__glyph {
+  position: absolute;
+  right: -3px;
+  bottom: -3px;
+  width: 11px;
+  height: 11px;
+  background-color: var(--fui-mixer-ink);
+  mask: var(--fui-glyph-src, var(--fui-mask-none)) center / contain no-repeat;
+  -webkit-mask: var(--fui-glyph-src, var(--fui-mask-none)) center / contain no-repeat;
+}
+
+.fui-mixer__names {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0;
+  min-width: 0;
+}
+
+.fui-mixer__name {
+  font-size: 12px;
+  color: var(--fui-ink);
+}
+
+.fui-mixer__note {
+  font-size: 9.5px;
+  color: var(--fui-ink-faint);
+}
+
+.fui-mixer__value {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--fui-ink-dim);
+}
+
+/* A real range input under a painted track: keyboard, screen readers and touch
+   all work for free, and the visible fill is driven from its value. */
+.fui-mixer__track {
+  position: relative;
+  height: 8px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.6);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.fui-mixer__input {
+  position: absolute;
+  inset: -6px 0;
+  width: 100%;
+  height: 20px;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.fui-mixer__fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: calc(var(--fui-mixer-p) * 100%);
+  border-radius: 4px;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--fui-mixer-ink) 55%, #000),
+    var(--fui-mixer-ink)
+  );
+  box-shadow: 0 0 8px color-mix(in srgb, var(--fui-mixer-ink) 45%, transparent);
+}
+
+.fui-mixer__fill::after {
+  content: '';
+  position: absolute;
+  right: -6px;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  margin-top: -6px;
+  border-radius: 50%;
+  background: var(--fui-ink);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+}
+
+.fui-mixer__channel[data-muted='true'] .fui-mixer__fill {
+  background: var(--fui-ink-faint);
+  box-shadow: none;
+}
+
+/* ── the vertical desk ──────────────────────────────────────────────────── */
+.fui-mixer[data-variant='faders'] .fui-mixer__channel {
+  flex: 1;
+  align-items: center;
+}
+
+.fui-mixer[data-variant='faders'] .fui-mixer__head {
+  flex-direction: column;
+  gap: 3px;
+  text-align: center;
+}
+
+.fui-mixer[data-variant='faders'] .fui-mixer__names { align-items: center; }
+
+.fui-mixer[data-variant='faders'] .fui-mixer__track {
+  width: 8px;
+  height: var(--fui-mixer-h);
+}
+
+.fui-mixer[data-variant='faders'] .fui-mixer__input {
+  inset: 0;
+  width: var(--fui-mixer-h);
+  height: 20px;
+  /* Rotating the input keeps a real range control while the desk reads
+     vertically; the painted fill is laid out independently. */
+  transform-origin: 0 0;
+  transform: rotate(-90deg) translate(calc(var(--fui-mixer-h) * -1), -6px);
+}
+
+.fui-mixer[data-variant='faders'] .fui-mixer__fill {
+  top: auto;
+  bottom: 0;
+  width: 100%;
+  height: calc(var(--fui-mixer-p) * 100%);
+  background: linear-gradient(
+    0deg,
+    color-mix(in srgb, var(--fui-mixer-ink) 55%, #000),
+    var(--fui-mixer-ink)
+  );
+}
+
+.fui-mixer[data-variant='faders'] .fui-mixer__fill::after {
+  right: 50%;
+  top: -6px;
+  margin: 0 -6px 0 0;
+}

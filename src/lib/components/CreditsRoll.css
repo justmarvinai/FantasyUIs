@@ -1,0 +1,150 @@
+/* CreditsRoll — the end-of-game scroll. */
+
+.fui-credits {
+  --fui-credits-h: 420px;
+  --fui-credits-s: 60s;
+
+  position: relative;
+  height: var(--fui-credits-h);
+  width: 100%;
+  max-width: 560px;
+  overflow: hidden;
+  border-radius: 8px;
+  background:
+    radial-gradient(ellipse at 50% 0%, color-mix(in srgb, var(--fui-accent, #d8c9a6) 8%, transparent), transparent 60%),
+    color-mix(in srgb, var(--fui-panel-ink, #14100c) 94%, transparent);
+  color: var(--fui-text, #e8e0cd);
+}
+
+.fui-credits__view {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* One composited transform for the whole column. Travel is expressed in the
+   column's own height, so a longer list scrolls further rather than faster. */
+.fui-credits__column {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  display: grid;
+  gap: 22px;
+  justify-items: center;
+  padding: 0 24px 40%;
+  text-align: center;
+}
+
+.fui-credits[data-running='on'] .fui-credits__column {
+  animation: fui-credits-roll var(--fui-credits-s) linear both;
+}
+
+.fui-credits__crest {
+  width: 74px;
+  height: 74px;
+  background: var(--fui-credits-crest, none) no-repeat center / contain;
+  filter: drop-shadow(0 4px 12px rgb(0 0 0 / 0.6));
+}
+
+.fui-credits__title {
+  margin: 0;
+  font: var(--fui-font-title, 700 26px/1.15 system-ui, sans-serif);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-shadow: 0 2px 14px color-mix(in srgb, var(--fui-gold, #e0b04a) 30%, transparent);
+}
+
+.fui-credits__subtitle {
+  margin: -14px 0 0;
+  font-size: 12px;
+  font-style: italic;
+  letter-spacing: 0.08em;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 60%, transparent);
+}
+
+.fui-credits__section {
+  display: grid;
+  gap: 2px;
+  justify-items: center;
+}
+
+.fui-credits__role {
+  margin: 0 0 4px;
+  font: var(--fui-font-label, 700 10px/1 system-ui, sans-serif);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--fui-gold, #e0b04a);
+}
+
+.fui-credits__name {
+  margin: 0;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 88%, transparent);
+}
+
+.fui-credits__outro {
+  margin: 24px 0 0;
+  font: var(--fui-font-title, 700 16px/1.4 system-ui, sans-serif);
+  letter-spacing: 0.1em;
+  color: var(--fui-accent, #d8c9a6);
+}
+
+/* Soft edges so names arrive and leave rather than being clipped. */
+.fui-credits__fade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 56px;
+  pointer-events: none;
+}
+
+.fui-credits__fade[data-edge='top'] {
+  top: 0;
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--fui-panel-ink, #14100c) 96%, transparent), transparent);
+}
+
+.fui-credits__fade[data-edge='bottom'] {
+  bottom: 0;
+  background: linear-gradient(to top, color-mix(in srgb, var(--fui-panel-ink, #14100c) 96%, transparent), transparent);
+}
+
+.fui-credits__skip {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  padding: 5px 12px;
+  border-radius: 3px;
+  border: 1px solid color-mix(in srgb, var(--fui-text, #e8e0cd) 25%, transparent);
+  background: color-mix(in srgb, #000 55%, transparent);
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 75%, transparent);
+  font: inherit;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.fui-credits__skip:hover { color: var(--fui-text, #e8e0cd); border-color: var(--fui-accent, #d8c9a6); }
+
+.fui-credits__skip:focus-visible {
+  outline: 2px solid var(--fui-accent, #d8c9a6);
+  outline-offset: 2px;
+}
+
+@keyframes fui-credits-roll {
+  from { transform: translateY(0); }
+  to { transform: translateY(calc(-100% - var(--fui-credits-h))); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fui-credits[data-running='on'] .fui-credits__column {
+    animation: none;
+    position: static;
+    padding-top: 24px;
+  }
+  .fui-credits { height: auto; max-height: var(--fui-credits-h); overflow-y: auto; }
+  .fui-credits__view { position: static; }
+}

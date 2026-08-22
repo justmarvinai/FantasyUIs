@@ -1,0 +1,196 @@
+/* LoadoutSlots — the row a player swaps their whole setup through. */
+
+.fui-loadout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fui-gap-sm);
+  font-family: var(--fui-font-ui);
+}
+
+.fui-loadout__head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--fui-gap-sm);
+}
+
+.fui-loadout__title {
+  font-size: 14px;
+}
+
+.fui-loadout__hint {
+  font-size: 10px;
+  color: var(--fui-ink-faint);
+}
+
+.fui-loadout__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--fui-gap-sm);
+}
+
+.fui-loadout__slot {
+  display: flex;
+  width: 168px;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: var(--fui-gap-sm);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--fui-radius);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.35));
+}
+
+.fui-loadout__slot[data-state='active'] {
+  border-color: var(--fui-gold);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--fui-gold) 35%, transparent);
+}
+
+.fui-loadout__slot[data-state='empty'],
+.fui-loadout__slot[data-state='locked'] {
+  justify-content: center;
+  border-style: dashed;
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.fui-loadout__strip {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+  min-height: 40px;
+}
+
+.fui-loadout__face {
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: var(--fui-radius);
+  background: center / cover no-repeat rgba(0, 0, 0, 0.55);
+}
+
+.fui-loadout__more {
+  font-size: 10px;
+  color: var(--fui-ink-faint);
+}
+
+.fui-loadout__name {
+  width: 100%;
+  font-size: 12.5px;
+  text-align: center;
+  color: var(--fui-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Renaming in place: the field looks like the label until it is focused, so a
+   slot does not read as a form until you touch it. */
+.fui-loadout__name--input {
+  padding: 2px 4px;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  background: none;
+  font-family: inherit;
+}
+
+.fui-loadout__name--input:hover {
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+.fui-loadout__name--input:focus-visible {
+  border-color: var(--fui-accent);
+  background: rgba(0, 0, 0, 0.5);
+  outline: none;
+}
+
+.fui-loadout__meta {
+  font-size: 9.5px;
+  text-align: center;
+  color: var(--fui-ink-faint);
+}
+
+.fui-loadout__equip,
+.fui-loadout__overwrite,
+.fui-loadout__unlock {
+  width: 100%;
+  padding: 5px;
+  border-radius: var(--fui-radius);
+  font-family: inherit;
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.fui-loadout__equip {
+  border: 1px solid var(--fui-accent);
+  background: color-mix(in srgb, var(--fui-accent) 22%, transparent);
+  color: var(--fui-ink);
+}
+
+.fui-loadout__equip:disabled {
+  border-color: var(--fui-gold);
+  background: color-mix(in srgb, var(--fui-gold) 18%, transparent);
+  color: var(--fui-gold);
+  cursor: default;
+}
+
+.fui-loadout__overwrite {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: none;
+  color: var(--fui-ink-faint);
+}
+
+.fui-loadout__overwrite:hover { color: var(--fui-ink-dim); }
+
+.fui-loadout__save {
+  display: flex;
+  width: 100%;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: var(--fui-gap);
+  border: 0;
+  background: none;
+  color: var(--fui-ink-faint);
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.fui-loadout__save:hover { color: var(--fui-ink-dim); }
+
+.fui-loadout__plus {
+  font-size: 26px;
+  line-height: 1;
+}
+
+.fui-loadout__save-label {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* A padlock drawn from a border and a shadow — no glyph has to load. */
+.fui-loadout__lock {
+  width: 14px;
+  height: 10px;
+  border: 2px solid var(--fui-ink-faint);
+  border-bottom: 0;
+  border-radius: 6px 6px 0 0;
+  box-shadow: 0 10px 0 -1px var(--fui-ink-faint);
+  margin-bottom: 12px;
+}
+
+.fui-loadout__locked-label {
+  font-size: 10px;
+  text-align: center;
+  color: var(--fui-ink-faint);
+}
+
+.fui-loadout__unlock {
+  margin-top: 4px;
+  border: 1px solid var(--fui-xp);
+  background: color-mix(in srgb, var(--fui-xp) 18%, transparent);
+  color: var(--fui-ink);
+}

@@ -2,7 +2,7 @@
 
 **A growing database of ready-to-use UI components for Fantasy & RPG web games.**
 
-164 components built from 494 art assets across 2 swappable themes, 2 icon
+209 components built from 494 art assets across 2 swappable themes, 2 icon
 collections and a tintable ornament set. Vanilla TypeScript and CSS — zero
 runtime dependencies, no framework, no build plugin. Drops into any Vite
 project, React or not, or straight over a Phaser canvas as a DOM layer.
@@ -15,15 +15,15 @@ project, React or not, or straight over a Phaser canvas as a DOM layer.
 
 | Group | Components |
 | --- | --- |
-| **Surfaces & Framing** | Panel, Frame, Divider, Banner, TintFrame, Carousel, Scroll, OrnateHeader, SceneBackdrop, Ribbon, SceneTransition |
-| **Controls** | Button, Tabs, Toggle, Slider, Select, TextInput, ContextMenu, SegmentedControl, NumberStepper, Accordion, ConfirmSlider, CheckList, RangeSlider, KeybindInput, RadialMenu, FilterBar, SortBar, SideNav, Pagination, ReorderList, DyePicker |
-| **Data display** | Icon, StatBar, Slot, Portrait, Tooltip, Badge, ProgressRing, StatChip, Sparkline, Gauge, Timeline, ItemCard, Glyph, CompareStats, StatRadar, HealthPips, ShareBar, ActivityCalendar, ElementWheel |
-| **Game widgets** | InventoryGrid, ActionBar, UnitFrame, PartyFrame, BuffBar, CastBar, DialogueBox, QuestLog, QuestTracker, ShopPanel, LootWindow, CraftingPanel, SkillTree, StatsPanel, Paperdoll, Minimap, CurrencyBar, Leaderboard, WorldMap, CodexEntry, AchievementList, PatchNotes, TradePanel, QuestBoard, Compass, AuctionHouse, CraftingQueue, AutoBattleRules, **RegionAtlas** |
-| **Combat & battle** | BossHealthBar, ShieldBar, WaveTracker, DamageMeter, BattleLog, ComboCounter, ArenaMatchup, MatchHistory, LootRoll, TargetSelector, ThreatMeter, SkillCheck, DungeonMap |
-| **Collection & live-ops** | PityCounter, BannerCarousel, TopBar, VipProgress, EventBanner, StreakMeter, StarRating, AffinityBadge, ChampionCard, SummonResult, TeamSlots, TurnMeter, EnergyBar, RewardTrack, DailyRewards, UpgradePanel, StageSelect, OfferCard, CountdownTimer, BottomNav, BattleControls, TierBadge, ChampionList, SkillCard, MasteryGrid, ArtifactCard, ArtifactSet, RankUpPanel, ShardCounter, PowerRating, FormationGrid, SocketPanel, CollectionProgress, FusionPanel, BondMeter, SpinWheel, RateTable, IdleRewards, **StageTrail** |
-| **Social & clan** | ClanCard, MailInbox, ChatPanel, FriendList, LeaderboardPodium, ClanRoster, PlayerProfile, PartyFinder, WarBoard |
-| **Feedback** | LoadingDots, EmptyState, TutorialTip, RewardPopup, Ticker, ConnectionStatus, SpeechBubble, DamageVignette, ToastStack, FloatingText, AchievementPopup |
-| **Screens & overlays** | Modal, TitleGate, StorySlide, DeathScreen, MainMenu, PauseMenu, SettingsScreen, CharacterSelect, LoadingScreen, ResultScreen, LevelUpModal, HUD |
+| **Surfaces & Framing** | Panel, Frame, Divider, Banner, TintFrame, Carousel, Scroll, OrnateHeader, SceneBackdrop, Ribbon, SceneTransition, **Pedestal**, **RuneCircle**, **Tabletop**, **Signpost**, **StainedGlass** |
+| **Controls** | Button, Tabs, Toggle, Slider, Select, TextInput, ContextMenu, SegmentedControl, NumberStepper, Accordion, ConfirmSlider, CheckList, RangeSlider, KeybindInput, RadialMenu, FilterBar, SortBar, SideNav, Pagination, ReorderList, DyePicker, **DiceRoller**, **StatAllocator**, **RunePad**, **TimeDial**, **VolumeMixer** |
+| **Data display** | Icon, StatBar, Slot, Portrait, Tooltip, Badge, ProgressRing, StatChip, Sparkline, Gauge, Timeline, ItemCard, Glyph, CompareStats, StatRadar, HealthPips, ShareBar, ActivityCalendar, ElementWheel, **StatBlock**, **RelationshipWeb**, **TierList**, **Ledger**, **ResistGrid** |
+| **Game widgets** | InventoryGrid, ActionBar, UnitFrame, PartyFrame, BuffBar, CastBar, DialogueBox, QuestLog, QuestTracker, ShopPanel, LootWindow, CraftingPanel, SkillTree, StatsPanel, Paperdoll, Minimap, CurrencyBar, Leaderboard, WorldMap, CodexEntry, AchievementList, PatchNotes, TradePanel, QuestBoard, Compass, AuctionHouse, CraftingQueue, AutoBattleRules, RegionAtlas, **CompanionPanel**, **HousingGrid**, **LoadoutSlots**, **HagglePanel**, **EventCalendar** |
+| **Combat & battle** | BossHealthBar, ShieldBar, WaveTracker, DamageMeter, BattleLog, ComboCounter, ArenaMatchup, MatchHistory, LootRoll, TargetSelector, ThreatMeter, SkillCheck, DungeonMap, **InitiativeTrack**, **BattleGrid**, **Reticle**, **KillFeed**, **PhaseTracker** |
+| **Collection & live-ops** | PityCounter, BannerCarousel, TopBar, VipProgress, EventBanner, StreakMeter, StarRating, AffinityBadge, ChampionCard, SummonResult, TeamSlots, TurnMeter, EnergyBar, RewardTrack, DailyRewards, UpgradePanel, StageSelect, OfferCard, CountdownTimer, BottomNav, BattleControls, TierBadge, ChampionList, SkillCard, MasteryGrid, ArtifactCard, ArtifactSet, RankUpPanel, ShardCounter, PowerRating, FormationGrid, SocketPanel, CollectionProgress, FusionPanel, BondMeter, SpinWheel, RateTable, IdleRewards, StageTrail, **WishList**, **ExchangeShop**, **SkinSelector**, **SynergyPanel**, **SubscriptionCard** |
+| **Social & clan** | ClanCard, MailInbox, ChatPanel, FriendList, LeaderboardPodium, ClanRoster, PlayerProfile, PartyFinder, WarBoard, **GuildBank**, **RequestList**, **GiftPanel**, **ClanPerks**, **ClanFinder** |
+| **Feedback** | LoadingDots, EmptyState, TutorialTip, RewardPopup, Ticker, ConnectionStatus, SpeechBubble, DamageVignette, ToastStack, FloatingText, AchievementPopup, **ObjectiveBanner**, **ImpactFrame**, **Nameplate**, **TutorialMask**, **CountdownOverlay** |
+| **Screens & overlays** | Modal, TitleGate, StorySlide, DeathScreen, MainMenu, PauseMenu, SettingsScreen, CharacterSelect, LoadingScreen, ResultScreen, LevelUpModal, HUD, **CharacterCreator**, **InventoryScreen**, **SummonScreen**, **CreditsRoll**, **SeasonEndScreen** |
 
 Bold marks the newest additions.
 
@@ -48,6 +48,18 @@ that calls it. `TradePanel` clears both accepts on any change to the offer,
 labels a full board instead of failing the accept on the server, `FusionPanel`
 counts the slots you are still missing rather than going quietly grey, and
 `TitleGate` refuses a full realm with a reason attached.
+
+That principle shows up in the newest additions too. `BattleGrid` flood-fills
+movement range with the same Dijkstra pass the movement rules use, so the tiles
+that light up are exactly the tiles you can reach — never the diamond that
+promises a move the rules will refuse. `GuildBank` puts the per-rank withdrawal
+allowance at the top of the vault rather than in the error you get after
+choosing. `ClanPerks` prints *why* each locked perk is locked — guild level, a
+prerequisite, an empty treasury, or a rank that cannot spend — instead of going
+grey and sending you to ask an officer. `RequestList` disables every Accept the
+moment the last seat goes. And `WishList` draws pity as one bar with the
+soft-pity threshold marked on it, because the number a player plans around is
+how many *more*, not where they are out of ninety.
 
 The same rule holds where money is involved. `SpinWheel` draws its prize from
 the weights *before* the animation starts and then spins onto it, so the odds
@@ -143,7 +155,8 @@ demo markup already rendered, so nothing needs JavaScript to be understood.
 
 | Endpoint | What it gives you |
 | --- | --- |
-| [`/llms.txt`](https://fantasy-u-is.vercel.app/llms.txt) | The whole library summarised for an LLM — every component, its purpose, its options, every asset id |
+| [`/llms.txt`](https://fantasy-u-is.vercel.app/llms.txt) | The whole library written for an LLM — how to work with it, then every component, its purpose, its options, every asset id |
+| [`/llms-full.txt`](https://fantasy-u-is.vercel.app/llms-full.txt) | The same index with **every component's complete working example inlined**, so an agent can adapt one without a second request |
 | [`/registry.json`](https://fantasy-u-is.vercel.app/registry.json) | Machine-readable index of all components and assets |
 | `/r/<Component>.json` | One component's full record, **including its complete TypeScript and CSS source** |
 | `/components/<Component>.html` | The human-readable page, pre-rendered |
@@ -153,10 +166,12 @@ Point an agent at the site root and it can discover and copy anything:
 
 ```
 Use the UI library at https://fantasy-u-is.vercel.app.
-Read https://fantasy-u-is.vercel.app/llms.txt first, then fetch
-https://fantasy-u-is.vercel.app/r/<Component>.json for the source of anything you need.
-Copy every path listed in that record's "copy" field — components compose each
-other, so a component's dependencies have to come along with it.
+Read https://fantasy-u-is.vercel.app/llms.txt first — it explains the method:
+start from a component's shipped example and change the data, not the structure.
+Fetch https://fantasy-u-is.vercel.app/r/<Component>.json for one component's example
+and source, or https://fantasy-u-is.vercel.app/llms-full.txt for every example in
+one document. When vendoring, copy every path in a record's "copy" field —
+components compose each other, so dependencies have to come along too.
 ```
 
 ### Copying a component correctly

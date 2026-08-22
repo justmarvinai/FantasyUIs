@@ -1,0 +1,164 @@
+/* Ledger — what came in, what went out, and what is left. */
+
+.fui-ledger {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-family: var(--fui-font-ui);
+}
+
+.fui-ledger__head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--fui-gap-sm);
+}
+
+.fui-ledger__title {
+  flex: 1;
+  font-size: 14px;
+}
+
+.fui-ledger__balance {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--fui-gold);
+}
+
+.fui-ledger__coin {
+  width: 15px;
+  height: 15px;
+  background-color: currentColor;
+  mask: var(--fui-glyph-src, var(--fui-mask-none)) center / contain no-repeat;
+  -webkit-mask: var(--fui-glyph-src, var(--fui-mask-none)) center / contain no-repeat;
+}
+
+.fui-ledger__summary {
+  display: flex;
+  gap: 4px;
+}
+
+.fui-ledger__stat {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 1px;
+  padding: 5px 9px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--fui-radius);
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.fui-ledger__stat-label {
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fui-ink-faint);
+}
+
+.fui-ledger__stat-value {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--fui-ink);
+}
+
+.fui-ledger__stat[data-sign='up'] .fui-ledger__stat-value { color: var(--fui-success); }
+.fui-ledger__stat[data-sign='down'] .fui-ledger__stat-value { color: var(--fui-danger); }
+
+.fui-ledger__list {
+  display: flex;
+  flex-direction: column;
+}
+
+.fui-ledger__row {
+  display: flex;
+  align-items: center;
+  gap: var(--fui-gap-sm);
+  padding: 6px 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.fui-ledger__row:last-child { border-bottom: 0; }
+
+/* An arrow drawn from a clipped block: up for income, down for spend, so the
+   direction reads before the sign does. */
+.fui-ledger__mark {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  background: var(--fui-success);
+  clip-path: polygon(50% 8%, 92% 52%, 66% 52%, 66% 92%, 34% 92%, 34% 52%, 8% 52%);
+}
+
+.fui-ledger__row[data-sign='down'] .fui-ledger__mark {
+  background: var(--fui-danger);
+  transform: rotate(180deg);
+}
+
+.fui-ledger__mark.is-glyph {
+  clip-path: none;
+  transform: none;
+  background-color: var(--fui-success);
+  mask: var(--fui-glyph-src, var(--fui-mask-none)) center / contain no-repeat;
+  -webkit-mask: var(--fui-glyph-src, var(--fui-mask-none)) center / contain no-repeat;
+}
+
+.fui-ledger__row[data-sign='down'] .fui-ledger__mark.is-glyph {
+  background-color: var(--fui-danger);
+}
+
+.fui-ledger__text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.fui-ledger__label {
+  font-size: 12px;
+  color: var(--fui-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fui-ledger__meta {
+  font-size: 9.5px;
+  color: var(--fui-ink-faint);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fui-ledger__amounts {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0;
+  flex: none;
+}
+
+.fui-ledger__amount {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--fui-success);
+}
+
+.fui-ledger__row[data-sign='down'] .fui-ledger__amount { color: var(--fui-danger); }
+
+/* The running balance is the quiet number — it is context for the amount, not
+   the thing being read. */
+.fui-ledger__running {
+  font-size: 9.5px;
+  color: var(--fui-ink-faint);
+}
+
+.fui-ledger__empty {
+  padding: 18px;
+  font-size: 11.5px;
+  text-align: center;
+  color: var(--fui-ink-faint);
+}

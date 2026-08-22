@@ -1,0 +1,173 @@
+/* KillFeed — the running "who killed whom" log in a HUD corner. */
+
+.fui-killfeed {
+  display: block;
+  width: 100%;
+  max-width: 420px;
+  pointer-events: none;
+}
+
+.fui-killfeed__list {
+  display: grid;
+  gap: 4px;
+  justify-items: end;
+}
+
+.fui-killfeed[data-align='left'] .fui-killfeed__list { justify-items: start; }
+
+.fui-killfeed__row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  max-width: 100%;
+  padding: 4px 10px;
+  background: linear-gradient(
+    to left,
+    color-mix(in srgb, var(--fui-panel-ink, #14100c) 82%, transparent),
+    color-mix(in srgb, var(--fui-panel-ink, #14100c) 40%, transparent)
+  );
+  border-right: 2px solid color-mix(in srgb, var(--fui-accent, #d8c9a6) 55%, transparent);
+  border-radius: 2px;
+  font: var(--fui-font-label, 600 12px/1.3 system-ui, sans-serif);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition:
+    opacity 380ms ease-out,
+    transform 380ms ease-out;
+}
+
+.fui-killfeed[data-align='left'] .fui-killfeed__row {
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--fui-panel-ink, #14100c) 82%, transparent),
+    color-mix(in srgb, var(--fui-panel-ink, #14100c) 40%, transparent)
+  );
+  border-right: 0;
+  border-left: 2px solid color-mix(in srgb, var(--fui-accent, #d8c9a6) 55%, transparent);
+}
+
+/* A headline event — first blood, a boss going down — earns the gold bar and a
+   brighter ground, because it is the one line worth breaking focus for. */
+.fui-killfeed__row[data-headline='on'] {
+  border-color: var(--fui-gold, #e0b04a);
+  background: linear-gradient(
+    to left,
+    color-mix(in srgb, var(--fui-gold, #e0b04a) 22%, var(--fui-panel-ink, #14100c)),
+    color-mix(in srgb, var(--fui-panel-ink, #14100c) 45%, transparent)
+  );
+  box-shadow: 0 0 14px color-mix(in srgb, var(--fui-gold, #e0b04a) 25%, transparent);
+}
+
+.fui-killfeed[data-align='left'] .fui-killfeed__row[data-headline='on'] {
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--fui-gold, #e0b04a) 22%, var(--fui-panel-ink, #14100c)),
+    color-mix(in srgb, var(--fui-panel-ink, #14100c) 45%, transparent)
+  );
+}
+
+.fui-killfeed__name {
+  color: var(--fui-text, #e8e0cd);
+  text-shadow: 0 1px 2px rgb(0 0 0 / 0.7);
+}
+
+.fui-killfeed__name[data-side='ally'] { color: var(--fui-info, #6fa8dc); }
+.fui-killfeed__name[data-side='enemy'] { color: var(--fui-danger, #d8543f); }
+
+.fui-killfeed__streak {
+  padding: 0 5px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--fui-gold, #e0b04a) 30%, transparent);
+  color: var(--fui-gold, #e0b04a);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+/* The verb. Glyph art is monochrome, so it goes in as a mask over currentColor
+   rather than as a background image — one file serves every state. */
+.fui-killfeed__means {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 80%, transparent);
+  font-size: 13px;
+  line-height: 18px;
+  text-align: center;
+  background-color: currentColor;
+  mask-image: var(--fui-killfeed-glyph, var(--fui-mask-none));
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+  -webkit-mask-image: var(--fui-killfeed-glyph, var(--fui-mask-none));
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+}
+
+/* Without art the element carries a literal arrow, and a mask would eat it —
+   so an empty glyph slot drops the paint and shows the text instead. */
+.fui-killfeed__means[data-glyph='off'] {
+  background-color: transparent;
+  mask-image: none;
+  -webkit-mask-image: none;
+}
+
+.fui-killfeed__means[data-crit='on'] {
+  color: var(--fui-danger, #d8543f);
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--fui-danger, #d8543f) 70%, transparent));
+  transform: scale(1.15);
+}
+
+.fui-killfeed__note {
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 72%, transparent);
+  font-weight: 400;
+  font-style: italic;
+}
+
+.fui-killfeed[data-compact='on'] .fui-killfeed__row {
+  gap: 5px;
+  padding: 2px 8px;
+  font-size: 11px;
+}
+
+.fui-killfeed[data-compact='on'] .fui-killfeed__means {
+  width: 14px;
+  height: 14px;
+  line-height: 14px;
+}
+
+/* ── Motion ─────────────────────────────────────────────────────────────── */
+
+.fui-killfeed__row.is-new {
+  animation: fui-killfeed-in 260ms cubic-bezier(0.2, 0.9, 0.25, 1) both;
+}
+
+.fui-killfeed[data-align='left'] .fui-killfeed__row.is-new {
+  animation-name: fui-killfeed-in-left;
+}
+
+.fui-killfeed__row.is-gone {
+  opacity: 0;
+  transform: translateX(12px);
+}
+
+.fui-killfeed[data-align='left'] .fui-killfeed__row.is-gone {
+  transform: translateX(-12px);
+}
+
+@keyframes fui-killfeed-in {
+  from { opacity: 0; transform: translateX(24px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes fui-killfeed-in-left {
+  from { opacity: 0; transform: translateX(-24px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fui-killfeed__row,
+  .fui-killfeed__row.is-new { animation: none; transition: opacity 200ms linear; }
+  .fui-killfeed__row.is-gone { transform: none; }
+}

@@ -10,7 +10,8 @@
  *   - an optional mask slot must never fall back to `none` (that paints a block)
  *   - every option field needs a doc comment, because the site's props table
  *     is generated from them
- *   - every asset id referenced must exist in the manifest
+ *   - every asset id referenced must exist in the manifest, in components and
+ *     in the demos, and a slot drawn as a mask must be given monochrome art
  *
  *   npm run audit
  */
@@ -68,6 +69,13 @@ for (const file of files) {
   }
   for (const m of ts.matchAll(/class:\s*'([^']+)'/g)) {
     for (const c of m[1].split(/\s+/)) if (c.startsWith('fui-')) emitted.add(c);
+  }
+  // A `class:` whose value is an expression rather than a literal — most often a
+  // ternary picking between two names. Harvest every quoted class in the value.
+  for (const m of ts.matchAll(/class:\s*([^,\n]*\?[^,\n]*)/g)) {
+    for (const inner of m[1].matchAll(/'([^']*)'/g)) {
+      for (const c of inner[1].split(/\s+/)) if (c.startsWith('fui-')) emitted.add(c);
+    }
   }
   for (const m of ts.matchAll(/classList\.(?:add|toggle)\('([^']+)'/g)) {
     if (m[1].startsWith('fui-')) emitted.add(m[1]);
@@ -203,7 +211,103 @@ for (const file of files) {
   }
 }
 
-// ── 9. Barrel and catalog coverage ──────────────────────────────────────────
+// ── 10. Demo asset ids must exist, and mask slots need monochrome art ───────
+// The demos are the library's code samples, so a wrong id there ships as
+// documentation. Two failures matter and neither shows up in a typecheck: an id
+// that is not in the manifest resolves to an undefined custom property (which
+// invalidates the whole declaration it sits in), and a *painted* icon handed to
+// a slot the component draws as a CSS mask renders as a solid block.
+//
+// Which slots are masks is derived, not guessed: find the custom properties a
+// component's CSS feeds to `mask`, then find the option field its TypeScript
+// writes into them. `icon` is a mask on SynergyPanel and a background on Icon,
+// and only the component itself knows which.
+{
+  const byId = new Map(manifest.assets.map((a) => [a.id, a]));
+
+  /** component id → set of option field names drawn through a mask */
+  const maskFields = new Map();
+  for (const file of files) {
+    const name = file.replace(/\.ts$/, '');
+    const ts = await readFile(path.join(COMPONENTS, file), 'utf8');
+    let css = '';
+    try {
+      css = await readFile(path.join(COMPONENTS, `${name}.css`), 'utf8');
+    } catch {
+      continue;
+    }
+
+    const masked = new Set();
+    for (const m of css.matchAll(/-?(?:webkit-)?mask(?:-image)?\s*:\s*([^;]+);/g)) {
+      for (const v of m[1].matchAll(/var\(\s*(--fui-[a-z0-9-]+)/g)) masked.add(v[1]);
+    }
+    if (!masked.size) continue;
+
+    const fields = new Set();
+    for (const prop of masked) {
+      // `'--fui-x-glyph': `var(--fui-img-${skill.icon})`` → field name `icon`.
+      const re = new RegExp(`'${prop}'\\s*:\\s*\`var\\(--fui-img-\\$\\{([^}]+)\\}\\)\``, 'g');
+      for (const m of ts.matchAll(re)) {
+        const expr = m[1].trim();
+        const field = expr.split(/[.?]/).filter(Boolean).pop();
+        if (field && /^[a-zA-Z][a-zA-Z0-9]*$/.test(field)) fields.add(field);
+      }
+    }
+    if (fields.size) maskFields.set(name, fields);
+  }
+
+  const demoDir = path.join(ROOT, 'src', 'site', 'demos');
+  for (const file of (await readdir(demoDir)).filter((f) => f.endsWith('.ts')).sort()) {
+    const src = await readFile(path.join(demoDir, file), 'utf8');
+    const where = `demos/${file}`;
+
+    // Every asset id in the file must exist, whatever slot it sits in.
+    for (const m of src.matchAll(/\b(?:art|thumb|crest|glyph|icon|means|[a-zA-Z]*Art)\s*:\s*'([a-z0-9-]+)'/g)) {
+      if (!byId.has(m[1])) fail(where, `references asset "${m[1]}", which is not in the manifest`);
+    }
+    for (const list of src.matchAll(/\b(?:glyphs|effects)\s*:\s*\[([^\]]*)\]/gs)) {
+      for (const g of list[1].matchAll(/'([a-z0-9-]+)'/g)) {
+        if (!byId.has(g[1])) fail(where, `references asset "${g[1]}", which is not in the manifest`);
+      }
+    }
+
+    // Mask slots additionally need monochrome art. Scope each field to the
+    // component being constructed above it — the nearest preceding `new X(`.
+    const constructions = [...src.matchAll(/new\s+([A-Z][A-Za-z0-9]*)\s*\(/g)];
+    const componentAt = (index) => {
+      let current = null;
+      for (const c of constructions) {
+        if (c.index > index) break;
+        current = c[1];
+      }
+      return current;
+    };
+
+    for (const m of src.matchAll(/\b([a-zA-Z][a-zA-Z0-9]*)\s*:\s*'([a-z0-9-]+)'/g)) {
+      const asset = byId.get(m[2]);
+      if (!asset || asset.category === 'glyph') continue;
+      const owner = componentAt(m.index);
+      if (owner && maskFields.get(owner)?.has(m[1])) {
+        fail(
+          where,
+          `passes painted art "${m[2]}" to ${owner}'s \`${m[1]}\`, which is drawn as a mask — it will paint a solid block`,
+        );
+      }
+    }
+    for (const list of src.matchAll(/\b(glyphs|effects)\s*:\s*\[([^\]]*)\]/gs)) {
+      const owner = componentAt(list.index);
+      if (!owner || !maskFields.get(owner)?.has(list[1])) continue;
+      for (const g of list[2].matchAll(/'([a-z0-9-]+)'/g)) {
+        const asset = byId.get(g[1]);
+        if (asset && asset.category !== 'glyph') {
+          fail(where, `passes painted art "${g[1]}" to ${owner}'s \`${list[1]}\`, a mask slot`);
+        }
+      }
+    }
+  }
+}
+
+// ── 11. Barrel and catalog coverage ─────────────────────────────────────────
 const barrel = await readFile(path.join(ROOT, 'src', 'lib', 'index.ts'), 'utf8');
 const stylesheet = await readFile(path.join(ROOT, 'src', 'lib', 'styles', 'index.css'), 'utf8');
 const registryIds = new Set(manifest.components.map((c) => c.id));

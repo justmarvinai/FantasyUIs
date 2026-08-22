@@ -1,0 +1,198 @@
+/* Signpost — a nav menu that belongs in the world rather than in a panel. */
+
+.fui-sign {
+  --fui-sign-h: 300px;
+  --fui-sign-wood: #6b4a26;
+  --fui-sign-lit: #9a7040;
+  --fui-sign-ink: #2a1c0e;
+  position: relative;
+  display: flex;
+  width: 100%;
+  /* A signpost that spans a wide screen stops reading as an object. Cap it and
+     centre it; the arms are anchored to the post, not to these edges. */
+  max-width: 560px;
+  margin-inline: auto;
+  flex-direction: column;
+  align-items: center;
+  min-height: var(--fui-sign-h);
+  font-family: var(--fui-font-ui);
+}
+
+.fui-sign[data-wood='walnut'] { --fui-sign-wood: #4a3120; --fui-sign-lit: #79512f; }
+.fui-sign[data-wood='ashen'] { --fui-sign-wood: #514a41; --fui-sign-lit: #7d7367; }
+
+.fui-sign__cap {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: var(--fui-gap-sm);
+  padding: 5px 16px;
+  border-radius: 4px 4px 2px 2px;
+  background: linear-gradient(180deg, var(--fui-sign-lit), var(--fui-sign-wood));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 4px 10px rgba(0, 0, 0, 0.55);
+}
+
+.fui-sign__title {
+  font-family: var(--fui-font-display);
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  /* Burned in: dark ink with a lit edge under it, not a light-on-dark label. */
+  color: var(--fui-sign-ink);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.fui-sign__lantern {
+  position: relative;
+  width: 13px;
+  height: 17px;
+  border: 1px solid rgba(0, 0, 0, 0.6);
+  border-radius: 2px 2px 4px 4px;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.fui-sign__flame {
+  position: absolute;
+  inset: 3px;
+  border-radius: 50% 50% 40% 40%;
+  background: radial-gradient(circle at 50% 65%, #ffe9a8, #e8a13c 55%, #b8541a 100%);
+  box-shadow: 0 0 12px rgba(232, 161, 60, 0.85);
+  animation: fui-sign-flicker 2.4s var(--fui-ease) infinite;
+}
+
+@keyframes fui-sign-flicker {
+  0%, 100% { opacity: 1; transform: scaleY(1); }
+  40% { opacity: 0.82; transform: scaleY(0.9); }
+  70% { opacity: 0.95; transform: scaleY(1.05); }
+}
+
+/* The post itself is a vertical beam; the planks hang off it either side. */
+.fui-sign__post {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--fui-gap-sm);
+  width: 100%;
+  padding-top: var(--fui-gap);
+}
+
+.fui-sign__post::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 16px;
+  margin-left: -8px;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--fui-sign-wood) 60%, #000) 0%,
+    var(--fui-sign-lit) 38%,
+    var(--fui-sign-wood) 100%
+  );
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.5);
+}
+
+.fui-sign__arm {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  transform: rotate(var(--fui-sign-tilt, 0deg));
+  transition: transform var(--fui-t) var(--fui-ease);
+}
+
+/* Each arm owns one half of the width and pushes its plank *toward* the centre,
+   so plank and post always meet however wide the component gets. Aligning to
+   the outer edge instead is what leaves a gap on a wide screen. */
+.fui-sign__arm[data-side='left'] { justify-content: flex-end; padding-right: 50%; }
+.fui-sign__arm[data-side='right'] { justify-content: flex-start; padding-left: 50%; }
+
+.fui-sign__arm[data-state='open']:hover {
+  transform: rotate(calc(var(--fui-sign-tilt, 0deg) * 0.4)) translateY(-1px);
+}
+
+.fui-sign__arm[data-state='locked'] {
+  cursor: default;
+  filter: grayscale(0.7) brightness(0.62);
+}
+
+/* The plank is clipped into an arrow, so the shape carries the direction and
+   the label does not have to say it. */
+.fui-sign__plank {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  /* Of the arm's half-width, so a plank is never wider than its own side. */
+  min-width: 78%;
+  padding: 7px 16px;
+  background: linear-gradient(
+    180deg,
+    var(--fui-sign-lit) 0%,
+    var(--fui-sign-wood) 55%,
+    color-mix(in srgb, var(--fui-sign-wood) 70%, #000) 100%
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    0 3px 8px rgba(0, 0, 0, 0.55);
+}
+
+.fui-sign__arm[data-side='left'] .fui-sign__plank {
+  padding-left: 24px;
+  clip-path: polygon(14px 0, 100% 0, 100% 100%, 14px 100%, 0 50%);
+}
+
+.fui-sign__arm[data-side='right'] .fui-sign__plank {
+  padding-right: 24px;
+  flex-direction: row-reverse;
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 0 100%);
+}
+
+.fui-sign__arm[data-state='current'] .fui-sign__plank {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 0 0 2px var(--fui-gold),
+    0 3px 12px rgba(217, 164, 65, 0.4);
+}
+
+.fui-sign__glyph {
+  width: 15px;
+  height: 15px;
+  flex: none;
+  background-color: var(--fui-sign-ink);
+  mask: var(--fui-glyph-src, var(--fui-mask-none)) center / contain no-repeat;
+  -webkit-mask: var(--fui-glyph-src, var(--fui-mask-none)) center / contain no-repeat;
+  opacity: 0.75;
+}
+
+.fui-sign__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-width: 0;
+}
+
+.fui-sign__arm[data-side='right'] .fui-sign__text { text-align: right; }
+
+.fui-sign__label {
+  font-family: var(--fui-font-display);
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--fui-sign-ink);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+.fui-sign__note {
+  font-size: 9.5px;
+  white-space: nowrap;
+  color: color-mix(in srgb, var(--fui-sign-ink) 70%, transparent);
+}

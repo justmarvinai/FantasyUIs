@@ -1,0 +1,169 @@
+/* ResistGrid — what this unit shrugs off and what melts it. */
+
+.fui-resist {
+  --fui-resist-cols: 4;
+  --fui-resist-ink: var(--fui-neutral);
+  --fui-resist-pos: 0%;
+  --fui-resist-neg: 0%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--fui-gap-sm);
+  font-family: var(--fui-font-ui);
+}
+
+.fui-resist__title {
+  font-size: 14px;
+}
+
+.fui-resist__list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fui-resist[data-variant='grid'] .fui-resist__list {
+  display: grid;
+  grid-template-columns: repeat(var(--fui-resist-cols), 1fr);
+  gap: 5px;
+}
+
+.fui-resist__row {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.fui-resist[data-variant='grid'] .fui-resist__row {
+  padding: 6px 7px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--fui-radius);
+  background: rgba(0, 0, 0, 0.32);
+}
+
+.fui-resist__head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.fui-resist__glyph {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  background-color: var(--fui-resist-ink);
+  mask: var(--fui-glyph-src, var(--fui-mask-none)) center / contain no-repeat;
+  -webkit-mask: var(--fui-glyph-src, var(--fui-mask-none)) center / contain no-repeat;
+}
+
+.fui-resist__glyph.is-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  mask: none;
+  -webkit-mask: none;
+}
+
+.fui-resist__names {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0;
+  min-width: 0;
+}
+
+.fui-resist__label {
+  font-size: 11.5px;
+  color: var(--fui-ink);
+}
+
+.fui-resist__note {
+  font-size: 9px;
+  color: var(--fui-ink-faint);
+}
+
+.fui-resist__value {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--fui-ink-dim);
+}
+
+.fui-resist__row[data-state='strong'] .fui-resist__value,
+.fui-resist__row[data-state='immune'] .fui-resist__value { color: var(--fui-success); }
+
+.fui-resist__row[data-state='absorb'] .fui-resist__value { color: var(--fui-gold); }
+.fui-resist__row[data-state='weak'] .fui-resist__value { color: var(--fui-danger); }
+
+.fui-resist__delta {
+  font-size: 8.5px;
+}
+
+.fui-resist__delta[data-sign='up'] { color: var(--fui-success); }
+.fui-resist__delta[data-sign='down'] { color: var(--fui-danger); }
+
+/* A centre line with two fills growing outward from it: resistance to the
+   right, weakness to the left. Drawing a weakness as a short resistance bar is
+   the mistake this layout exists to avoid. */
+.fui-resist__track {
+  position: relative;
+  display: block;
+  height: 7px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.6);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.fui-resist__track::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -2px;
+  bottom: -2px;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.fui-resist__fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  transition: width var(--fui-t-slow) var(--fui-ease);
+}
+
+.fui-resist__fill--pos {
+  left: 50%;
+  width: calc(var(--fui-resist-pos) / 2);
+  border-radius: 0 4px 4px 0;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--fui-resist-ink) 60%, #000),
+    var(--fui-resist-ink)
+  );
+  box-shadow: 0 0 7px color-mix(in srgb, var(--fui-resist-ink) 45%, transparent);
+}
+
+.fui-resist__fill--neg {
+  right: 50%;
+  width: calc(var(--fui-resist-neg) / 2);
+  border-radius: 4px 0 0 4px;
+  background: linear-gradient(
+    270deg,
+    color-mix(in srgb, var(--fui-danger) 60%, #000),
+    var(--fui-danger)
+  );
+  box-shadow: 0 0 7px color-mix(in srgb, var(--fui-danger) 45%, transparent);
+}
+
+/* Immune and absorb both pin the bar at the end, so the word carries the
+   difference the bar cannot. */
+.fui-resist__verdict {
+  align-self: flex-end;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fui-success);
+}
+
+.fui-resist__row[data-state='absorb'] .fui-resist__verdict { color: var(--fui-gold); }

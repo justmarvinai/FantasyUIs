@@ -1,0 +1,213 @@
+/* ClanPerks — shared guild upgrades bought out of the treasury. */
+
+.fui-clanperks {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  width: 100%;
+  max-width: 460px;
+  background: var(--fui-panel-fill-src, none) center / 100% 100%;
+  background-color: color-mix(in srgb, var(--fui-panel-ink, #14100c) 80%, transparent);
+  border-radius: 6px;
+  color: var(--fui-text, #e8e0cd);
+}
+
+.fui-clanperks__head {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+
+.fui-clanperks__title {
+  margin: 0;
+  flex: 1;
+  font: var(--fui-font-title, 700 15px/1.2 system-ui, sans-serif);
+  letter-spacing: 0.04em;
+}
+
+.fui-clanperks__level {
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 50%, transparent);
+}
+
+.fui-clanperks__purse {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 11px;
+  background: color-mix(in srgb, var(--fui-panel-ink, #14100c) 80%, transparent);
+  border: 1px solid color-mix(in srgb, var(--fui-gold, #e0b04a) 40%, transparent);
+}
+
+.fui-clanperks__coin {
+  width: 14px;
+  height: 14px;
+  background-color: var(--fui-gold, #e0b04a);
+  mask: var(--fui-perk-coin, var(--fui-mask-none)) no-repeat center / contain;
+  -webkit-mask: var(--fui-perk-coin, var(--fui-mask-none)) no-repeat center / contain;
+}
+
+.fui-clanperks__gold {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--fui-gold, #e0b04a);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Cards ──────────────────────────────────────────────────────────────── */
+
+.fui-clanperks__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 8px;
+}
+
+.fui-clanperks__card {
+  --fui-perk-fill: 0;
+
+  position: relative;
+  display: grid;
+  gap: 6px;
+  padding: 9px 10px;
+  border-radius: 5px;
+  border: 1px solid color-mix(in srgb, var(--fui-text, #e8e0cd) 13%, transparent);
+  /* The card's own ground fills as the perk levels — progress you feel rather
+     than read, under the numbers that state it exactly. */
+  background:
+    linear-gradient(
+      to right,
+      color-mix(in srgb, var(--fui-accent, #d8c9a6) 15%, transparent) calc(100% * var(--fui-perk-fill)),
+      transparent calc(100% * var(--fui-perk-fill))
+    ),
+    color-mix(in srgb, var(--fui-panel-ink, #14100c) 55%, transparent);
+}
+
+.fui-clanperks__card[data-state='max'] {
+  border-color: color-mix(in srgb, var(--fui-gold, #e0b04a) 60%, transparent);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--fui-gold, #e0b04a) 18%, transparent);
+}
+
+.fui-clanperks__card[data-state='locked'] { opacity: 0.78; }
+
+.fui-clanperks__top { display: flex; align-items: center; gap: 8px; }
+
+.fui-clanperks__badge {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--fui-accent, #d8c9a6) 16%, var(--fui-panel-ink, #14100c));
+  border: 1px solid color-mix(in srgb, var(--fui-accent, #d8c9a6) 35%, transparent);
+  color: var(--fui-accent, #d8c9a6);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.fui-clanperks__badge[data-glyph='on']::before {
+  content: '';
+  width: 17px;
+  height: 17px;
+  background-color: currentColor;
+  mask: var(--fui-perk-glyph, var(--fui-mask-none)) no-repeat center / contain;
+  -webkit-mask: var(--fui-perk-glyph, var(--fui-mask-none)) no-repeat center / contain;
+}
+
+.fui-clanperks__card[data-state='max'] .fui-clanperks__badge {
+  background: var(--fui-gold, #e0b04a);
+  border-color: var(--fui-gold, #e0b04a);
+  color: #1a1408;
+}
+
+.fui-clanperks__names { display: grid; gap: 1px; min-width: 0; }
+
+.fui-clanperks__name {
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fui-clanperks__rank {
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 55%, transparent);
+}
+
+.fui-clanperks__track { display: flex; gap: 2px; }
+
+.fui-clanperks__pip {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: color-mix(in srgb, #000 50%, transparent);
+}
+
+.fui-clanperks__pip[data-on='on'] {
+  background: var(--fui-accent, #d8c9a6);
+  box-shadow: 0 0 5px color-mix(in srgb, var(--fui-accent, #d8c9a6) 55%, transparent);
+}
+
+.fui-clanperks__card[data-state='max'] .fui-clanperks__pip[data-on='on'] {
+  background: var(--fui-gold, #e0b04a);
+}
+
+.fui-clanperks__effect {
+  margin: 0;
+  font-size: 10px;
+  line-height: 1.35;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 65%, transparent);
+}
+
+.fui-clanperks__fund {
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 3px;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: filter 130ms ease-out;
+}
+
+.fui-clanperks__fund[data-state='open'] {
+  background: linear-gradient(to bottom, #f0d68a, var(--fui-gold, #e0b04a));
+  color: #1a1408;
+}
+
+/* A blocked button prints the reason, so it must stay legible rather than
+   fading out like an ordinary disabled control. */
+.fui-clanperks__fund[data-state='locked'] {
+  background: color-mix(in srgb, var(--fui-danger, #d8543f) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--fui-danger, #d8543f) 35%, transparent);
+  color: color-mix(in srgb, var(--fui-danger, #d8543f) 95%, transparent);
+  cursor: not-allowed;
+  text-transform: none;
+  letter-spacing: 0.02em;
+}
+
+.fui-clanperks__fund[data-state='max'] {
+  background: none;
+  border: 1px solid color-mix(in srgb, var(--fui-gold, #e0b04a) 45%, transparent);
+  color: var(--fui-gold, #e0b04a);
+  cursor: default;
+}
+
+.fui-clanperks__fund:hover:not([disabled]) { filter: brightness(1.1); }
+
+.fui-clanperks__fund:focus-visible {
+  outline: 2px solid var(--fui-accent, #d8c9a6);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fui-clanperks__fund { transition: none; }
+}

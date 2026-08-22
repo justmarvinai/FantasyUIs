@@ -58,7 +58,7 @@ build me more components."* That workflow is:
 
 4. **Write a theme file** if the pack is a new visual style: copy
    `src/lib/styles/theme-stone-vine.css` and rebind every semantic slot. A theme
-   that fills in all the slots gets all 164 existing components for free.
+   that fills in all the slots gets all 209 existing components for free.
 
 5. **Build new components** for what the art newly makes possible, plus demos in
    `src/site/demos/`.
@@ -87,8 +87,18 @@ src/site/                    the documentation site (catalog, demos, chrome)
   demos/gacha.ts, roster.ts  collection, champions, gear, ascension
   demos/world.ts             maps, codex, social, achievements, patch notes
   demos/screens.ts           full-screen templates and feedback
+  demos/chrome.ts, systems.ts, station.ts, economy.ts, atlas.ts
+  demos/hall.ts              surfaces: Pedestal, RuneCircle, Tabletop, Signpost, glass
+  demos/dials.ts             controls: dice, stat points, rune gestures, time, audio
+  demos/records.ts           data: stat blocks, relationship webs, tiers, ledgers
+  demos/estate.ts            widgets: companions, housing, loadouts, haggling, calendar
+  demos/skirmish.ts          combat: initiative, tactics grid, reticle, kill feed
+  demos/vault.ts             live-ops: wishes, exchange, skins, synergies, passes
+  demos/guild.ts             social: guild bank, applications, gifts, perks, finder
+  demos/signals.ts           feedback: objective banners, impact frames, nameplates
+  demos/chapters.ts          screens: creator, inventory, summon, credits, season end
 scripts/ingest.mjs           new_assets/ → public/fui/ + manifests
-scripts/generate.mjs         → static site, registry.json, llms.txt, /r/*.json
+scripts/generate.mjs         → static site, registry.json, llms.txt, llms-full.txt, /r/*.json
 scripts/gen-lib.mjs          → src/lib/index.ts and styles/index.css
 scripts/audit.mjs            library-wide invariants a typechecker cannot see
 ```
@@ -229,7 +239,7 @@ npm run dev        # gen + Vite on :5173
 npm run build      # ingest → gen → static build into dist/
 npm run typecheck  # tsc --noEmit — must stay clean
 npm run ingest     # reprocess new_assets/
-npm run gen        # regenerate site + registry.json + llms.txt + /r/*.json
+npm run gen        # regenerate site + registry.json + llms.txt + llms-full.txt + /r/*.json
 npm run shots      # reference screenshots (dev server must be running)
 ```
 
@@ -248,6 +258,6 @@ can fetch them. The build runs `ingest` too, so a deploy is reproducible from
 
 Develop on `claude/fantasyuis-asset-library-19h9eq`. Generated site files
 (`/components/`, `/index.html`, `/start.html`, `/assets.html`, `public/r/`,
-`public/registry.json`, `public/llms.txt`) are gitignored — they are rebuilt on
+`public/registry.json`, `public/llms.txt`, `public/llms-full.txt`) are gitignored — they are rebuilt on
 every deploy. Ingest output (`public/fui/`, `src/data/assets.generated.ts`) *is*
 committed so a fresh clone runs without reprocessing every PNG.

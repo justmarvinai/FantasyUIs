@@ -1,0 +1,177 @@
+/* StatAllocator — the point-buy sheet, showing what each point actually buys. */
+
+.fui-alloc {
+  --fui-alloc-ink: var(--fui-accent);
+  display: flex;
+  flex-direction: column;
+  gap: var(--fui-gap-sm);
+  font-family: var(--fui-font-ui);
+}
+
+.fui-alloc__head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--fui-gap-sm);
+}
+
+.fui-alloc__title {
+  flex: 1;
+  font-size: 14px;
+}
+
+.fui-alloc__pool {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--fui-gold);
+}
+
+/* An empty pool is the state the player most needs to notice. */
+.fui-alloc[data-spent='true'] .fui-alloc__pool {
+  color: var(--fui-ink-faint);
+}
+
+.fui-alloc__reset {
+  padding: 3px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--fui-radius);
+  background: rgba(0, 0, 0, 0.4);
+  color: var(--fui-ink-dim);
+  font-family: inherit;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.fui-alloc__reset:hover { color: var(--fui-ink); }
+
+.fui-alloc__list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fui-alloc__row {
+  display: flex;
+  align-items: center;
+  gap: var(--fui-gap-sm);
+  padding: 7px 9px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-left: 3px solid var(--fui-alloc-ink);
+  border-radius: var(--fui-radius);
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.3));
+}
+
+.fui-alloc__glyph {
+  width: 22px;
+  height: 22px;
+  flex: none;
+  background-color: var(--fui-alloc-ink);
+  mask: var(--fui-glyph-src, var(--fui-mask-none)) center / contain no-repeat;
+  -webkit-mask: var(--fui-glyph-src, var(--fui-mask-none)) center / contain no-repeat;
+}
+
+.fui-alloc__text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.fui-alloc__name {
+  font-size: 12.5px;
+  color: var(--fui-ink);
+}
+
+.fui-alloc__note {
+  font-size: 9.5px;
+  color: var(--fui-ink-faint);
+}
+
+.fui-alloc__stepper {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex: none;
+}
+
+.fui-alloc__step {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--fui-radius);
+  background: rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+}
+
+/* Plus and minus drawn from pseudo-elements, so no glyph font has to load. */
+.fui-alloc__step::before,
+.fui-alloc__step::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 10px;
+  height: 2px;
+  background: var(--fui-ink-dim);
+}
+
+.fui-alloc__step--up::after {
+  width: 2px;
+  height: 10px;
+}
+
+.fui-alloc__step--down::after { display: none; }
+
+.fui-alloc__step:hover:not(:disabled) {
+  border-color: var(--fui-alloc-ink);
+}
+
+.fui-alloc__step:hover:not(:disabled)::before,
+.fui-alloc__step:hover:not(:disabled)::after {
+  background: var(--fui-ink);
+}
+
+.fui-alloc__step:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.fui-alloc__value {
+  display: inline-flex;
+  min-width: 46px;
+  align-items: baseline;
+  justify-content: center;
+  gap: 3px;
+}
+
+.fui-alloc__total {
+  font-family: var(--fui-font-display);
+  font-size: 17px;
+  color: var(--fui-ink);
+}
+
+/* Points added in this session read differently from the base, so a player can
+   always see what a reset would take back. */
+.fui-alloc__added {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--fui-success);
+}
+
+.fui-alloc__commit {
+  padding: 8px;
+  border: 1px solid var(--fui-gold);
+  border-radius: var(--fui-radius);
+  background: linear-gradient(180deg, rgba(217, 164, 65, 0.34), rgba(217, 164, 65, 0.1));
+  color: var(--fui-ink);
+  font-family: inherit;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.fui-alloc__commit:hover { filter: brightness(1.28); }

@@ -1,0 +1,160 @@
+/* InitiativeTrack — who acts now, who is next, and how far away your turn is. */
+
+.fui-init {
+  --fui-init-size: 46px;
+  --fui-init-ink: var(--fui-neutral);
+  --fui-init-hp: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-family: var(--fui-font-ui);
+}
+
+.fui-init__head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--fui-gap-sm);
+}
+
+.fui-init__title {
+  flex: 1;
+  font-size: 10px;
+}
+
+.fui-init__round {
+  font-size: 10.5px;
+  color: var(--fui-ink-faint);
+}
+
+.fui-init__queue {
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+  padding: 6px;
+  overflow-x: auto;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--fui-radius);
+  background: rgba(0, 0, 0, 0.4);
+  scrollbar-width: none;
+}
+
+.fui-init__queue::-webkit-scrollbar { display: none; }
+
+.fui-init__slot {
+  position: relative;
+  display: flex;
+  width: var(--fui-init-size);
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  transition: transform var(--fui-t) var(--fui-ease);
+}
+
+.fui-init__slot[data-side='ally'] { --fui-init-ink: var(--fui-success); }
+.fui-init__slot[data-side='enemy'] { --fui-init-ink: var(--fui-danger); }
+
+/* Whoever is acting is bigger and lit. Everything after it is context. */
+.fui-init__slot[data-active='true'] {
+  width: calc(var(--fui-init-size) * 1.28);
+  margin-right: 4px;
+}
+
+.fui-init__slot[data-down='true'] {
+  opacity: 0.35;
+  filter: grayscale(1);
+}
+
+.fui-init__slot[data-stunned='true'] .fui-init__art {
+  filter: grayscale(0.7) brightness(0.7);
+}
+
+/* The health ring is a conic gradient masked to a hoop, so a portrait carries
+   its own health without a second bar taking up room in the queue. */
+.fui-init__ring {
+  position: relative;
+  display: grid;
+  width: 100%;
+  aspect-ratio: 1;
+  place-items: center;
+  border-radius: 50%;
+  background: conic-gradient(
+    var(--fui-init-ink) calc(var(--fui-init-hp) * 360deg),
+    rgba(255, 255, 255, 0.12) 0
+  );
+  padding: 3px;
+}
+
+.fui-init__slot[data-active='true'] .fui-init__ring {
+  box-shadow: 0 0 0 2px var(--fui-init-ink), 0 0 16px color-mix(in srgb, var(--fui-init-ink) 60%, transparent);
+}
+
+.fui-init__art {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: center / cover no-repeat rgba(0, 0, 0, 0.6);
+}
+
+.fui-init__effects {
+  position: absolute;
+  left: 50%;
+  top: -4px;
+  display: flex;
+  gap: 2px;
+  transform: translateX(-50%);
+}
+
+.fui-init__effect {
+  width: 11px;
+  height: 11px;
+  background-color: var(--fui-ink);
+  mask: var(--fui-glyph-src, var(--fui-mask-none)) center / contain no-repeat;
+  -webkit-mask: var(--fui-glyph-src, var(--fui-mask-none)) center / contain no-repeat;
+  filter: drop-shadow(0 1px 2px #000);
+}
+
+/* A stunned unit keeps its slot and says it is skipping. Vanishing would be
+   the same as lying about the order. */
+.fui-init__skip {
+  position: absolute;
+  top: 38%;
+  padding: 0 5px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.85);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fui-warn);
+}
+
+.fui-init__name {
+  max-width: 100%;
+  font-size: 8.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--fui-ink-faint);
+}
+
+.fui-init__slot[data-active='true'] .fui-init__name {
+  font-size: 9.5px;
+  color: var(--fui-ink);
+}
+
+.fui-init__speed {
+  font-size: 9px;
+  color: var(--fui-init-ink);
+}
+
+.fui-init__break {
+  align-self: center;
+  padding: 0 6px;
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--fui-ink-faint);
+  writing-mode: vertical-rl;
+  border-left: 1px dashed rgba(255, 255, 255, 0.22);
+}

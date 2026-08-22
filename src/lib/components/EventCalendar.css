@@ -1,0 +1,157 @@
+/* EventCalendar — a month with event bars, so overlaps are visible. */
+
+.fui-cal2 {
+  --fui-cal2-ink: var(--fui-accent);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-family: var(--fui-font-ui);
+}
+
+.fui-cal2__month {
+  font-size: 15px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.fui-cal2__weekdays,
+.fui-cal2__days,
+.fui-cal2__lane {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.fui-cal2__weekday {
+  padding-bottom: 2px;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--fui-ink-faint);
+}
+
+.fui-cal2__grid {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fui-cal2__week {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-bottom: 3px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.fui-cal2__day {
+  min-height: 22px;
+  padding: 2px 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.fui-cal2__day[data-out='true'] {
+  background: none;
+}
+
+/* Today is the anchor a player reads everything else against. */
+.fui-cal2__day[data-today='true'] {
+  background: color-mix(in srgb, var(--fui-gold) 22%, transparent);
+  box-shadow: inset 0 0 0 1px var(--fui-gold);
+}
+
+.fui-cal2__num {
+  font-size: 10px;
+  color: var(--fui-ink-faint);
+}
+
+.fui-cal2__day[data-today='true'] .fui-cal2__num {
+  color: var(--fui-gold);
+  font-weight: 700;
+}
+
+.fui-cal2__bars {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fui-cal2__bar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  height: 15px;
+  padding: 0 5px;
+  background: color-mix(in srgb, var(--fui-cal2-ink) 34%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--fui-cal2-ink) 60%, transparent);
+  color: var(--fui-ink);
+}
+
+/* Only the true ends of a run are rounded, so a bar split across two weeks
+   reads as one event continuing rather than as two. */
+.fui-cal2__bar[data-start='true'] { border-radius: 8px 0 0 8px; }
+.fui-cal2__bar[data-end='true'] { border-radius: 0 8px 8px 0; }
+.fui-cal2__bar[data-start='true'][data-end='true'] { border-radius: 8px; }
+
+.fui-cal2__bar[data-live='true'] {
+  background: color-mix(in srgb, var(--fui-cal2-ink) 55%, transparent);
+  box-shadow:
+    inset 0 0 0 1px var(--fui-cal2-ink),
+    0 0 8px color-mix(in srgb, var(--fui-cal2-ink) 40%, transparent);
+}
+
+.fui-cal2__bar-glyph {
+  width: 11px;
+  height: 11px;
+  flex: none;
+  background-color: currentColor;
+  mask: var(--fui-glyph-src, var(--fui-mask-none)) center / contain no-repeat;
+  -webkit-mask: var(--fui-glyph-src, var(--fui-mask-none)) center / contain no-repeat;
+}
+
+.fui-cal2__bar-label {
+  font-size: 9px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fui-cal2__now {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding-top: 2px;
+}
+
+.fui-cal2__live {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px;
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--fui-cal2-ink) 16%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--fui-cal2-ink) 45%, transparent);
+  font-size: 10px;
+  color: var(--fui-ink-dim);
+}
+
+.fui-cal2__live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--fui-cal2-ink);
+  box-shadow: 0 0 6px var(--fui-cal2-ink);
+  animation: fui-pulse 2s var(--fui-ease) infinite;
+}
+
+.fui-cal2__live-left {
+  color: var(--fui-ink-faint);
+}
+
+.fui-cal2__quiet {
+  font-size: 10.5px;
+  color: var(--fui-ink-faint);
+}

@@ -12,6 +12,15 @@ import { SYSTEMS } from './demos/systems.ts';
 import { STATION } from './demos/station.ts';
 import { ECONOMY } from './demos/economy.ts';
 import { ATLAS } from './demos/atlas.ts';
+import { HALL } from './demos/hall.ts';
+import { DIALS } from './demos/dials.ts';
+import { RECORDS } from './demos/records.ts';
+import { ESTATE } from './demos/estate.ts';
+import { SKIRMISH } from './demos/skirmish.ts';
+import { VAULT } from './demos/vault.ts';
+import { GUILD } from './demos/guild.ts';
+import { SIGNALS } from './demos/signals.ts';
+import { CHAPTERS } from './demos/chapters.ts';
 
 /** Every documented component, in the order the gallery lists them. */
 export const CATALOG: CatalogEntry[] = [
@@ -27,8 +36,17 @@ export const CATALOG: CatalogEntry[] = [
   ...STATION,
   ...ECONOMY,
   ...ATLAS,
+  ...HALL,
+  ...DIALS,
+  ...RECORDS,
+  ...ESTATE,
+  ...SKIRMISH,
+  ...VAULT,
+  ...GUILD,
   ...FEEDBACK,
+  ...SIGNALS,
   ...SCREENS,
+  ...CHAPTERS,
 ];
 
 export const CATALOG_BY_ID = new Map(CATALOG.map((c) => [c.id, c]));

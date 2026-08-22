@@ -1,0 +1,317 @@
+/* SummonScreen — the banner and its reveal, in one component. */
+
+.fui-summonscreen {
+  position: relative;
+  display: grid;
+  gap: 10px;
+  padding: 18px;
+  width: 100%;
+  max-width: 640px;
+  overflow: hidden;
+  border-radius: 8px;
+  color: var(--fui-text, #e8e0cd);
+  background:
+    linear-gradient(to bottom, color-mix(in srgb, #000 30%, transparent), color-mix(in srgb, var(--fui-panel-ink, #14100c) 92%, transparent) 72%),
+    var(--fui-summon-art, none) no-repeat center top / cover,
+    color-mix(in srgb, var(--fui-panel-ink, #14100c) 90%, transparent);
+}
+
+.fui-summonscreen__head {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  text-align: center;
+}
+
+.fui-summonscreen__banner {
+  margin: 0;
+  font: var(--fui-font-title, 700 22px/1.15 system-ui, sans-serif);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-shadow: 0 2px 10px rgb(0 0 0 / 0.85);
+}
+
+.fui-summonscreen__featured {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--fui-gold, #e0b04a);
+  text-shadow: 0 1px 6px rgb(0 0 0 / 0.9);
+}
+
+.fui-summonscreen__ends {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 55%, transparent);
+}
+
+/* ── Stage ──────────────────────────────────────────────────────────────── */
+
+.fui-summonscreen__stage {
+  min-height: 200px;
+  display: grid;
+  place-items: center;
+}
+
+/* Before a pull the stage is empty on purpose — the art behind the whole
+   screen is the banner, and a placeholder box would fight it. */
+.fui-summonscreen[data-phase='banner'] .fui-summonscreen__stage {
+  min-height: 160px;
+}
+
+.fui-summonscreen__results {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+  width: 100%;
+}
+
+.fui-summonscreen[data-phase='banner'] .fui-summonscreen__results { display: none; }
+
+.fui-summonscreen__tile {
+  --fui-summon-delay: 0ms;
+  --fui-rarity-ink: color-mix(in srgb, var(--fui-text, #e8e0cd) 30%, transparent);
+
+  position: relative;
+  display: grid;
+  gap: 3px;
+  justify-items: center;
+  padding: 6px 4px 5px;
+  border-radius: 5px;
+  border: 1px solid var(--fui-rarity-ink);
+  background: color-mix(in srgb, var(--fui-panel-ink, #14100c) 72%, transparent);
+  animation: fui-summon-land 420ms cubic-bezier(0.15, 1.3, 0.4, 1) both;
+  animation-delay: var(--fui-summon-delay);
+}
+
+.fui-summonscreen__tile[data-rarity='legendary'] { --fui-rarity-ink: var(--fui-gold, #e0b04a); }
+.fui-summonscreen__tile[data-rarity='mythic'] { --fui-rarity-ink: #d05fd0; }
+.fui-summonscreen__tile[data-rarity='epic'] { --fui-rarity-ink: #9a6fd0; }
+.fui-summonscreen__tile[data-rarity='rare'] { --fui-rarity-ink: #5f92d0; }
+
+.fui-summonscreen__tile[data-rarity='legendary'],
+.fui-summonscreen__tile[data-rarity='mythic'] {
+  box-shadow: 0 0 18px color-mix(in srgb, var(--fui-rarity-ink) 45%, transparent);
+}
+
+.fui-summonscreen__tile[data-dupe='on'] { opacity: 0.82; }
+
+.fui-summonscreen__tileart {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 4px;
+  background:
+    var(--fui-summon-tile, none) no-repeat center / cover,
+    radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--fui-rarity-ink) 28%, transparent), transparent 70%),
+    color-mix(in srgb, #000 35%, transparent);
+}
+
+.fui-summonscreen__tilename {
+  font-size: 9px;
+  line-height: 1.2;
+  text-align: center;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 78%, transparent);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.fui-summonscreen__new {
+  position: absolute;
+  left: 4px;
+  top: 4px;
+  padding: 0 5px;
+  border-radius: 6px;
+  background: var(--fui-danger, #d8543f);
+  color: #fff;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.fui-summonscreen__dupe {
+  font-size: 8px;
+  letter-spacing: 0.04em;
+  color: var(--fui-info, #6fa8dc);
+}
+
+/* ── Bar ────────────────────────────────────────────────────────────────── */
+
+.fui-summonscreen__bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.fui-summonscreen__pity {
+  flex: 1;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 65%, transparent);
+}
+
+.fui-summonscreen__pity[data-close='on'] {
+  color: var(--fui-gold, #e0b04a);
+  font-weight: 700;
+}
+
+.fui-summonscreen__ratebtn {
+  padding: 3px 10px;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--fui-text, #e8e0cd) 22%, transparent);
+  background: none;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 65%, transparent);
+  font: inherit;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.fui-summonscreen__purse {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 11px;
+  background: color-mix(in srgb, #000 55%, transparent);
+  border: 1px solid color-mix(in srgb, var(--fui-gold, #e0b04a) 40%, transparent);
+}
+
+.fui-summonscreen__coin {
+  width: 14px;
+  height: 14px;
+  background-color: var(--fui-gold, #e0b04a);
+  mask: var(--fui-summon-coin, var(--fui-mask-none)) no-repeat center / contain;
+  -webkit-mask: var(--fui-summon-coin, var(--fui-mask-none)) no-repeat center / contain;
+}
+
+.fui-summonscreen__balance {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--fui-gold, #e0b04a);
+  font-variant-numeric: tabular-nums;
+}
+
+.fui-summonscreen__rates {
+  display: grid;
+  gap: 2px;
+  padding: 8px 10px;
+  border-radius: 4px;
+  background: color-mix(in srgb, #000 55%, transparent);
+}
+
+.fui-summonscreen__rates[data-open='off'] { display: none; }
+
+.fui-summonscreen__rate {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 10px;
+}
+
+.fui-summonscreen__ratelabel { color: color-mix(in srgb, var(--fui-text, #e8e0cd) 65%, transparent); }
+
+.fui-summonscreen__ratenum {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--fui-gold, #e0b04a);
+}
+
+/* ── Actions ────────────────────────────────────────────────────────────── */
+
+.fui-summonscreen__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.fui-summonscreen[data-phase='reveal'] .fui-summonscreen__actions {
+  grid-template-columns: 1fr;
+}
+
+.fui-summonscreen[data-phase='reveal'] .fui-summonscreen__pull { display: none; }
+.fui-summonscreen[data-phase='banner'] .fui-summonscreen__done { display: none; }
+
+.fui-summonscreen__pull,
+.fui-summonscreen__done {
+  display: grid;
+  gap: 2px;
+  justify-items: center;
+  padding: 10px 8px;
+  border: 0;
+  border-radius: 4px;
+  font: inherit;
+  cursor: pointer;
+  transition: filter 130ms ease-out, transform 130ms ease-out;
+}
+
+.fui-summonscreen__pull[data-count='10'],
+.fui-summonscreen__done {
+  background: linear-gradient(to bottom, #f0d68a, var(--fui-gold, #e0b04a));
+  color: #1a1408;
+  box-shadow: 0 3px 0 color-mix(in srgb, #000 45%, transparent);
+}
+
+.fui-summonscreen__pull[data-count='1'] {
+  background: color-mix(in srgb, var(--fui-text, #e8e0cd) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--fui-accent, #d8c9a6) 45%, transparent);
+  color: var(--fui-text, #e8e0cd);
+}
+
+.fui-summonscreen__done {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.fui-summonscreen__pulllabel {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.fui-summonscreen__price {
+  font-size: 10px;
+  opacity: 0.75;
+  font-variant-numeric: tabular-nums;
+}
+
+.fui-summonscreen__pull:hover:not([disabled]),
+.fui-summonscreen__done:hover { filter: brightness(1.08); }
+
+.fui-summonscreen__pull:active:not([disabled]),
+.fui-summonscreen__done:active { transform: translateY(3px); box-shadow: none; }
+
+.fui-summonscreen__pull[disabled] {
+  filter: grayscale(0.85);
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.fui-summonscreen__pull:focus-visible,
+.fui-summonscreen__done:focus-visible,
+.fui-summonscreen__ratebtn:focus-visible {
+  outline: 2px solid var(--fui-accent, #d8c9a6);
+  outline-offset: 2px;
+}
+
+@keyframes fui-summon-land {
+  0% { opacity: 0; transform: scale(0.55) rotate(-5deg); }
+  70% { opacity: 1; transform: scale(1.06) rotate(1deg); }
+  100% { opacity: 1; transform: none; }
+}
+
+@media (max-width: 520px) {
+  .fui-summonscreen__results { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fui-summonscreen__tile { animation: none; }
+  .fui-summonscreen__pull,
+  .fui-summonscreen__done { transition: none; }
+}
