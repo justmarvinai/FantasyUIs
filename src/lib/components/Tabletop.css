@@ -1,0 +1,116 @@
+/* Tabletop — felt, a wood rail, and zones to lay cards in. */
+
+.fui-table {
+  --fui-table-felt: #1f4c33;
+  --fui-table-rail: #6b4a26;
+  --fui-table-rail-lit: #9a7040;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
+  padding: 14px;
+  border-radius: 10px;
+  /* The rail is the padding: a gradient on the root, with the felt inset. */
+  background: linear-gradient(
+    160deg,
+    var(--fui-table-rail-lit) 0%,
+    var(--fui-table-rail) 38%,
+    color-mix(in srgb, var(--fui-table-rail) 60%, #000) 100%
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    0 10px 26px rgba(0, 0, 0, 0.55);
+  font-family: var(--fui-font-ui);
+}
+
+.fui-table[data-felt='crimson'] { --fui-table-felt: #4a1420; }
+.fui-table[data-felt='midnight'] { --fui-table-felt: #16203c; }
+.fui-table[data-felt='sand'] { --fui-table-felt: #4a3f28; }
+
+.fui-table[data-rail='walnut'] { --fui-table-rail: #4a3120; --fui-table-rail-lit: #79512f; }
+.fui-table[data-rail='ebony'] { --fui-table-rail: #26211d; --fui-table-rail-lit: #463e35; }
+
+.fui-table[data-rail='none'] {
+  padding: 0;
+  background: none;
+  box-shadow: none;
+}
+
+.fui-table__title {
+  position: absolute;
+  left: 50%;
+  top: 1px;
+  transform: translateX(-50%);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  /* Burned into the rail: dark ink with a light edge underneath it. */
+  color: rgba(0, 0, 0, 0.55);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+.fui-table__felt {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--fui-gap-sm);
+  padding: var(--fui-gap);
+  border-radius: 5px;
+  /* Layered gradients rather than a texture file: a table costs nothing to
+     load and recolours from one custom property. */
+  background:
+    radial-gradient(ellipse at 50% 40%, rgba(255, 255, 255, 0.07), transparent 65%),
+    repeating-linear-gradient(48deg, rgba(0, 0, 0, 0.05) 0 2px, transparent 2px 4px),
+    repeating-linear-gradient(-48deg, rgba(0, 0, 0, 0.05) 0 2px, transparent 2px 4px),
+    var(--fui-table-felt);
+  box-shadow:
+    inset 0 3px 10px rgba(0, 0, 0, 0.6),
+    inset 0 0 60px rgba(0, 0, 0, 0.35);
+}
+
+.fui-table__felt[data-inlay='true']::before {
+  content: '';
+  position: absolute;
+  inset: 7px;
+  border: 1px solid rgba(217, 164, 65, 0.35);
+  border-radius: 3px;
+  pointer-events: none;
+}
+
+.fui-table__row {
+  display: flex;
+  flex: 1;
+  gap: var(--fui-gap-sm);
+  min-height: 0;
+}
+
+.fui-table__zone {
+  position: relative;
+  display: flex;
+  flex-basis: 0;
+  align-items: center;
+  justify-content: center;
+  gap: var(--fui-gap-sm);
+  min-width: 0;
+  padding: var(--fui-gap-sm);
+  border-radius: var(--fui-radius);
+}
+
+/* A drop zone is the one place on the felt that says "put something here", so
+   it is the only one that draws an outline. */
+.fui-table__zone[data-drop='true'] {
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.fui-table__zone-label {
+  position: absolute;
+  left: 8px;
+  top: 4px;
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.28);
+  pointer-events: none;
+}

@@ -482,7 +482,7 @@ export const ROSTER: CatalogEntry[] = [
             ],
             chance: 62,
             cost: 450_000,
-            costGlyph: 'icon-coins',
+            costGlyph: 'glyph-trophy-cup',
             warning: 'Ascension material is consumed even if the attempt fails.',
             action: 'Ascend',
           });

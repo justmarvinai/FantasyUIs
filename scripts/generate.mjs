@@ -257,7 +257,7 @@ ${body}
 </main>
 <footer class="sitefoot">
   <p>${esc(SITE.name)} — ${esc(SITE.tagline)}. Vanilla TypeScript + CSS, zero runtime dependencies.</p>
-  <p class="sitefoot__links"><a href="/registry.json">registry.json</a> · <a href="/llms.txt">llms.txt</a> · <a href="/assets.html">asset browser</a></p>
+  <p class="sitefoot__links"><a href="/registry.json">registry.json</a> · <a href="/llms.txt">llms.txt</a> · <a href="/llms-full.txt">llms-full.txt</a> · <a href="/assets.html">asset browser</a></p>
 </footer>
 </body>
 </html>`;
@@ -540,6 +540,7 @@ ${props
       <a class="btn btn--primary" href="/start.html">Get started</a>
       <a class="btn" href="/assets.html">Browse the art</a>
       <a class="btn" href="/llms.txt">llms.txt</a>
+      <a class="btn" href="/llms-full.txt">llms-full.txt</a>
     </div>
   </div>
 </section>
@@ -670,13 +671,14 @@ ${assets
     <h2>Using this library with an AI coding agent</h2>
     <p>The site is built to be read by machines as well as people. Every page is static HTML with the demo markup already rendered, so nothing needs JavaScript to be understood.</p>
     <ul>
-      <li><a href="/llms.txt"><code>/llms.txt</code></a> — the whole library summarised for an LLM, with every component, its purpose and its options.</li>
+      <li><a href="/llms.txt"><code>/llms.txt</code></a> — the whole library written for an LLM: how to work with it, then every component, its purpose and its options.</li>
+      <li><a href="/llms-full.txt"><code>/llms-full.txt</code></a> — the same index with every component's complete working example inlined, so an agent can adapt one without a second request.</li>
       <li><a href="/registry.json"><code>/registry.json</code></a> — machine-readable index of every component and asset.</li>
       <li><code>/r/&lt;Component&gt;.json</code> — one component's full record including its complete TypeScript and CSS source. <a href="/r/Panel.json">Example: /r/Panel.json</a></li>
     </ul>
     <p>Most components are self-contained, but not all: <code>ChampionCard</code> composes <code>StarRating</code> and <code>AffinityBadge</code>. Every record carries a <code>dependencies</code> list and a <code>copy</code> list — the complete, ordered set of files that component needs — so copying is a mechanical step rather than a guess. Imports between components are plain relative paths, so a flat <code>src/ui/</code> folder compiles with no rewriting.</p>
     <p>Point your agent at the site root and it can discover, read and copy any component without a single manual step:</p>
-    ${codeBlock(`Use the UI library at ${SITE.origin}.\nRead ${SITE.origin}/llms.txt first, then fetch\n${SITE.origin}/r/<Component>.json for the source of anything you need.\nCopy every path in that record's "copy" field \u2014 components compose each other,\nso a component's dependencies have to come along with it.`, 'text', 'Prompt')}
+    ${codeBlock(`Use the UI library at ${SITE.origin}.\nRead ${SITE.origin}/llms.txt first \u2014 it explains the method:\nstart from a component's shipped example and change the data, not the structure.\nFetch ${SITE.origin}/r/<Component>.json for one component's example and source,\nor ${SITE.origin}/llms-full.txt for every example in one document.\nWhen vendoring, copy every path in a record's "copy" field \u2014 components compose\neach other, so dependencies have to come along too.`, 'text', 'Prompt')}
   </section>
 
   <section class="block">
@@ -754,6 +756,7 @@ ${assets
     },
     endpoints: {
       llms: `${SITE.origin}/llms.txt`,
+      llmsFull: `${SITE.origin}/llms-full.txt`,
       registry: `${SITE.origin}/registry.json`,
       component: `${SITE.origin}/r/{ComponentId}.json`,
       assetFile: `${SITE.origin}/fui/{pack}/{assetId}.png`,
@@ -771,61 +774,195 @@ ${assets
     'utf8',
   );
 
+  // ── llms.txt ─────────────────────────────────────────────────────────────
+  // Written for an agent that has been handed nothing but this URL. The order is
+  // deliberate: what this is, the fastest path to working UI, then the two ways
+  // to build with it (adapt an example; compose from raw art), then the index.
+  const exampleFor = (id) => {
+    const rec = registry.find((r) => r.id === id);
+    return rec?.examples?.[0]?.code ?? '';
+  };
+  const indent = (text, pad = '    ') =>
+    text
+      .split('\n')
+      .map((line) => (line.trim() ? pad + line : line))
+      .join('\n');
+
   const llms = `# ${SITE.name}
 
-> ${SITE.tagline}. ${CATALOG.length} components built from ${ASSETS.length} art assets, in ${THEME_PACKS.length} swappable themes plus ${ART_PACKS.length} art collections (icons, glyphs and tintable ornament frames). Vanilla TypeScript + CSS, zero runtime dependencies, designed for Vite projects but framework-agnostic.
+> ${SITE.tagline}. ${CATALOG.length} components built from ${ASSETS.length} art assets, in ${THEME_PACKS.length} swappable themes plus ${ART_PACKS.length} art collections (icons, glyphs and tintable ornament frames). Vanilla TypeScript + CSS, zero runtime dependencies, framework-agnostic.
 
-## How to use this library
+You are almost certainly here because someone asked you to build a fantasy or RPG
+game UI. Read this file, then go straight to **Working method** below. Do not
+design a component library from scratch — one already exists, every piece of it
+ships with a working example, and adapting an example is both faster and better
+than starting from an empty file.
 
-Every component is a plain class that builds DOM and exposes \`.el\`:
+## The 60-second version
 
-    import { Panel, StatBar } from 'fantasyuis';
-    const panel = new Panel({ title: 'Inventory', width: 460, mount: document.body });
-    const hp = new StatBar({ kind: 'health', value: 72, max: 100, label: 'Health' });
-    panel.add(hp.el);
-
-Artwork resolves through CSS custom properties (\`var(--fui-img-<assetId>)\`), so a single
-stylesheet import is all the setup there is:
+One stylesheet, then plain classes that build DOM:
 
     <link rel="stylesheet" href="${SITE.origin}/dist/fantasyuis.css" />
 
-Themes are swapped with one attribute — both packs implement the same semantic slots:
+    import { Panel, StatBar } from 'fantasyuis';
 
-    <div data-fui-theme="dark-ember"> ... </div>
+    const panel = new Panel({ title: 'Inventory', width: 460, mount: document.body });
+    panel.add(new StatBar({ kind: 'health', value: 72, max: 100, label: 'Health' }).el);
 
-The whole UI scales from one variable: \`--fui-ui-scale\` (default 0.5).
+- Every component is a class. Construct it, read \`.el\`, put \`.el\` where you want it.
+- Every component emits events: \`thing.on('ns:verb', (detail) => ...)\`.
+- Every component takes \`{ mount }\`, \`{ class }\`, \`{ style }\` and \`{ theme }\`.
+- Call \`.destroy()\` when you tear a screen down; timers and observers stop with it.
+- Artwork resolves through CSS variables (\`var(--fui-img-<assetId>)\`) off the hosted
+  CDN, so a copied snippet renders immediately with no asset setup at all.
+- Two themes, swapped with one attribute: \`<div data-fui-theme="dark-ember">\`.
+- The whole UI scales from one variable: \`--fui-ui-scale\` (default 0.5).
 
-## Fetching source
+## Working method
 
-- \`${SITE.origin}/registry.json\` — every component and asset, with options and examples.
-- \`${SITE.origin}/r/<ComponentId>.json\` — one component, including its full TypeScript and CSS source.
-- \`${SITE.origin}/components/<ComponentId>.html\` — the human-readable page, pre-rendered.
+### 1. Start from an example, not from scratch
+
+Every one of the ${CATALOG.length} components in the index below has at least one
+complete, runnable example, and those examples are the intended starting point.
+They are not illustrative fragments — the site extracts them from the code it
+actually ran, so what you read is what renders.
+
+Fetch one and adapt it:
+
+    GET ${SITE.origin}/r/<ComponentId>.json
+
+That record contains:
+
+- \`examples[]\` — \`{ title, note, code }\`. **This is what you copy.** The code is
+  idiomatic usage with realistic data already filled in.
+- \`props[]\` — every option, its type, and what it does.
+- \`source.ts\` / \`source.css\` — the component's full source, if you want to fork it.
+- \`copy[]\` — the exact, ordered file list to vendor it into a project.
+- \`dependencies[]\` — the other components it composes.
+
+**Adapting an example means changing the data, not the structure.** Swap the
+names, numbers, art ids and event handlers for the ones your game actually has;
+keep the shape. The examples encode decisions that are easy to get wrong —
+which state gets which colour, what is disabled when, what the empty case looks
+like — and those decisions survive a rename.
+
+A worked adaptation. This is the shipped \`ShieldBar\` example, verbatim:
+
+${indent(exampleFor('ShieldBar'))}
+
+In a game that already has a unit object it becomes:
+
+    import { ShieldBar } from 'fantasyuis';
+
+    const bar = new ShieldBar({
+      value: boss.hp, max: boss.maxHp, shield: boss.barrier,
+      kind: 'health', label: boss.name, height: 22,
+      mount: '#boss-hud',
+    });
+    boss.on('damage', () => bar.set(boss.hp, boss.barrier));
+    bar.on('shield:break', () => sfx.play('barrier-shatter'));
+
+Same structure, your data, wired to your events. Note two mechanical
+differences, which apply to every example in this library:
+
+- Examples end with \`return x.el;\` because they are demo builders. In real code,
+  drop that line and pass \`{ mount: '#selector' }\` or append \`x.el\` yourself.
+- Some examples wrap several components in a \`row(...)\` / \`col(...)\` /
+  \`scene(...)\` helper. Those are one-line flex wrappers belonging to the docs,
+  not to the library — use your own layout instead.
+
+### 2. Compose screens out of several components
+
+Nothing here expects to be alone. A battle HUD is a \`HUD\` with \`PartyFrame\`,
+\`BossHealthBar\`, \`ActionBar\`, \`BuffBar\` and \`FloatingText\` inside it; a shop is a
+\`Panel\` full of \`ItemCard\`s over a \`CurrencyBar\`. Each component's record lists
+\`related\` ids — the ones it is normally seen with. Follow those to assemble a
+screen instead of inventing a layout.
+
+### 3. You can also build entirely new components from the raw art
+
+The ${CATALOG.length} components are a starting set, not a ceiling. All
+${ASSETS.length} assets are addressable on their own, and the same three-layer
+indirection the library uses is available to anything you write:
+
+    /* every asset publishes these, generated, for you to use directly */
+    --fui-img-<id>      /* url() of the artwork                       */
+    --fui-slice-<id>    /* unitless 9-slice numbers, for border-image  */
+    --fui-bw-<id>       /* matching border-widths, already scaled      */
+
+So a component this library does not have — a siege-map overlay, a card
+crafting bench, a fishing minigame gauge — is a normal thing to build:
+
+    .my-forge__frame {
+      border-image: var(--fui-img-panel-stone) var(--fui-slice-panel-stone) fill stretch;
+      border-width: var(--fui-bw-panel-stone);
+    }
+
+Better still, bind to the *semantic* slots instead of a specific asset, and your
+new component inherits both themes for free and any future one automatically:
+
+    .my-forge__frame {
+      border-image: var(--fui-panel-frame-src) var(--fui-panel-frame-sl) fill stretch;
+      border-width: var(--fui-panel-frame-bw);
+    }
+
+Read any component's \`source.css\` to see the full list of slots in use. If you
+write something new, extend \`FuiComponent\`, expose \`.el\`, emit \`ns:verb\` events
+and register teardown with \`this.onDestroy(fn)\` — then it drops into the same
+screens as everything else.
+
+### 4. Recolouring is a mask, not a new file
+
+Two of the art collections are monochrome on purpose so one file serves every
+colour and state:
+
+- **Line glyphs** — SVG with the fill rewritten to \`currentColor\`. The \`Glyph\`
+  component masks them, so \`glyph-crossed-swords\` is grey in a disabled row and
+  gold on a legendary card without a second asset.
+- **Ornate frames** — white silhouettes 9-sliced as a \`mask-border\`. \`TintFrame\`
+  paints any colour or gradient underneath, so 32 shapes × 4 centre treatments
+  (\`hollow\`, \`scrim\`, \`solid\`, \`soft\`) cover every rarity and faction colour from
+  one small set of PNGs. Ids run \`deco-frame-01\` … \`deco-frame-32\` with
+  \`-scrim\` / \`-solid\` / \`-soft\` suffixes, plus \`deco-divider-01\` … \`-06\`.
+
+Painted icons are full-colour art and will mask to a solid block — use them as
+backgrounds, not masks.
+
+## Endpoints
+
+- \`${SITE.origin}/llms.txt\` — this file: the guide and the full index.
+- \`${SITE.origin}/llms-full.txt\` — the same index **with every component's
+  complete example inlined**. Large. Fetch it when you want to work offline from
+  one document instead of making ${CATALOG.length} requests.
+- \`${SITE.origin}/r/<ComponentId>.json\` — one component: examples, props, full source.
+- \`${SITE.origin}/registry.json\` — everything, machine-readable, in one document.
+- \`${SITE.origin}/components/<ComponentId>.html\` — the human page, pre-rendered
+  (readable without running JavaScript).
+- \`${SITE.origin}/dist/fantasyuis.css\` — the complete stylesheet.
 - \`${SITE.origin}/fui/<pack>/<assetId>.png\` — the raw art.
 
-## Copying a component into a game
+## Vendoring components into a project
 
-Each \`/r/<ComponentId>.json\` record carries two fields that make this reliable:
+If the game should not depend on a CDN, copy the files. Each record's \`copy\`
+field is the complete, ordered list — take all of it. Most components are
+self-contained, but some are not: \`ChampionCard\` imports \`StarRating\` and
+\`AffinityBadge\`, so copying only \`ChampionCard.ts\` gives you a file that will not
+compile. Every component also needs \`src/lib/core/component.ts\` and
+\`src/lib/core/dom.ts\`, which are already in the list.
 
-- \`copy\` — the complete, ordered list of files that component needs.
-- \`dependencies\` — the other components it composes.
-
-Most components are self-contained, but some are not: \`ChampionCard\` imports
-\`StarRating\` and \`AffinityBadge\`, so copying only \`ChampionCard.ts\` gives you a file
-that will not compile. Always copy the whole \`copy\` list. Every component also needs
-\`src/lib/core/component.ts\` and \`src/lib/core/dom.ts\`, which are already in that list.
-
-Components import each other with explicit \`./Name.ts\` paths, so a flat \`src/ui/\`
-folder works with no rewriting:
+Components import each other with explicit \`./Name.ts\` paths, so a flat folder
+works with no rewriting:
 
     src/ui/
-      core/component.ts
-      core/dom.ts
-      StarRating.ts   StarRating.css
-      AffinityBadge.ts AffinityBadge.css
-      ChampionCard.ts ChampionCard.css
+      core/component.ts  core/dom.ts
+      StarRating.ts      StarRating.css
+      AffinityBadge.ts   AffinityBadge.css
+      ChampionCard.ts    ChampionCard.css
 
-Then import the CSS files (or link the single hosted stylesheet, which already
-contains all of them).
+Then point the art at your own copy once:
+
+    import { setAssetBase } from './ui/core/assets.ts';
+    setAssetBase('/fui');
 
 ## Themes
 
@@ -833,25 +970,15 @@ ${PACKS.filter((p) => p.kind === 'theme')
   .map((p) => `- **${p.name}** (\`${p.id}\`) — ${p.blurb} ${p.count} assets.`)
   .join('\n')}
 
+Both implement the same semantic slots, so every component works in both and a
+third theme costs zero component changes.
+
 ## Art collections
 
-These are art libraries rather than themes — reference any asset by id from any
-theme, in any component that takes an \`art\` or \`glyph\` option.
+Art libraries rather than themes — reference any asset by id from any theme, in
+any component that takes an \`art\` or \`glyph\` option.
 
 ${ART_PACKS.map((p) => `- **${p.name}** (\`${p.id}\`, ${p.kind}) — ${p.blurb} ${p.count} assets.`).join('\n')}
-
-Two of these are drawn through a CSS mask rather than as images, which is what
-lets one file serve every colour:
-
-- **Line glyphs** are SVG with their fill rewritten to \`currentColor\`. The
-  \`Glyph\` component masks them, so the same \`glyph-crossed-swords\` renders grey
-  in a disabled row and gold on a legendary card.
-- **Ornate frames** are white silhouettes 9-sliced as a \`mask-border\`. The
-  \`TintFrame\` component paints any colour or gradient underneath, so 32 shapes ×
-  4 centre treatments (\`hollow\`, \`scrim\`, \`solid\`, \`soft\`) cover every rarity
-  and faction colour a game needs from one set of small PNGs. Ids run
-  \`deco-frame-01\` … \`deco-frame-32\`, with \`-scrim\` / \`-solid\` / \`-soft\`
-  suffixes, plus \`deco-divider-01\` … \`-06\`.
 
 ## Components
 
@@ -867,7 +994,8 @@ ${GROUP_ORDER.filter((g) => CATALOG.some((c) => c.group === g))
         const needs = rec.dependencies.length
           ? `\n  - also copy: ${rec.dependencies.join(', ')}`
           : '';
-        return `- **${c.name}** — ${c.blurb}\n  - keywords: ${c.tags.join(', ')}\n  - options: ${keyProps || 'none beyond base options'}${needs}\n  - source: ${SITE.origin}/r/${c.id}.json`;
+        const pairs = rec.related.length ? `\n  - pairs with: ${rec.related.join(', ')}` : '';
+        return `- **${c.name}** — ${c.blurb}\n  - keywords: ${c.tags.join(', ')}\n  - options: ${keyProps || 'none beyond base options'}${needs}${pairs}\n  - example + source: ${SITE.origin}/r/${c.id}.json`;
       })
       .join('\n')}`,
   )
@@ -885,6 +1013,72 @@ ${PACKS.map(
       .join('\n')}`,
 ).join('\n\n')}
 `;
+
+  // ── llms-full.txt ────────────────────────────────────────────────────────
+  // The llmstxt.org convention: the same index with the bodies inlined. Here the
+  // body that matters is the example, because adapting an example is the whole
+  // recommended workflow — an agent that fetches this file never has to make a
+  // second request to start writing code.
+  const llmsFull = `# ${SITE.name} — every component, with its example
+
+> ${SITE.tagline}. ${CATALOG.length} components, ${ASSETS.length} assets, ${THEME_PACKS.length} themes.
+> This is the long form of ${SITE.origin}/llms.txt: the same index, with each
+> component's complete working example inlined so you can adapt it without a
+> second request. Read ${SITE.origin}/llms.txt first for the method, the setup
+> and the asset variables; this file is the reference body.
+
+**How to use this file.** Find the component that matches what you are building,
+copy its example, and change the data — the names, numbers, art ids and event
+handlers — for the ones your game actually has. Keep the structure. If nothing
+here matches, build a new component from the raw assets; llms.txt explains how.
+
+Every example below assumes:
+
+    <link rel="stylesheet" href="${SITE.origin}/dist/fantasyuis.css" />
+
+${GROUP_ORDER.filter((g) => CATALOG.some((c) => c.group === g))
+  .map(
+    (g) => `## ${GROUP_LABELS[g]}\n\n${CATALOG.filter((c) => c.group === g)
+      .map((c) => {
+        const rec = registry.find((r) => r.id === c.id);
+        const props = rec.props.length
+          ? rec.props
+              .map((p) => `- \`${p.name}${p.optional ? '?' : ''}: ${p.type}\` — ${p.doc || '—'}`)
+              .join('\n')
+          : '- none beyond the base options.';
+        const needs = rec.dependencies.length
+          ? `\n\nAlso copy: ${rec.dependencies.map((d) => `\`${d}\``).join(', ')}.`
+          : '';
+        const pairs = rec.related.length
+          ? `\n\nPairs with: ${rec.related.map((d) => `\`${d}\``).join(', ')}.`
+          : '';
+        const examples = rec.examples
+          .map(
+            (ex) =>
+              `**${ex.title}**${ex.note ? ` — ${ex.note}` : ''}\n\n${indent(ex.code)}`,
+          )
+          .join('\n\n');
+        return `### ${c.name}
+
+${c.blurb}
+
+${c.description || ''}
+
+Keywords: ${c.tags.join(', ')}.${needs}${pairs}
+
+Options:
+
+${props}
+
+${examples}
+
+Full source: ${SITE.origin}/r/${c.id}.json`;
+      })
+      .join('\n\n---\n\n')}`,
+  )
+  .join('\n\n')}
+`;
+  await writeFile(path.join(OUT_PUBLIC, 'llms-full.txt'), llmsFull, 'utf8');
   await writeFile(path.join(OUT_PUBLIC, 'llms.txt'), llms, 'utf8');
 
   await writeFile(
@@ -897,6 +1091,8 @@ ${PACKS.map(
     `${SITE.origin}/`,
     `${SITE.origin}/start.html`,
     `${SITE.origin}/assets.html`,
+    `${SITE.origin}/llms.txt`,
+    `${SITE.origin}/llms-full.txt`,
     ...CATALOG.map((c) => `${SITE.origin}/components/${c.id}.html`),
   ];
   await writeFile(
@@ -910,7 +1106,9 @@ ${PACKS.map(
   console.log(
     `✓ generated ${CATALOG.length} component pages, ${lib.components.length} exports, ${ASSETS.length} assets indexed`,
   );
-  console.log('  index.html, start.html, assets.html, registry.json, llms.txt, sitemap.xml');
+  console.log(
+    '  index.html, start.html, assets.html, registry.json, llms.txt, llms-full.txt, sitemap.xml',
+  );
 }
 
 main().catch((err) => {

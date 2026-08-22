@@ -1,0 +1,192 @@
+/* StatBlock — the densest, most-read page in any tabletop-derived RPG. */
+
+.fui-block {
+  --fui-block-ink: #7a2b1c;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  max-width: 460px;
+  padding: var(--fui-gap);
+  border-radius: 2px;
+  /* Aged paper: two gradients, no texture file. */
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(255, 255, 255, 0.5), transparent 55%),
+    linear-gradient(160deg, #f3e9d2 0%, #e6d8bb 55%, #d9c9a6 100%);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.5) inset,
+    0 8px 22px rgba(0, 0, 0, 0.5);
+  font-family: var(--fui-font-body);
+  color: #2b2418;
+}
+
+.fui-block[data-wide='true'] {
+  max-width: 720px;
+}
+
+.fui-block[data-wide='true'] .fui-block__body {
+  column-count: 2;
+  column-gap: var(--fui-gap-lg);
+  column-rule: 1px solid rgba(122, 43, 28, 0.25);
+}
+
+/* Nothing may straddle a column break, or a trait loses its own name. */
+.fui-block[data-wide='true'] .fui-block__body > * {
+  break-inside: avoid;
+}
+
+.fui-block__head {
+  display: flex;
+  align-items: center;
+  gap: var(--fui-gap-sm);
+}
+
+.fui-block__art {
+  width: 52px;
+  height: 52px;
+  flex: none;
+  border: 2px solid var(--fui-block-ink);
+  border-radius: 3px;
+  background: center / cover no-repeat #2b2418;
+}
+
+.fui-block__titles {
+  min-width: 0;
+}
+
+.fui-block__name {
+  margin: 0;
+  font-size: 21px;
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+  color: var(--fui-block-ink);
+  text-shadow: none;
+}
+
+.fui-block__kind {
+  font-size: 11.5px;
+  font-style: italic;
+  color: #5b4f3a;
+}
+
+/* The tapered rule is the signature of this layout — a plain line reads as a
+   web page, this reads as a monster manual. */
+.fui-block__rule {
+  display: block;
+  height: 5px;
+  background: var(--fui-block-ink);
+  clip-path: polygon(0 0, 100% 40%, 100% 60%, 0 100%);
+}
+
+.fui-block__body {
+  display: block;
+}
+
+.fui-block__top,
+.fui-block__lines {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 4px 0;
+}
+
+.fui-block__line {
+  font-size: 12.5px;
+  line-height: 1.35;
+}
+
+.fui-block__key {
+  font-weight: 700;
+  color: var(--fui-block-ink);
+}
+
+.fui-block__key::after {
+  content: ' ';
+}
+
+.fui-block__val {
+  color: #2b2418;
+}
+
+.fui-block__line--cr .fui-block__val {
+  font-weight: 700;
+}
+
+.fui-block__scores {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  justify-content: space-between;
+  padding: 6px 0;
+  text-align: center;
+}
+
+.fui-block__score {
+  display: flex;
+  min-width: 52px;
+  flex: 1;
+  flex-direction: column;
+  gap: 0;
+}
+
+.fui-block__score-key {
+  font-family: var(--fui-font-ui);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--fui-block-ink);
+}
+
+.fui-block__score-val {
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.fui-block__score-mod {
+  font-size: 11px;
+  color: #5b4f3a;
+}
+
+.fui-block__score-mod[data-sign='down'] {
+  color: #8a2f22;
+}
+
+.fui-block__heading {
+  margin: 8px 0 2px;
+  padding-bottom: 2px;
+  border-bottom: 1px solid var(--fui-block-ink);
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  color: var(--fui-block-ink);
+  text-shadow: none;
+}
+
+.fui-block__traits {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding-top: 4px;
+}
+
+.fui-block__trait {
+  font-size: 12.5px;
+  line-height: 1.42;
+  /* A hanging indent is what makes a run of traits scannable by name. */
+  padding-left: 12px;
+  text-indent: -12px;
+}
+
+/* Trait bodies run on from their bold name, so the text drops back to ordinary
+   prose weight while the name beside it stays emphasised. The colour is
+   inherited on purpose: the block paints its own parchment ground and sets a
+   dark ink for it, and reaching for a theme token here would pick up the
+   light-on-dark ink meant for panels. */
+.fui-block__trait-text {
+  font-weight: 400;
+  font-style: normal;
+}
+
+.fui-block__trait-name {
+  font-weight: 700;
+  font-style: italic;
+}

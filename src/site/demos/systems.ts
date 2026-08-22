@@ -90,18 +90,18 @@ export const SYSTEMS: CatalogEntry[] = [
               {
                 id: 'b1', title: 'Cull the Rotmire', objective: 'Slay 30 bog wardens',
                 art: 'hunt-dire-wolf', tier: 'rare', requirement: '80k power',
-                rewards: ['120,000 gold'], rewardGlyph: 'icon-coins', expiresIn: 7200, taken: true,
+                rewards: ['120,000 gold'], rewardGlyph: 'glyph-trophy-cup', expiresIn: 7200, taken: true,
               },
               {
                 id: 'b2', title: 'The Pale Priest', objective: 'Break the ritual under Ashvale',
                 art: 'blood-pale-priest', tier: 'legendary', requirement: '160k power',
-                rewards: ['2 Ancient Shards', '1 Void Sigil'], rewardGlyph: 'icon-star',
+                rewards: ['2 Ancient Shards', '1 Void Sigil'], rewardGlyph: 'glyph-celestial-body',
                 expiresIn: 25_200, complete: true,
               },
               {
                 id: 'b3', title: 'Emberwake Sighting', objective: 'Track the phoenix to its nest',
                 art: 'fire-phoenix-flight', tier: 'epic', requirement: '120k power',
-                rewards: ['Legendary Book'], rewardGlyph: 'icon-scroll', expiresIn: 3600,
+                rewards: ['Legendary Book'], rewardGlyph: 'glyph-burning-scroll', expiresIn: 3600,
               },
             ],
           });

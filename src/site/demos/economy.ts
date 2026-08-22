@@ -38,7 +38,7 @@ export const ECONOMY: CatalogEntry[] = [
             title: 'Auction house',
             sort: 'ending',
             funds: 480_000,
-            currencyGlyph: 'icon-coins',
+            currencyGlyph: 'glyph-trophy-cup',
             maxHeight: 300,
             listings: [
               { id: 'l1', name: 'Runeblade', art: 'weapon-runeblade', rarity: 'epic', note: 'ilvl 62',

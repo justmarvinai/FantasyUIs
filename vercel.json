@@ -5,7 +5,7 @@
   "cleanUrls": true,
   "headers": [
     {
-      "source": "/(registry.json|llms.txt|sitemap.xml)",
+      "source": "/(registry.json|llms.txt|llms-full.txt|sitemap.xml)",
       "headers": [
         {
           "key": "Access-Control-Allow-Origin",

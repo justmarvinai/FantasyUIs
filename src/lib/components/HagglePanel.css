@@ -1,0 +1,221 @@
+/* HagglePanel — an offer, a mood, and a patience that runs out. */
+
+.fui-haggle {
+  --fui-haggle-rarity: var(--fui-rarity-common);
+  --fui-haggle-mood: 0.5;
+  display: flex;
+  width: 100%;
+  max-width: 340px;
+  flex-direction: column;
+  gap: var(--fui-gap-sm);
+  padding: var(--fui-gap);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--fui-radius);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(0, 0, 0, 0.42));
+  font-family: var(--fui-font-ui);
+}
+
+.fui-haggle__head {
+  display: flex;
+  align-items: center;
+  gap: var(--fui-gap-sm);
+}
+
+.fui-haggle__art {
+  width: 52px;
+  height: 52px;
+  flex: none;
+  border: 2px solid var(--fui-haggle-rarity);
+  border-radius: var(--fui-radius);
+  background: center / cover no-repeat rgba(0, 0, 0, 0.55);
+}
+
+.fui-haggle__art[data-rarity='uncommon'] { --fui-haggle-rarity: var(--fui-rarity-uncommon); }
+.fui-haggle__art[data-rarity='rare'] { --fui-haggle-rarity: var(--fui-rarity-rare); }
+.fui-haggle__art[data-rarity='epic'] { --fui-haggle-rarity: var(--fui-rarity-epic); }
+.fui-haggle__art[data-rarity='legendary'] { --fui-haggle-rarity: var(--fui-rarity-legendary); }
+
+.fui-haggle__names {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.fui-haggle__item {
+  font-size: 14px;
+  color: var(--fui-haggle-rarity);
+}
+
+.fui-haggle__note {
+  font-size: 9.5px;
+  color: var(--fui-ink-faint);
+}
+
+.fui-haggle__asking {
+  font-size: 11px;
+  color: var(--fui-gold);
+}
+
+.fui-haggle__merchant {
+  display: flex;
+  align-items: center;
+  gap: var(--fui-gap-sm);
+  padding: 6px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.fui-haggle__face {
+  width: 36px;
+  height: 36px;
+  flex: none;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 50%;
+  background: center / cover no-repeat rgba(0, 0, 0, 0.55);
+}
+
+.fui-haggle__mood-wrap {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.fui-haggle__merchant-name {
+  font-size: 11.5px;
+  color: var(--fui-ink);
+}
+
+/* The mood is the only honest signal the player gets: it says whether to push
+   without saying where to stop. The floor is never drawn. */
+.fui-haggle__mood {
+  display: block;
+  height: 6px;
+  overflow: hidden;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.6);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.fui-haggle__mood-fill {
+  display: block;
+  width: calc(var(--fui-haggle-mood) * 100%);
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    var(--fui-danger) 0%,
+    var(--fui-warn) 50%,
+    var(--fui-success) 100%
+  );
+  /* The gradient is fixed to the full track, so the colour a player sees is the
+     colour of the level they reached rather than a re-scaled ramp. */
+  background-size: calc(100% / max(var(--fui-haggle-mood), 0.01)) 100%;
+  transition: width var(--fui-t-slow) var(--fui-ease);
+}
+
+.fui-haggle__pips {
+  display: flex;
+  gap: 3px;
+}
+
+.fui-haggle__pip {
+  width: 8px;
+  height: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 50%;
+}
+
+.fui-haggle__pip.is-on {
+  border-color: transparent;
+  background: var(--fui-gold);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--fui-gold) 55%, transparent);
+}
+
+.fui-haggle__reply {
+  min-height: 30px;
+  font-family: var(--fui-font-body);
+  font-size: 12px;
+  font-style: italic;
+  line-height: 1.35;
+  color: var(--fui-ink-dim);
+}
+
+.fui-haggle[data-state='deal'] .fui-haggle__reply { color: var(--fui-success); }
+.fui-haggle[data-state='insulted'] .fui-haggle__reply,
+.fui-haggle[data-state='walked'] .fui-haggle__reply { color: var(--fui-danger); }
+.fui-haggle[data-state='close'] .fui-haggle__reply { color: var(--fui-warn); }
+
+.fui-haggle__offer {
+  display: flex;
+  align-items: baseline;
+  gap: var(--fui-gap-sm);
+}
+
+.fui-haggle__offer-label {
+  flex: 1;
+  font-size: 10px;
+}
+
+.fui-haggle__offer-value {
+  font-family: var(--fui-font-display);
+  font-size: 20px;
+  color: var(--fui-ink);
+}
+
+.fui-haggle__offer-value[data-poor='true'] {
+  color: var(--fui-danger);
+}
+
+.fui-haggle__slider {
+  width: 100%;
+  accent-color: var(--fui-gold);
+  cursor: pointer;
+}
+
+.fui-haggle__slider:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.fui-haggle__actions {
+  display: flex;
+  gap: var(--fui-gap-sm);
+}
+
+.fui-haggle__walk,
+.fui-haggle__push {
+  flex: 1;
+  padding: 8px;
+  border-radius: var(--fui-radius);
+  font-family: inherit;
+  font-size: 11.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.fui-haggle__walk {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: none;
+  color: var(--fui-ink-faint);
+}
+
+.fui-haggle__walk:hover { color: var(--fui-ink-dim); }
+
+.fui-haggle__push {
+  border: 1px solid var(--fui-gold);
+  background: linear-gradient(180deg, rgba(217, 164, 65, 0.34), rgba(217, 164, 65, 0.1));
+  color: var(--fui-ink);
+}
+
+.fui-haggle__push:hover { filter: brightness(1.28); }
+
+/* Once the deal is done or the merchant has walked, the controls stop
+   pretending there is anything left to do. */
+.fui-haggle[data-closed='true'] .fui-haggle__push {
+  opacity: 0.4;
+  pointer-events: none;
+}

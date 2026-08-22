@@ -1,0 +1,156 @@
+/* TierList — S through D, entries dragged between rows. */
+
+.fui-tiers {
+  --fui-tiers-size: 54px;
+  --fui-tiers-ink: var(--fui-neutral);
+  --fui-tiers-rarity: var(--fui-rarity-common);
+  display: flex;
+  flex-direction: column;
+  gap: var(--fui-gap-sm);
+  font-family: var(--fui-font-ui);
+}
+
+.fui-tiers__head {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.fui-tiers__title {
+  font-size: 14px;
+}
+
+.fui-tiers__sub {
+  font-size: 10.5px;
+  color: var(--fui-ink-faint);
+}
+
+.fui-tiers__board {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border: 1px solid rgba(0, 0, 0, 0.6);
+  border-radius: var(--fui-radius);
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.fui-tiers__row {
+  display: flex;
+  min-height: calc(var(--fui-tiers-size) + 12px);
+  gap: 2px;
+}
+
+/* The letter badge is the row's whole identity, so it is a solid block of the
+   tier colour rather than a label sitting on the grid. */
+.fui-tiers__badge {
+  display: flex;
+  width: 62px;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--fui-tiers-ink) 92%, #fff 12%),
+    color-mix(in srgb, var(--fui-tiers-ink) 82%, #000 18%)
+  );
+  text-align: center;
+}
+
+.fui-tiers__letter {
+  font-family: var(--fui-font-display);
+  font-size: 24px;
+  line-height: 1;
+  color: #16130f;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+
+.fui-tiers__note {
+  font-size: 8.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.fui-tiers__slots {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 5px;
+  min-height: calc(var(--fui-tiers-size) + 12px);
+  padding: 6px;
+  background: rgba(255, 255, 255, 0.035);
+  transition: background var(--fui-t-fast) var(--fui-ease);
+}
+
+/* A row lights up while something is held over it, which is the only feedback
+   drag-and-drop gives for free — and it gives none. */
+.fui-tiers__slots[data-over='true'] {
+  background: color-mix(in srgb, var(--fui-tiers-ink) 22%, transparent);
+  box-shadow: inset 0 0 0 1px var(--fui-tiers-ink);
+}
+
+.fui-tiers__entry {
+  display: flex;
+  width: var(--fui-tiers-size);
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  cursor: grab;
+  transition: transform var(--fui-t-fast) var(--fui-ease);
+}
+
+.fui-tiers__entry:hover { transform: translateY(-2px); }
+
+.fui-tiers__entry.is-held {
+  opacity: 0.4;
+  cursor: grabbing;
+}
+
+.fui-tiers__entry[data-rarity='uncommon'] { --fui-tiers-rarity: var(--fui-rarity-uncommon); }
+.fui-tiers__entry[data-rarity='rare'] { --fui-tiers-rarity: var(--fui-rarity-rare); }
+.fui-tiers__entry[data-rarity='epic'] { --fui-tiers-rarity: var(--fui-rarity-epic); }
+.fui-tiers__entry[data-rarity='legendary'] { --fui-tiers-rarity: var(--fui-rarity-legendary); }
+.fui-tiers__entry[data-rarity='mythic'] { --fui-tiers-rarity: var(--fui-rarity-mythic); }
+
+.fui-tiers__art {
+  width: var(--fui-tiers-size);
+  height: var(--fui-tiers-size);
+  border: 2px solid var(--fui-tiers-rarity);
+  border-radius: var(--fui-radius);
+  background: center / cover no-repeat rgba(0, 0, 0, 0.6);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+.fui-tiers__name {
+  max-width: 100%;
+  font-size: 9px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--fui-ink-dim);
+}
+
+.fui-tiers__meta {
+  font-size: 8px;
+  color: var(--fui-ink-faint);
+}
+
+.fui-tiers__tray {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fui-tiers__tray-label {
+  font-size: 10px;
+}
+
+.fui-tiers__tray .fui-tiers__slots {
+  border: 1px dashed rgba(255, 255, 255, 0.16);
+  border-radius: var(--fui-radius);
+  background: rgba(0, 0, 0, 0.3);
+}

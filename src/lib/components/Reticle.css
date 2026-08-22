@@ -1,0 +1,275 @@
+/* Reticle — an aiming crosshair with spread, lock and hit chance. */
+
+.fui-reticle {
+  --fui-reticle-size: 120px;
+  --fui-reticle-lock: 0;
+  --fui-reticle-spread: 0.2;
+  --fui-reticle-ink: var(--fui-accent, #d8c9a6);
+  /* Arms sit at a quarter of the box and open outward with spread. */
+  --fui-reticle-gap: calc(var(--fui-reticle-size) * (0.14 + 0.2 * var(--fui-reticle-spread)));
+  --fui-reticle-arm: calc(var(--fui-reticle-size) * 0.16);
+
+  position: relative;
+  display: block;
+  width: var(--fui-reticle-size);
+  height: var(--fui-reticle-size);
+  color: var(--fui-reticle-ink);
+  pointer-events: none;
+}
+
+.fui-reticle.is-pinned {
+  position: fixed;
+  margin: calc(var(--fui-reticle-size) / -2) 0 0 calc(var(--fui-reticle-size) / -2);
+  z-index: 40;
+}
+
+/* ── Arms ───────────────────────────────────────────────────────────────── */
+
+.fui-reticle__arm {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  background: currentColor;
+  box-shadow: 0 0 6px color-mix(in srgb, currentColor 60%, transparent);
+  transition:
+    transform 160ms ease-out,
+    opacity 160ms ease-out;
+}
+
+.fui-reticle__arm--n,
+.fui-reticle__arm--s {
+  width: 2px;
+  height: var(--fui-reticle-arm);
+  margin: 0 0 0 -1px;
+}
+
+.fui-reticle__arm--e,
+.fui-reticle__arm--w {
+  width: var(--fui-reticle-arm);
+  height: 2px;
+  margin: -1px 0 0 0;
+}
+
+.fui-reticle__arm--n { transform: translate(0, calc(-1 * var(--fui-reticle-gap) - 100%)); }
+.fui-reticle__arm--s { transform: translate(0, var(--fui-reticle-gap)); }
+.fui-reticle__arm--w { transform: translate(calc(-1 * var(--fui-reticle-gap) - 100%), 0); }
+.fui-reticle__arm--e { transform: translate(var(--fui-reticle-gap), 0); }
+
+/* ── Ring and lock ──────────────────────────────────────────────────────── */
+
+.fui-reticle__ring {
+  position: absolute;
+  inset: 22%;
+  border: 1px solid color-mix(in srgb, currentColor 45%, transparent);
+  border-radius: 50%;
+  opacity: 0.8;
+}
+
+/* The lock closes in as `--fui-reticle-lock` goes 0 → 1, ending flush on the
+   ring. Dashes rather than a solid stroke so a partial lock still reads. */
+.fui-reticle__lock {
+  position: absolute;
+  inset: calc(6% + 16% * var(--fui-reticle-lock));
+  border: 2px dashed currentColor;
+  border-radius: 50%;
+  opacity: calc(0.15 + 0.85 * var(--fui-reticle-lock));
+  transition:
+    inset 220ms cubic-bezier(0.2, 0.9, 0.25, 1),
+    opacity 220ms ease-out;
+}
+
+.fui-reticle__dot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 3px;
+  height: 3px;
+  margin: -1.5px 0 0 -1.5px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 8px currentColor;
+}
+
+/* ── Variants ───────────────────────────────────────────────────────────── */
+
+/* Brackets: corner elbows instead of bars. Each arm grows a second edge. */
+.fui-reticle[data-variant='brackets'] .fui-reticle__arm {
+  width: var(--fui-reticle-arm);
+  height: var(--fui-reticle-arm);
+  background: none;
+  box-shadow: none;
+  border: 2px solid currentColor;
+  margin: 0;
+  filter: drop-shadow(0 0 5px color-mix(in srgb, currentColor 55%, transparent));
+}
+
+.fui-reticle[data-variant='brackets'] .fui-reticle__arm--n {
+  border-right: 0;
+  border-bottom: 0;
+  transform: translate(calc(-1 * var(--fui-reticle-gap) - 100%), calc(-1 * var(--fui-reticle-gap) - 100%));
+}
+
+.fui-reticle[data-variant='brackets'] .fui-reticle__arm--e {
+  border-left: 0;
+  border-bottom: 0;
+  transform: translate(var(--fui-reticle-gap), calc(-1 * var(--fui-reticle-gap) - 100%));
+}
+
+.fui-reticle[data-variant='brackets'] .fui-reticle__arm--s {
+  border-left: 0;
+  border-top: 0;
+  transform: translate(var(--fui-reticle-gap), var(--fui-reticle-gap));
+}
+
+.fui-reticle[data-variant='brackets'] .fui-reticle__arm--w {
+  border-right: 0;
+  border-top: 0;
+  transform: translate(calc(-1 * var(--fui-reticle-gap) - 100%), var(--fui-reticle-gap));
+}
+
+.fui-reticle[data-variant='brackets'] .fui-reticle__ring { opacity: 0; }
+
+/* Ring: a heavy circle and a single index mark at twelve o'clock, which is
+   what tells the player which way up the sight is while it swings. */
+.fui-reticle[data-variant='ring'] .fui-reticle__arm--s,
+.fui-reticle[data-variant='ring'] .fui-reticle__arm--e,
+.fui-reticle[data-variant='ring'] .fui-reticle__arm--w { opacity: 0; }
+
+.fui-reticle[data-variant='ring'] .fui-reticle__arm--n {
+  height: calc(var(--fui-reticle-size) * 0.1);
+  transform: translate(0, calc(var(--fui-reticle-size) * -0.44));
+}
+
+.fui-reticle[data-variant='ring'] .fui-reticle__ring {
+  inset: 12%;
+  border-width: 2px;
+  border-color: currentColor;
+  opacity: 1;
+  box-shadow:
+    0 0 10px color-mix(in srgb, currentColor 40%, transparent),
+    inset 0 0 12px color-mix(in srgb, currentColor 22%, transparent);
+}
+
+/* Arc: two facing crescents, drawn by hiding half of a thick ring each way. */
+.fui-reticle[data-variant='arc'] .fui-reticle__arm { opacity: 0; }
+
+.fui-reticle[data-variant='arc'] .fui-reticle__ring {
+  inset: calc(10% + 6% * var(--fui-reticle-spread));
+  border-width: 3px;
+  border-color: currentColor transparent currentColor transparent;
+  opacity: 1;
+  transform: rotate(calc(45deg - 45deg * var(--fui-reticle-lock)));
+  transition:
+    inset 160ms ease-out,
+    transform 260ms cubic-bezier(0.2, 0.9, 0.25, 1);
+}
+
+.fui-reticle[data-variant='arc'] .fui-reticle__lock {
+  inset: calc(24% + 10% * var(--fui-reticle-lock));
+  border-style: solid;
+  border-color: transparent currentColor transparent currentColor;
+}
+
+/* ── States ─────────────────────────────────────────────────────────────── */
+
+.fui-reticle[data-state='idle'] {
+  --fui-reticle-ink: color-mix(in srgb, var(--fui-text, #e8e0cd) 62%, transparent);
+}
+
+.fui-reticle[data-state='idle'] .fui-reticle__lock { opacity: 0; }
+
+.fui-reticle[data-state='tracking'] {
+  --fui-reticle-ink: var(--fui-accent, #d8c9a6);
+}
+
+.fui-reticle[data-state='locked'] {
+  --fui-reticle-ink: var(--fui-danger, #d8543f);
+}
+
+.fui-reticle[data-state='locked'] .fui-reticle__ring {
+  animation: fui-reticle-pulse 900ms ease-in-out infinite;
+}
+
+.fui-reticle[data-state='blocked'] {
+  --fui-reticle-ink: color-mix(in srgb, var(--fui-danger, #d8543f) 70%, #6a6a6a);
+}
+
+/* A blocked shot gets a slash through the middle — the one reading that has to
+   survive being glanced at for a sixth of a second. */
+.fui-reticle[data-state='blocked'] .fui-reticle__dot {
+  width: calc(var(--fui-reticle-size) * 0.34);
+  height: 2px;
+  margin: -1px 0 0 calc(var(--fui-reticle-size) * -0.17);
+  border-radius: 0;
+  transform: rotate(-45deg);
+}
+
+.fui-reticle[data-state='reloading'] {
+  --fui-reticle-ink: color-mix(in srgb, var(--fui-text, #e8e0cd) 45%, transparent);
+}
+
+.fui-reticle[data-state='reloading'] .fui-reticle__lock {
+  border-style: solid;
+  border-color: currentColor transparent transparent transparent;
+  inset: 10%;
+  opacity: 0.9;
+  animation: fui-reticle-spin 1100ms linear infinite;
+}
+
+@keyframes fui-reticle-pulse {
+  0%,
+  100% { transform: scale(1); opacity: 0.85; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+
+@keyframes fui-reticle-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fui-reticle__arm,
+  .fui-reticle__lock,
+  .fui-reticle__ring { animation: none; transition: none; }
+}
+
+/* ── Readout ────────────────────────────────────────────────────────────── */
+
+.fui-reticle__info {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 6px);
+  transform: translateX(-50%);
+  display: grid;
+  gap: 2px;
+  justify-items: center;
+  white-space: nowrap;
+  text-shadow: 0 1px 3px rgb(0 0 0 / 0.85);
+}
+
+.fui-reticle__target {
+  font: var(--fui-font-label, 600 11px/1.2 system-ui, sans-serif);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fui-text, #e8e0cd);
+}
+
+.fui-reticle__line {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 11px;
+}
+
+.fui-reticle__chance {
+  font-weight: 700;
+  color: currentColor;
+}
+
+.fui-reticle__chance[data-odds='good'] { color: var(--fui-success, #7fb069); }
+.fui-reticle__chance[data-odds='fair'] { color: var(--fui-warning, #d9a441); }
+.fui-reticle__chance[data-odds='poor'] { color: var(--fui-danger, #d8543f); }
+
+.fui-reticle__range {
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 65%, transparent);
+}

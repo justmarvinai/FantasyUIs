@@ -1,0 +1,235 @@
+/* PhaseTracker — the round structure of a turn-based fight. */
+
+.fui-phasetracker {
+  --fui-phase-progress: 0;
+  --fui-phase-clock: 1;
+  --fui-phase-ink: var(--fui-accent, #d8c9a6);
+
+  display: grid;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--fui-panel-fill-src, none) center / 100% 100%;
+  background-color: color-mix(in srgb, var(--fui-panel-ink, #14100c) 70%, transparent);
+  border-radius: 4px;
+  color: var(--fui-text, #e8e0cd);
+}
+
+.fui-phasetracker[data-side='you'] { --fui-phase-ink: var(--fui-info, #6fa8dc); }
+.fui-phasetracker[data-side='foe'] { --fui-phase-ink: var(--fui-danger, #d8543f); }
+
+/* ── Head ───────────────────────────────────────────────────────────────── */
+
+.fui-phasetracker__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font: var(--fui-font-label, 600 11px/1 system-ui, sans-serif);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.fui-phasetracker__round {
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 70%, transparent);
+}
+
+.fui-phasetracker__side {
+  padding: 3px 8px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--fui-phase-ink) 22%, transparent);
+  border: 1px solid color-mix(in srgb, var(--fui-phase-ink) 45%, transparent);
+  color: var(--fui-phase-ink);
+}
+
+/* The clock drains its own ground left-to-right, so the bar and the digit are
+   the same number and cannot disagree. */
+.fui-phasetracker__clock {
+  position: relative;
+  margin-left: auto;
+  padding: 3px 9px;
+  border-radius: 3px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--fui-panel-ink, #14100c) 80%, transparent);
+  border: 1px solid color-mix(in srgb, var(--fui-text, #e8e0cd) 20%, transparent);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.fui-phasetracker__clock::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: calc(100% * var(--fui-phase-clock));
+  background: color-mix(in srgb, var(--fui-phase-ink) 28%, transparent);
+  transition: width 900ms linear;
+}
+
+.fui-phasetracker__clock[data-low='on'] {
+  color: var(--fui-danger, #d8543f);
+  border-color: color-mix(in srgb, var(--fui-danger, #d8543f) 60%, transparent);
+  animation: fui-phase-blink 1s steps(2, jump-none) infinite;
+}
+
+/* ── Track ──────────────────────────────────────────────────────────────── */
+
+.fui-phasetracker__track {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+}
+
+.fui-phasetracker__link {
+  flex: 1;
+  height: 2px;
+  margin-top: 15px;
+  min-width: 16px;
+  background: color-mix(in srgb, var(--fui-text, #e8e0cd) 18%, transparent);
+}
+
+.fui-phasetracker__node {
+  flex: none;
+  display: grid;
+  justify-items: center;
+  gap: 5px;
+  padding: 0 4px;
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  cursor: default;
+}
+
+.fui-phasetracker__node:not([disabled]) { cursor: pointer; }
+
+.fui-phasetracker__mark {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 2px solid color-mix(in srgb, var(--fui-text, #e8e0cd) 22%, transparent);
+  background: color-mix(in srgb, var(--fui-panel-ink, #14100c) 85%, transparent);
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 55%, transparent);
+  font-size: 12px;
+  font-weight: 700;
+  transition:
+    border-color 180ms ease-out,
+    background 180ms ease-out,
+    box-shadow 180ms ease-out,
+    transform 180ms ease-out;
+}
+
+/* Glyph art is monochrome — mask it over the mark's own colour so the icon
+   inherits every state change for free. */
+.fui-phasetracker__mark[data-glyph='on']::before {
+  content: '';
+  width: 18px;
+  height: 18px;
+  background-color: currentColor;
+  mask: var(--fui-phase-glyph, var(--fui-mask-none)) no-repeat center / contain;
+  -webkit-mask: var(--fui-phase-glyph, var(--fui-mask-none)) no-repeat center / contain;
+}
+
+.fui-phasetracker__label {
+  font: var(--fui-font-label, 600 10px/1.2 system-ui, sans-serif);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 50%, transparent);
+  white-space: nowrap;
+  transition: color 180ms ease-out;
+}
+
+/* ── Node states ────────────────────────────────────────────────────────── */
+
+.fui-phasetracker__node[data-state='done'] .fui-phasetracker__mark {
+  border-color: color-mix(in srgb, var(--fui-phase-ink) 55%, transparent);
+  color: color-mix(in srgb, var(--fui-phase-ink) 80%, transparent);
+  background: color-mix(in srgb, var(--fui-phase-ink) 12%, var(--fui-panel-ink, #14100c));
+}
+
+.fui-phasetracker__node[data-state='done'] .fui-phasetracker__label {
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 65%, transparent);
+}
+
+.fui-phasetracker__node[data-state='active'] .fui-phasetracker__mark {
+  border-color: var(--fui-phase-ink);
+  color: var(--fui-phase-ink);
+  background: color-mix(in srgb, var(--fui-phase-ink) 22%, var(--fui-panel-ink, #14100c));
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--fui-phase-ink) 18%, transparent),
+    0 0 16px color-mix(in srgb, var(--fui-phase-ink) 40%, transparent);
+  transform: scale(1.12);
+}
+
+.fui-phasetracker__node[data-state='active'] .fui-phasetracker__label {
+  color: var(--fui-phase-ink);
+  text-shadow: 0 0 8px color-mix(in srgb, var(--fui-phase-ink) 45%, transparent);
+}
+
+.fui-phasetracker__node[data-auto='on'] .fui-phasetracker__label::after {
+  content: ' •';
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 35%, transparent);
+}
+
+.fui-phasetracker__node:not([disabled]):hover .fui-phasetracker__mark {
+  border-color: color-mix(in srgb, var(--fui-phase-ink) 70%, transparent);
+}
+
+.fui-phasetracker__node:focus-visible {
+  outline: 2px solid var(--fui-phase-ink);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* A link is travelled when the node *before* it is done — an adjacent-sibling
+   test, so the fill stays right however many phases the caller declares. */
+.fui-phasetracker__node[data-state='done'] + .fui-phasetracker__link {
+  background: var(--fui-phase-ink);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--fui-phase-ink) 45%, transparent);
+}
+
+/* ── Hint ───────────────────────────────────────────────────────────────── */
+
+.fui-phasetracker__hint {
+  margin: 0;
+  min-height: 1.2em;
+  font-size: 12px;
+  line-height: 1.35;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 68%, transparent);
+}
+
+.fui-phasetracker__hint[data-empty='on'] { display: none; }
+
+/* ── Vertical ───────────────────────────────────────────────────────────── */
+
+.fui-phasetracker[data-axis='y'] .fui-phasetracker__track {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.fui-phasetracker[data-axis='y'] .fui-phasetracker__node {
+  grid-auto-flow: column;
+  grid-template-columns: 32px auto;
+  justify-items: start;
+  align-items: center;
+  gap: 10px;
+  padding: 2px 0;
+}
+
+.fui-phasetracker[data-axis='y'] .fui-phasetracker__link {
+  flex: none;
+  width: 2px;
+  height: 14px;
+  min-width: 0;
+  margin: 0 0 0 15px;
+}
+
+@keyframes fui-phase-blink {
+  50% { opacity: 0.55; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fui-phasetracker__clock[data-low='on'] { animation: none; }
+  .fui-phasetracker__clock::before { transition: none; }
+  .fui-phasetracker__mark,
+  .fui-phasetracker__label { transition: none; }
+}

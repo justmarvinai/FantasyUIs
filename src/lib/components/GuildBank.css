@@ -1,0 +1,281 @@
+/* GuildBank — shared vault, per-rank allowance, movement log. */
+
+.fui-guildbank {
+  --fui-bank-allow: 1;
+
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  width: 100%;
+  max-width: 400px;
+  background: var(--fui-panel-fill-src, none) center / 100% 100%;
+  background-color: color-mix(in srgb, var(--fui-panel-ink, #14100c) 80%, transparent);
+  border-radius: 6px;
+  color: var(--fui-text, #e8e0cd);
+}
+
+.fui-guildbank__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.fui-guildbank__title {
+  margin: 0;
+  flex: 1;
+  font: var(--fui-font-title, 700 15px/1.2 system-ui, sans-serif);
+  letter-spacing: 0.04em;
+}
+
+.fui-guildbank__deposit {
+  padding: 5px 11px;
+  border-radius: 3px;
+  border: 1px solid color-mix(in srgb, var(--fui-accent, #d8c9a6) 50%, transparent);
+  background: color-mix(in srgb, var(--fui-accent, #d8c9a6) 12%, transparent);
+  color: var(--fui-text, #e8e0cd);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.fui-guildbank__deposit:hover { background: color-mix(in srgb, var(--fui-accent, #d8c9a6) 22%, transparent); }
+
+.fui-guildbank__deposit:focus-visible,
+.fui-guildbank__tab:focus-visible,
+.fui-guildbank__slot:focus-visible {
+  outline: 2px solid var(--fui-accent, #d8c9a6);
+  outline-offset: 2px;
+}
+
+/* ── Allowance ──────────────────────────────────────────────────────────── */
+
+.fui-guildbank__allowance { display: grid; gap: 4px; }
+
+.fui-guildbank__allowtext {
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 72%, transparent);
+}
+
+.fui-guildbank[data-spent='on'] .fui-guildbank__allowtext {
+  color: var(--fui-danger, #d8543f);
+  font-weight: 700;
+}
+
+.fui-guildbank__allowbar {
+  display: block;
+  height: 5px;
+  border-radius: 3px;
+  overflow: hidden;
+  background: color-mix(in srgb, #000 55%, transparent);
+}
+
+.fui-guildbank__allowfill {
+  display: block;
+  height: 100%;
+  width: calc(100% * var(--fui-bank-allow));
+  border-radius: 3px;
+  background: linear-gradient(to right, var(--fui-success, #7fb069), #b6dd9a);
+  transition: width 350ms cubic-bezier(0.2, 0.9, 0.25, 1);
+}
+
+.fui-guildbank[data-spent='on'] .fui-guildbank__allowfill {
+  background: var(--fui-danger, #d8543f);
+}
+
+/* ── Tabs ───────────────────────────────────────────────────────────────── */
+
+.fui-guildbank__tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid color-mix(in srgb, var(--fui-text, #e8e0cd) 12%, transparent);
+}
+
+.fui-guildbank__tab {
+  padding: 5px 10px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: none;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 55%, transparent);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: color 150ms ease-out, border-color 150ms ease-out;
+}
+
+.fui-guildbank__tab[data-state='on'] {
+  color: var(--fui-accent, #d8c9a6);
+  border-bottom-color: var(--fui-accent, #d8c9a6);
+}
+
+/* ── Grid ───────────────────────────────────────────────────────────────── */
+
+.fui-guildbank__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(74px, 1fr));
+  gap: 6px;
+}
+
+.fui-guildbank__slot {
+  position: relative;
+  display: grid;
+  gap: 3px;
+  justify-items: center;
+  padding: 5px 4px;
+  border: 1px solid color-mix(in srgb, var(--fui-text, #e8e0cd) 14%, transparent);
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--fui-panel-ink, #14100c) 60%, transparent);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 150ms ease-out, transform 150ms ease-out;
+}
+
+.fui-guildbank__slot:hover:not([disabled]) {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--fui-accent, #d8c9a6) 60%, transparent);
+}
+
+.fui-guildbank__slot[data-rarity='legendary'] { border-color: color-mix(in srgb, var(--fui-gold, #e0b04a) 65%, transparent); }
+.fui-guildbank__slot[data-rarity='epic'] { border-color: #9a6fd0; }
+.fui-guildbank__slot[data-rarity='rare'] { border-color: #5f92d0; }
+
+/* Three ways a slot can be untakeable, and they must not look the same:
+   emptied out, rank-locked, or the member's allowance is gone. */
+.fui-guildbank__slot[data-state='empty'] { opacity: 0.3; cursor: default; }
+.fui-guildbank__slot[data-state='locked'] { cursor: not-allowed; }
+.fui-guildbank__slot[data-state='locked'] .fui-guildbank__art { filter: grayscale(0.9) brightness(0.6); }
+.fui-guildbank__slot[data-state='capped'] { cursor: not-allowed; opacity: 0.6; border-style: dashed; }
+
+.fui-guildbank__art {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 3px;
+  background:
+    var(--fui-slot-frame-src, none) center / 100% 100%,
+    var(--fui-bank-art, none) no-repeat center / 74% auto,
+    color-mix(in srgb, #000 38%, transparent);
+}
+
+.fui-guildbank__qty {
+  position: absolute;
+  right: 6px;
+  top: 6px;
+  padding: 0 4px;
+  border-radius: 3px;
+  background: color-mix(in srgb, #000 75%, transparent);
+  font-size: 10px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.fui-guildbank__lock {
+  position: absolute;
+  left: 50%;
+  top: 38%;
+  width: 18px;
+  height: 18px;
+  margin: -9px 0 0 -9px;
+  background-color: var(--fui-danger, #d8543f);
+  mask: var(--fui-img-glyph-broken-shackle, var(--fui-mask-none)) no-repeat center / contain;
+  -webkit-mask: var(--fui-img-glyph-broken-shackle, var(--fui-mask-none)) no-repeat center / contain;
+  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.85));
+}
+
+.fui-guildbank__name {
+  font-size: 9px;
+  line-height: 1.2;
+  text-align: center;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 68%, transparent);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.fui-guildbank__empty {
+  margin: 0;
+  grid-column: 1 / -1;
+  padding: 16px 0;
+  text-align: center;
+  font-size: 11px;
+  font-style: italic;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 45%, transparent);
+}
+
+/* ── Log ────────────────────────────────────────────────────────────────── */
+
+.fui-guildbank__log {
+  display: grid;
+  gap: 4px;
+  padding-top: 8px;
+  border-top: 1px solid color-mix(in srgb, var(--fui-text, #e8e0cd) 10%, transparent);
+}
+
+.fui-guildbank__logtitle {
+  margin: 0;
+  font-size: 10px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 45%, transparent);
+}
+
+.fui-guildbank__loglist {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 2px;
+  max-height: 110px;
+  overflow-y: auto;
+}
+
+.fui-guildbank__entry {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 10px;
+  padding-left: 10px;
+  position: relative;
+}
+
+/* One coloured tick carries the direction, so the line itself stays plain. */
+.fui-guildbank__entry::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 5px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+}
+
+.fui-guildbank__entry[data-kind='in']::before { background: var(--fui-success, #7fb069); }
+.fui-guildbank__entry[data-kind='out']::before { background: var(--fui-warning, #d9a441); }
+
+.fui-guildbank__who { font-weight: 700; }
+
+.fui-guildbank__what {
+  flex: 1;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 65%, transparent);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fui-guildbank__when {
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 40%, transparent);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fui-guildbank__slot,
+  .fui-guildbank__tab,
+  .fui-guildbank__allowfill { transition: none; }
+  .fui-guildbank__slot:hover:not([disabled]) { transform: none; }
+}

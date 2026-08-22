@@ -1,0 +1,166 @@
+/* BattleGrid — the tactics board a turn is actually played on. */
+
+.fui-bgrid {
+  --fui-bgrid-cell: 42px;
+  --fui-bgrid-cols: 10;
+  --fui-bgrid-rows: 7;
+  --fui-bgrid-ink: var(--fui-neutral);
+  --fui-bgrid-hp: 1;
+  display: inline-flex;
+  flex-direction: column;
+  gap: var(--fui-gap-sm);
+  font-family: var(--fui-font-ui);
+}
+
+.fui-bgrid__title {
+  font-size: 14px;
+}
+
+/* Units share the grid with the cells, so a unit occupies a real track rather
+   than being positioned over one. */
+.fui-bgrid__board {
+  display: grid;
+  grid-template-columns: repeat(var(--fui-bgrid-cols), var(--fui-bgrid-cell));
+  grid-template-rows: repeat(var(--fui-bgrid-rows), var(--fui-bgrid-cell));
+  gap: 1px;
+  padding: 5px;
+  border: 1px solid rgba(0, 0, 0, 0.7);
+  border-radius: var(--fui-radius);
+  background: #1a1712;
+  box-shadow: inset 0 0 34px rgba(0, 0, 0, 0.6);
+}
+
+.fui-bgrid__cell {
+  position: relative;
+  background: rgba(255, 255, 255, 0.04);
+  transition: background var(--fui-t-fast) var(--fui-ease);
+}
+
+.fui-bgrid__cell[data-kind='wall'] {
+  background:
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.3) 0 1px, transparent 1px 8px),
+    #4a453c;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), inset 0 -3px 6px rgba(0, 0, 0, 0.5);
+}
+
+.fui-bgrid__cell[data-kind='water'] {
+  background: linear-gradient(180deg, #234a63, #16303f);
+}
+
+.fui-bgrid__cell[data-kind='rough'] {
+  background: repeating-linear-gradient(48deg, #3a3225 0 4px, #332c20 4px 8px);
+}
+
+.fui-bgrid__cell[data-kind='hazard'] {
+  background: repeating-linear-gradient(
+    -45deg,
+    color-mix(in srgb, var(--fui-danger) 40%, transparent) 0 5px,
+    rgba(0, 0, 0, 0.3) 5px 10px
+  );
+}
+
+.fui-bgrid__cell[data-kind='cover'] {
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--fui-info) 45%, transparent);
+}
+
+.fui-bgrid__cell[data-kind='goal'] {
+  background: color-mix(in srgb, var(--fui-gold) 22%, transparent);
+  box-shadow: inset 0 0 0 1px var(--fui-gold);
+}
+
+/* Movement and threat are different questions, so they get different marks:
+   a filled cell you can stand in, a hatched one you can only be hit from. */
+.fui-bgrid__cell[data-reach='move'] {
+  background: color-mix(in srgb, var(--fui-info) 34%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--fui-info) 60%, transparent);
+  cursor: pointer;
+}
+
+.fui-bgrid__cell[data-reach='move']:hover {
+  background: color-mix(in srgb, var(--fui-info) 55%, transparent);
+}
+
+.fui-bgrid__cell[data-reach='threat'] {
+  background:
+    repeating-linear-gradient(
+      45deg,
+      color-mix(in srgb, var(--fui-danger) 26%, transparent) 0 3px,
+      transparent 3px 7px
+    ),
+    rgba(255, 255, 255, 0.04);
+}
+
+.fui-bgrid__unit {
+  position: relative;
+  display: block;
+  padding: 2px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.fui-bgrid__unit[data-side='ally'] { --fui-bgrid-ink: var(--fui-success); }
+.fui-bgrid__unit[data-side='enemy'] { --fui-bgrid-ink: var(--fui-danger); }
+
+.fui-bgrid__art {
+  display: block;
+  width: 100%;
+  height: calc(100% - 4px);
+  border: 2px solid var(--fui-bgrid-ink);
+  border-radius: 50%;
+  background: center / cover no-repeat rgba(0, 0, 0, 0.7);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+}
+
+.fui-bgrid__unit[data-on='true'] .fui-bgrid__art {
+  box-shadow:
+    0 0 0 2px #fff,
+    0 0 14px color-mix(in srgb, var(--fui-bgrid-ink) 70%, transparent);
+}
+
+/* A unit that has acted is dimmed rather than removed, so the board still
+   shows where everyone is. */
+.fui-bgrid__unit[data-spent='true'] {
+  filter: grayscale(0.75) brightness(0.7);
+}
+
+.fui-bgrid__hp {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  bottom: 0;
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.fui-bgrid__hp::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: calc(var(--fui-bgrid-hp) * 100%);
+  border-radius: 2px;
+  background: var(--fui-bgrid-ink);
+}
+
+/* A facing pip, for games where the direction a unit looks matters. Four
+   explicit placements rather than a rotation, because rotating a pseudo-element
+   around its parent's centre needs an origin nobody can read at a glance. */
+.fui-bgrid__unit[data-facing]:not([data-facing=''])::after {
+  content: '';
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--fui-bgrid-ink);
+  box-shadow: 0 0 5px color-mix(in srgb, var(--fui-bgrid-ink) 70%, transparent);
+}
+
+.fui-bgrid__unit[data-facing='n']::after { left: 50%; top: -1px; margin-left: -3.5px; }
+.fui-bgrid__unit[data-facing='s']::after { left: 50%; bottom: 1px; margin-left: -3.5px; }
+.fui-bgrid__unit[data-facing='e']::after { right: -1px; top: 50%; margin-top: -3.5px; }
+.fui-bgrid__unit[data-facing='w']::after { left: -1px; top: 50%; margin-top: -3.5px; }

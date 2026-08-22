@@ -1,0 +1,239 @@
+/* SeasonEndScreen — the competitive season wrap-up. */
+
+.fui-seasonend {
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+  padding: 20px 18px;
+  width: 100%;
+  max-width: 480px;
+  border-radius: 8px;
+  text-align: center;
+  color: var(--fui-text, #e8e0cd);
+  background:
+    linear-gradient(to bottom, color-mix(in srgb, #000 45%, transparent), color-mix(in srgb, var(--fui-panel-ink, #14100c) 94%, transparent) 60%),
+    var(--fui-season-art, none) no-repeat center top / cover,
+    color-mix(in srgb, var(--fui-panel-ink, #14100c) 92%, transparent);
+}
+
+.fui-seasonend__kicker {
+  font: var(--fui-font-label, 700 10px/1 system-ui, sans-serif);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 55%, transparent);
+}
+
+.fui-seasonend__season {
+  margin: 0;
+  font: var(--fui-font-title, 700 20px/1.15 system-ui, sans-serif);
+  letter-spacing: 0.06em;
+  text-shadow: 0 2px 12px rgb(0 0 0 / 0.8);
+}
+
+/* ── Crest ──────────────────────────────────────────────────────────────── */
+
+.fui-seasonend__crest {
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+  margin: 2px 0 4px;
+}
+
+.fui-seasonend__emblem {
+  width: 92px;
+  height: 92px;
+  background:
+    var(--fui-season-emblem, none) no-repeat center / contain,
+    radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--fui-gold, #e0b04a) 28%, transparent), transparent 68%);
+  filter: drop-shadow(0 4px 16px color-mix(in srgb, var(--fui-gold, #e0b04a) 35%, transparent));
+  animation: fui-seasonend-rise 620ms cubic-bezier(0.15, 1.25, 0.4, 1) both;
+}
+
+.fui-seasonend__rank {
+  font: var(--fui-font-title, 700 17px/1.15 system-ui, sans-serif);
+  letter-spacing: 0.08em;
+  color: var(--fui-gold, #e0b04a);
+  text-shadow: 0 0 14px color-mix(in srgb, var(--fui-gold, #e0b04a) 40%, transparent);
+}
+
+.fui-seasonend__place {
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 62%, transparent);
+}
+
+/* ── Stats ──────────────────────────────────────────────────────────────── */
+
+.fui-seasonend__stats {
+  display: grid;
+  gap: 3px;
+  width: 100%;
+  padding: 9px 11px;
+  border-radius: 5px;
+  background: color-mix(in srgb, #000 42%, transparent);
+}
+
+.fui-seasonend__stat {
+  display: grid;
+  grid-template-columns: 16px 1fr auto auto;
+  align-items: center;
+  gap: 8px;
+  text-align: left;
+}
+
+.fui-seasonend__staticon {
+  width: 15px;
+  height: 15px;
+}
+
+.fui-seasonend__staticon[data-glyph='on'] {
+  background-color: color-mix(in srgb, var(--fui-accent, #d8c9a6) 85%, transparent);
+  mask: var(--fui-season-glyph, var(--fui-mask-none)) no-repeat center / contain;
+  -webkit-mask: var(--fui-season-glyph, var(--fui-mask-none)) no-repeat center / contain;
+}
+
+.fui-seasonend__statlabel {
+  font-size: 11px;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 66%, transparent);
+}
+
+.fui-seasonend__statvalue {
+  font-size: 13px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.fui-seasonend__delta {
+  min-width: 34px;
+  text-align: right;
+  font-size: 10px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.fui-seasonend__delta[data-dir='up'] { color: var(--fui-success, #7fb069); }
+.fui-seasonend__delta[data-dir='down'] { color: var(--fui-danger, #d8543f); }
+
+/* ── Rewards ────────────────────────────────────────────────────────────── */
+
+.fui-seasonend__rewards { width: 100%; display: grid; gap: 5px; }
+
+.fui-seasonend__rewardtitle {
+  margin: 0;
+  font: var(--fui-font-label, 700 10px/1 system-ui, sans-serif);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 45%, transparent);
+}
+
+.fui-seasonend__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(66px, 1fr));
+  gap: 6px;
+}
+
+.fui-seasonend__reward {
+  --fui-rarity-ink: color-mix(in srgb, var(--fui-text, #e8e0cd) 25%, transparent);
+
+  position: relative;
+  display: grid;
+  gap: 2px;
+  justify-items: center;
+  padding: 5px 4px;
+  border-radius: 4px;
+  border: 1px solid var(--fui-rarity-ink);
+  background: color-mix(in srgb, var(--fui-panel-ink, #14100c) 62%, transparent);
+}
+
+.fui-seasonend__reward[data-rarity='legendary'] { --fui-rarity-ink: var(--fui-gold, #e0b04a); }
+.fui-seasonend__reward[data-rarity='mythic'] { --fui-rarity-ink: #d05fd0; }
+.fui-seasonend__reward[data-rarity='epic'] { --fui-rarity-ink: #9a6fd0; }
+.fui-seasonend__reward[data-rarity='rare'] { --fui-rarity-ink: #5f92d0; }
+
+.fui-seasonend__rewardart {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 3px;
+  background:
+    var(--fui-season-reward, none) no-repeat center / 78% auto,
+    radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--fui-rarity-ink) 26%, transparent), transparent 70%),
+    color-mix(in srgb, #000 32%, transparent);
+}
+
+.fui-seasonend__rewardqty {
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  padding: 0 4px;
+  border-radius: 3px;
+  background: color-mix(in srgb, #000 75%, transparent);
+  font-size: 9px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.fui-seasonend__rewardname {
+  font-size: 9px;
+  line-height: 1.2;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 68%, transparent);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* ── Next ───────────────────────────────────────────────────────────────── */
+
+.fui-seasonend__next {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.4;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 58%, transparent);
+}
+
+.fui-seasonend__claim {
+  width: 100%;
+  max-width: 260px;
+  padding: 10px 20px;
+  margin-top: 2px;
+  border: 0;
+  border-radius: 4px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: filter 130ms ease-out, transform 130ms ease-out;
+}
+
+.fui-seasonend__claim[data-state='open'] {
+  background: linear-gradient(to bottom, #f0d68a, var(--fui-gold, #e0b04a));
+  color: #1a1408;
+  box-shadow: 0 3px 0 color-mix(in srgb, #000 45%, transparent);
+}
+
+.fui-seasonend__claim[data-state='done'] {
+  background: none;
+  border: 1px solid color-mix(in srgb, var(--fui-success, #7fb069) 50%, transparent);
+  color: var(--fui-success, #7fb069);
+  cursor: default;
+}
+
+.fui-seasonend__claim:hover:not([disabled]) { filter: brightness(1.08); }
+.fui-seasonend__claim:active:not([disabled]) { transform: translateY(3px); box-shadow: none; }
+
+.fui-seasonend__claim:focus-visible {
+  outline: 2px solid var(--fui-accent, #d8c9a6);
+  outline-offset: 2px;
+}
+
+@keyframes fui-seasonend-rise {
+  from { opacity: 0; transform: translateY(14px) scale(0.86); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fui-seasonend__emblem { animation: none; }
+  .fui-seasonend__claim { transition: none; }
+}

@@ -1,0 +1,261 @@
+/* ClanFinder — the guild browser. */
+
+.fui-clanfinder {
+  display: grid;
+  gap: 9px;
+  padding: 14px;
+  width: 100%;
+  max-width: 440px;
+  background: var(--fui-panel-fill-src, none) center / 100% 100%;
+  background-color: color-mix(in srgb, var(--fui-panel-ink, #14100c) 80%, transparent);
+  border-radius: 6px;
+  color: var(--fui-text, #e8e0cd);
+}
+
+.fui-clanfinder__head { display: flex; align-items: center; gap: 10px; }
+
+.fui-clanfinder__title {
+  margin: 0;
+  flex: 1;
+  font: var(--fui-font-title, 700 15px/1.2 system-ui, sans-serif);
+  letter-spacing: 0.04em;
+}
+
+.fui-clanfinder__create {
+  padding: 5px 11px;
+  border-radius: 3px;
+  border: 1px solid color-mix(in srgb, var(--fui-accent, #d8c9a6) 50%, transparent);
+  background: color-mix(in srgb, var(--fui-accent, #d8c9a6) 12%, transparent);
+  color: var(--fui-text, #e8e0cd);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.fui-clanfinder__create:hover { background: color-mix(in srgb, var(--fui-accent, #d8c9a6) 22%, transparent); }
+
+.fui-clanfinder__create:focus-visible,
+.fui-clanfinder__filter:focus-visible,
+.fui-clanfinder__apply:focus-visible {
+  outline: 2px solid var(--fui-accent, #d8c9a6);
+  outline-offset: 2px;
+}
+
+/* ── Filters ────────────────────────────────────────────────────────────── */
+
+.fui-clanfinder__filters {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.fui-clanfinder__filter {
+  padding: 3px 10px;
+  border-radius: 11px;
+  border: 1px solid color-mix(in srgb, var(--fui-text, #e8e0cd) 16%, transparent);
+  background: none;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 60%, transparent);
+  font: inherit;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: border-color 150ms ease-out, color 150ms ease-out, background 150ms ease-out;
+}
+
+.fui-clanfinder__filter[data-on='on'] {
+  border-color: var(--fui-accent, #d8c9a6);
+  background: color-mix(in srgb, var(--fui-accent, #d8c9a6) 18%, transparent);
+  color: var(--fui-text, #e8e0cd);
+}
+
+/* ── Cards ──────────────────────────────────────────────────────────────── */
+
+.fui-clanfinder__list {
+  display: grid;
+  gap: 6px;
+  max-height: 420px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.fui-clanfinder__card {
+  display: grid;
+  grid-template-columns: 42px 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: 4px;
+  border: 1px solid color-mix(in srgb, var(--fui-text, #e8e0cd) 12%, transparent);
+  background: color-mix(in srgb, var(--fui-panel-ink, #14100c) 55%, transparent);
+  transition: border-color 150ms ease-out;
+}
+
+.fui-clanfinder__card[data-state='open']:hover {
+  border-color: color-mix(in srgb, var(--fui-accent, #d8c9a6) 50%, transparent);
+}
+
+.fui-clanfinder__card[data-state='full'],
+.fui-clanfinder__card[data-state='gated'] { opacity: 0.7; }
+
+.fui-clanfinder__card[data-state='applied'] {
+  border-color: color-mix(in srgb, var(--fui-success, #7fb069) 45%, transparent);
+}
+
+.fui-clanfinder__crest {
+  width: 42px;
+  height: 42px;
+  background:
+    var(--fui-clan-crest, none) no-repeat center / contain,
+    radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--fui-accent, #d8c9a6) 20%, transparent), transparent 70%);
+  filter: drop-shadow(0 2px 4px rgb(0 0 0 / 0.5));
+}
+
+.fui-clanfinder__body { display: grid; gap: 3px; min-width: 0; }
+
+.fui-clanfinder__line {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.fui-clanfinder__name { font-size: 13px; font-weight: 700; }
+
+.fui-clanfinder__level,
+.fui-clanfinder__rank {
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 55%, transparent);
+}
+
+.fui-clanfinder__rank { color: var(--fui-gold, #e0b04a); }
+
+.fui-clanfinder__open {
+  padding: 1px 6px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--fui-success, #7fb069) 22%, transparent);
+  color: var(--fui-success, #7fb069);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.fui-clanfinder__blurb {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.3;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 65%, transparent);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.fui-clanfinder__facts {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.fui-clanfinder__members {
+  font-size: 10px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 70%, transparent);
+}
+
+.fui-clanfinder__members[data-full='on'] { color: var(--fui-danger, #d8543f); }
+
+/* Activity as a meter, not a date — "will anyone be here tomorrow" answered
+   without making the reader do arithmetic. */
+.fui-clanfinder__activity {
+  --fui-clan-activity: 0;
+
+  display: block;
+  width: 46px;
+  height: 4px;
+  border-radius: 2px;
+  overflow: hidden;
+  background: color-mix(in srgb, #000 55%, transparent);
+}
+
+.fui-clanfinder__activityfill {
+  display: block;
+  height: 100%;
+  width: calc(100% * var(--fui-clan-activity));
+  border-radius: 2px;
+  background: linear-gradient(
+    to right,
+    var(--fui-danger, #d8543f),
+    var(--fui-warning, #d9a441) 45%,
+    var(--fui-success, #7fb069)
+  );
+}
+
+.fui-clanfinder__tag {
+  padding: 1px 6px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--fui-text, #e8e0cd) 10%, transparent);
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 58%, transparent);
+}
+
+.fui-clanfinder__tag[data-warn='on'] {
+  background: color-mix(in srgb, var(--fui-danger, #d8543f) 20%, transparent);
+  color: var(--fui-danger, #d8543f);
+}
+
+.fui-clanfinder__apply {
+  min-width: 66px;
+  padding: 6px 11px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: filter 130ms ease-out;
+}
+
+.fui-clanfinder__apply[data-state='open'] {
+  background: linear-gradient(to bottom, #f0d68a, var(--fui-gold, #e0b04a));
+  color: #1a1408;
+}
+
+.fui-clanfinder__apply[data-state='applied'] {
+  background: none;
+  border-color: color-mix(in srgb, var(--fui-success, #7fb069) 50%, transparent);
+  color: var(--fui-success, #7fb069);
+  cursor: default;
+}
+
+.fui-clanfinder__apply[data-state='full'],
+.fui-clanfinder__apply[data-state='gated'] {
+  background: none;
+  border-color: color-mix(in srgb, var(--fui-text, #e8e0cd) 18%, transparent);
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 45%, transparent);
+  cursor: not-allowed;
+}
+
+.fui-clanfinder__apply:hover:not([disabled]) { filter: brightness(1.1); }
+
+@media (max-width: 400px) {
+  .fui-clanfinder__card { grid-template-columns: 42px 1fr; }
+  .fui-clanfinder__apply { grid-column: 2; justify-self: start; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fui-clanfinder__card,
+  .fui-clanfinder__filter,
+  .fui-clanfinder__apply { transition: none; }
+}

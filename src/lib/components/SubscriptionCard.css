@@ -1,0 +1,236 @@
+/* SubscriptionCard — the monthly pass: offer when unowned, claim when owned. */
+
+.fui-subcard {
+  display: grid;
+  width: 100%;
+  max-width: 320px;
+  overflow: hidden;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--fui-panel-ink, #14100c) 85%, transparent);
+  border: 1px solid color-mix(in srgb, var(--fui-gold, #e0b04a) 35%, transparent);
+  color: var(--fui-text, #e8e0cd);
+  box-shadow: 0 8px 22px rgb(0 0 0 / 0.4);
+}
+
+.fui-subcard[data-owned='on'] {
+  border-color: color-mix(in srgb, var(--fui-success, #7fb069) 45%, transparent);
+}
+
+/* ── Banner ─────────────────────────────────────────────────────────────── */
+
+.fui-subcard__banner {
+  position: relative;
+  min-height: 92px;
+  display: flex;
+  align-items: flex-end;
+  padding: 10px 12px;
+  background:
+    linear-gradient(to top, color-mix(in srgb, var(--fui-panel-ink, #14100c) 95%, transparent) 5%, transparent 75%),
+    var(--fui-sub-art, none) no-repeat center / cover,
+    linear-gradient(135deg, #3a2c1c, #1b1510);
+}
+
+.fui-subcard__stack { display: grid; gap: 2px; }
+
+.fui-subcard__title {
+  margin: 0;
+  font: var(--fui-font-title, 700 16px/1.15 system-ui, sans-serif);
+  letter-spacing: 0.03em;
+  text-shadow: 0 2px 6px rgb(0 0 0 / 0.8);
+}
+
+.fui-subcard__tagline {
+  margin: 0;
+  font-size: 11px;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 72%, transparent);
+  text-shadow: 0 1px 4px rgb(0 0 0 / 0.8);
+}
+
+/* Corner ribbon, rotated out of the card's own box — hence the overflow clip on
+   the root rather than on the banner. */
+.fui-subcard__badge {
+  position: absolute;
+  right: -30px;
+  top: 12px;
+  width: 120px;
+  padding: 3px 0;
+  transform: rotate(38deg);
+  background: linear-gradient(to bottom, #f0d68a, var(--fui-gold, #e0b04a));
+  color: #1a1408;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-align: center;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.5);
+}
+
+/* ── Perks ──────────────────────────────────────────────────────────────── */
+
+.fui-subcard__perks {
+  margin: 0;
+  padding: 10px 12px;
+  list-style: none;
+  display: grid;
+  gap: 5px;
+}
+
+.fui-subcard__perk {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12px;
+  line-height: 1.35;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 78%, transparent);
+}
+
+.fui-subcard__perk::before {
+  content: '';
+  flex: none;
+  width: 14px;
+  height: 14px;
+  margin-top: 1px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--fui-gold, #e0b04a) 55%, transparent);
+}
+
+.fui-subcard__perk[data-glyph='on']::before {
+  border-radius: 0;
+  background-color: var(--fui-gold, #e0b04a);
+  mask: var(--fui-sub-glyph, var(--fui-mask-none)) no-repeat center / contain;
+  -webkit-mask: var(--fui-sub-glyph, var(--fui-mask-none)) no-repeat center / contain;
+}
+
+.fui-subcard__perk[data-highlight='on'] {
+  color: var(--fui-text, #e8e0cd);
+  font-weight: 700;
+}
+
+.fui-subcard__perk[data-highlight='on'] .fui-subcard__perktext {
+  text-shadow: 0 0 10px color-mix(in srgb, var(--fui-gold, #e0b04a) 35%, transparent);
+}
+
+/* ── Footer ─────────────────────────────────────────────────────────────── */
+
+.fui-subcard__footer {
+  display: grid;
+  gap: 8px;
+  padding: 10px 12px 12px;
+  background: color-mix(in srgb, #000 25%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--fui-text, #e8e0cd) 10%, transparent);
+}
+
+.fui-subcard__pricing {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 8px;
+}
+
+.fui-subcard__was {
+  font-size: 12px;
+  text-decoration: line-through;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 45%, transparent);
+}
+
+.fui-subcard__price {
+  font: var(--fui-font-title, 700 20px/1 system-ui, sans-serif);
+  color: var(--fui-gold, #e0b04a);
+}
+
+.fui-subcard__term { display: grid; gap: 4px; }
+
+.fui-subcard__days {
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 75%, transparent);
+}
+
+.fui-subcard__bar {
+  display: block;
+  height: 5px;
+  border-radius: 3px;
+  overflow: hidden;
+  background: color-mix(in srgb, #000 55%, transparent);
+}
+
+.fui-subcard__fill {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(to right, var(--fui-success, #7fb069), #b6dd9a);
+  transition: width 400ms cubic-bezier(0.2, 0.9, 0.25, 1);
+}
+
+.fui-subcard__streak {
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fui-gold, #e0b04a);
+}
+
+.fui-subcard__cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 12px;
+  border: 0;
+  border-radius: 4px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: filter 130ms ease-out, transform 130ms ease-out;
+}
+
+.fui-subcard__cta[data-mode='buy'] {
+  background: linear-gradient(to bottom, #f0d68a, var(--fui-gold, #e0b04a));
+  color: #1a1408;
+  box-shadow: 0 2px 0 color-mix(in srgb, #000 45%, transparent);
+}
+
+.fui-subcard__cta[data-mode='claim'] {
+  background: linear-gradient(to bottom, #8fc47a, var(--fui-success, #7fb069));
+  color: #10190c;
+  box-shadow: 0 2px 0 color-mix(in srgb, #000 45%, transparent);
+  animation: fui-subcard-nudge 2.4s ease-in-out infinite;
+}
+
+.fui-subcard__cta[data-mode='done'] {
+  background: color-mix(in srgb, var(--fui-text, #e8e0cd) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--fui-text, #e8e0cd) 20%, transparent);
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 50%, transparent);
+  cursor: default;
+}
+
+.fui-subcard__cta[data-glyph='on']::before {
+  content: '';
+  width: 15px;
+  height: 15px;
+  background-color: currentColor;
+  mask: var(--fui-sub-daily, var(--fui-mask-none)) no-repeat center / contain;
+  -webkit-mask: var(--fui-sub-daily, var(--fui-mask-none)) no-repeat center / contain;
+}
+
+.fui-subcard__cta:hover:not([disabled]) { filter: brightness(1.08); }
+.fui-subcard__cta:active:not([disabled]) { transform: translateY(2px); box-shadow: none; }
+
+.fui-subcard__cta:focus-visible {
+  outline: 2px solid var(--fui-accent, #d8c9a6);
+  outline-offset: 2px;
+}
+
+@keyframes fui-subcard-nudge {
+  0%, 88%, 100% { transform: none; }
+  92% { transform: translateY(-2px); }
+  96% { transform: translateY(1px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fui-subcard__cta,
+  .fui-subcard__fill { transition: none; animation: none; }
+}

@@ -1,0 +1,274 @@
+/* WishList — pick what the pity is being saved for, then pull. */
+
+.fui-wishlist {
+  --fui-wish-pity: 0;
+  --fui-wish-soft: 0.8;
+
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  width: 100%;
+  max-width: 420px;
+  background: var(--fui-panel-fill-src, none) center / 100% 100%;
+  background-color: color-mix(in srgb, var(--fui-panel-ink, #14100c) 78%, transparent);
+  border-radius: 6px;
+  color: var(--fui-text, #e8e0cd);
+}
+
+.fui-wishlist__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.fui-wishlist__title {
+  margin: 0;
+  flex: 1;
+  font: var(--fui-font-title, 700 15px/1.2 system-ui, sans-serif);
+  letter-spacing: 0.04em;
+}
+
+.fui-wishlist__purse {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 11px;
+  background: color-mix(in srgb, var(--fui-panel-ink, #14100c) 80%, transparent);
+  border: 1px solid color-mix(in srgb, var(--fui-gold, #e0b04a) 40%, transparent);
+}
+
+.fui-wishlist__coin {
+  width: 14px;
+  height: 14px;
+  background-color: var(--fui-gold, #e0b04a);
+  mask: var(--fui-wish-coin, var(--fui-mask-none)) no-repeat center / contain;
+  -webkit-mask: var(--fui-wish-coin, var(--fui-mask-none)) no-repeat center / contain;
+}
+
+.fui-wishlist__balance {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--fui-gold, #e0b04a);
+}
+
+/* ── Pity ───────────────────────────────────────────────────────────────── */
+
+.fui-wishlist__pity { display: grid; gap: 5px; }
+
+.fui-wishlist__bar {
+  position: relative;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: color-mix(in srgb, #000 55%, transparent);
+  box-shadow: inset 0 1px 3px rgb(0 0 0 / 0.6);
+}
+
+.fui-wishlist__fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: calc(100% * var(--fui-wish-pity));
+  border-radius: 4px;
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--fui-info, #6fa8dc) 70%, transparent),
+    var(--fui-accent, #d8c9a6)
+  );
+  transition: width 400ms cubic-bezier(0.2, 0.9, 0.25, 1);
+}
+
+/* Past soft pity the fill turns gold and glows — the state change players are
+   actually watching for, rather than a slow crawl toward the far end. */
+.fui-wishlist[data-phase='soft'] .fui-wishlist__fill {
+  background: linear-gradient(to right, var(--fui-gold, #e0b04a), #fff3c4);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--fui-gold, #e0b04a) 70%, transparent);
+}
+
+.fui-wishlist__soft {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  left: calc(100% * var(--fui-wish-soft));
+  width: 2px;
+  background: color-mix(in srgb, var(--fui-text, #e8e0cd) 75%, transparent);
+}
+
+.fui-wishlist__pitytext {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.35;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 70%, transparent);
+}
+
+.fui-wishlist[data-phase='soft'] .fui-wishlist__pitytext {
+  color: var(--fui-gold, #e0b04a);
+}
+
+/* ── Targets ────────────────────────────────────────────────────────────── */
+
+.fui-wishlist__list { display: grid; gap: 6px; }
+
+.fui-wishlist__target {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 6px 10px 6px 6px;
+  background: color-mix(in srgb, var(--fui-panel-ink, #14100c) 55%, transparent);
+  border: 1px solid color-mix(in srgb, var(--fui-text, #e8e0cd) 12%, transparent);
+  border-radius: 4px;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 160ms ease-out,
+    background 160ms ease-out,
+    transform 160ms ease-out;
+}
+
+.fui-wishlist__target:hover {
+  border-color: color-mix(in srgb, var(--fui-accent, #d8c9a6) 55%, transparent);
+  transform: translateX(2px);
+}
+
+.fui-wishlist__target[data-state='chosen'] {
+  border-color: var(--fui-gold, #e0b04a);
+  background: color-mix(in srgb, var(--fui-gold, #e0b04a) 14%, var(--fui-panel-ink, #14100c));
+  box-shadow: 0 0 14px color-mix(in srgb, var(--fui-gold, #e0b04a) 22%, transparent);
+}
+
+.fui-wishlist__target:focus-visible {
+  outline: 2px solid var(--fui-accent, #d8c9a6);
+  outline-offset: 2px;
+}
+
+.fui-wishlist__art {
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 3px;
+  background: var(--fui-wish-art, none) no-repeat center / cover,
+    color-mix(in srgb, #000 40%, transparent);
+  border: 1px solid color-mix(in srgb, var(--fui-text, #e8e0cd) 18%, transparent);
+}
+
+.fui-wishlist__target[data-rarity='legendary'] .fui-wishlist__art { border-color: var(--fui-gold, #e0b04a); }
+.fui-wishlist__target[data-rarity='mythic'] .fui-wishlist__art { border-color: #d05fd0; }
+.fui-wishlist__target[data-rarity='epic'] .fui-wishlist__art { border-color: #9a6fd0; }
+.fui-wishlist__target[data-rarity='rare'] .fui-wishlist__art { border-color: #5f92d0; }
+
+.fui-wishlist__body { flex: 1; display: grid; gap: 1px; min-width: 0; }
+
+.fui-wishlist__name {
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fui-wishlist__note {
+  font-size: 10px;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 55%, transparent);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fui-wishlist__rate {
+  flex: none;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 65%, transparent);
+}
+
+.fui-wishlist__tick {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid color-mix(in srgb, var(--fui-text, #e8e0cd) 28%, transparent);
+}
+
+.fui-wishlist__target[data-state='chosen'] .fui-wishlist__tick {
+  border-color: var(--fui-gold, #e0b04a);
+  background:
+    radial-gradient(circle at center, var(--fui-gold, #e0b04a) 0 45%, transparent 46%);
+}
+
+.fui-wishlist__target[data-owned='on'] .fui-wishlist__name::after {
+  content: ' · owned';
+  font-weight: 400;
+  font-size: 10px;
+  color: color-mix(in srgb, var(--fui-success, #7fb069) 85%, transparent);
+}
+
+/* ── Pull ───────────────────────────────────────────────────────────────── */
+
+.fui-wishlist__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.fui-wishlist__pull {
+  display: grid;
+  gap: 2px;
+  justify-items: center;
+  padding: 8px 6px;
+  border: 0;
+  border-radius: 4px;
+  color: #1a1408;
+  font: inherit;
+  cursor: pointer;
+  background:
+    var(--fui-btn-fill-src, none) center / 100% 100%,
+    linear-gradient(to bottom, #f0d68a, var(--fui-gold, #e0b04a));
+  box-shadow: 0 2px 0 color-mix(in srgb, #000 45%, transparent);
+  transition: transform 120ms ease-out, filter 120ms ease-out;
+}
+
+.fui-wishlist__pull[data-count='1'] {
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--fui-text, #e8e0cd) 22%, transparent),
+    color-mix(in srgb, var(--fui-panel-ink, #14100c) 55%, transparent)
+  );
+  border: 1px solid color-mix(in srgb, var(--fui-accent, #d8c9a6) 45%, transparent);
+  color: var(--fui-text, #e8e0cd);
+}
+
+.fui-wishlist__pull:hover:not([disabled]) { filter: brightness(1.08); }
+.fui-wishlist__pull:active:not([disabled]) { transform: translateY(2px); box-shadow: none; }
+
+.fui-wishlist__pull[disabled] {
+  filter: grayscale(0.8);
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.fui-wishlist__pull:focus-visible {
+  outline: 2px solid var(--fui-accent, #d8c9a6);
+  outline-offset: 2px;
+}
+
+.fui-wishlist__pulllabel {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.fui-wishlist__price {
+  font-size: 10px;
+  opacity: 0.75;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fui-wishlist__fill,
+  .fui-wishlist__target,
+  .fui-wishlist__pull { transition: none; }
+}

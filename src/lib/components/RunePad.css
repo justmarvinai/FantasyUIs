@@ -1,0 +1,134 @@
+/* RunePad — trace the shape, cast the spell. */
+
+.fui-runepad {
+  --fui-runepad-size: 220px;
+  --fui-runepad-grid: 3;
+  --fui-runepad-ink: var(--fui-xp);
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--fui-font-ui);
+}
+
+.fui-runepad__label {
+  font-size: 10px;
+}
+
+.fui-runepad__board {
+  position: relative;
+  display: grid;
+  width: var(--fui-runepad-size);
+  height: var(--fui-runepad-size);
+  grid-template-columns: repeat(var(--fui-runepad-grid), 1fr);
+  grid-template-rows: repeat(var(--fui-runepad-grid), 1fr);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--fui-radius);
+  background:
+    radial-gradient(circle at 50% 45%, rgba(255, 255, 255, 0.05), transparent 68%),
+    rgba(0, 0, 0, 0.5);
+  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.6);
+  cursor: crosshair;
+  touch-action: none;
+}
+
+/* The ink layer stretches to the board, so a node's centre in the 0–100 space
+   lands on that node's centre on screen whatever the pad's size. */
+.fui-runepad__ink {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.fui-runepad__hint {
+  fill: none;
+  stroke: color-mix(in srgb, var(--fui-runepad-ink) 45%, transparent);
+  stroke-width: 2;
+  stroke-dasharray: 3 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.fui-runepad__trace {
+  fill: none;
+  stroke: var(--fui-runepad-ink);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  filter: drop-shadow(0 0 6px var(--fui-runepad-ink));
+}
+
+.fui-runepad[data-result='fizzle'] .fui-runepad__trace {
+  stroke: var(--fui-danger);
+  filter: drop-shadow(0 0 6px var(--fui-danger));
+  animation: fui-runepad-fizzle 420ms var(--fui-ease) forwards;
+}
+
+/* Opacity is declared at the end too, or the trace snaps back to full under
+   `forwards` instead of dissolving. */
+@keyframes fui-runepad-fizzle {
+  0% { opacity: 1; }
+  40% { opacity: 0.5; }
+  100% { opacity: 0; }
+}
+
+.fui-runepad[data-result='cast'] .fui-runepad__trace {
+  animation: fui-runepad-flare 520ms var(--fui-ease);
+}
+
+@keyframes fui-runepad-flare {
+  0% { stroke-width: 4; }
+  35% { stroke-width: 8; }
+  100% { stroke-width: 4; }
+}
+
+.fui-runepad__node {
+  display: grid;
+  place-items: center;
+}
+
+.fui-runepad__dot {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  transition:
+    transform var(--fui-t-fast) var(--fui-ease),
+    box-shadow var(--fui-t-fast) var(--fui-ease);
+}
+
+.fui-runepad__node[data-on='true'] .fui-runepad__dot {
+  border-color: var(--fui-runepad-ink);
+  background: color-mix(in srgb, var(--fui-runepad-ink) 45%, transparent);
+  box-shadow: 0 0 12px var(--fui-runepad-ink);
+  transform: scale(1.25);
+}
+
+.fui-runepad[data-result='fizzle'] .fui-runepad__node[data-on='true'] .fui-runepad__dot {
+  border-color: var(--fui-danger);
+  background: color-mix(in srgb, var(--fui-danger) 40%, transparent);
+  box-shadow: 0 0 12px var(--fui-danger);
+}
+
+.fui-runepad__result {
+  min-height: 15px;
+  font-family: var(--fui-font-display);
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fui-runepad-ink);
+  text-shadow: 0 1px 4px #000;
+}
+
+.fui-runepad[data-result='cast'] .fui-runepad__result {
+  animation: fui-pop 380ms var(--fui-ease) backwards;
+}
+
+.fui-runepad[data-result='fizzle'] .fui-runepad__result {
+  color: var(--fui-danger);
+}

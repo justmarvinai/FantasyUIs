@@ -1,0 +1,275 @@
+/* CompanionPanel — the pet page, where hunger is the mechanic that matters. */
+
+.fui-pet {
+  --fui-pet-rarity: var(--fui-rarity-common);
+  --fui-pet-p: 0;
+  display: flex;
+  flex-direction: column;
+  max-width: 380px;
+  padding: var(--fui-gap);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--fui-radius);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(0, 0, 0, 0.4));
+  font-family: var(--fui-font-ui);
+}
+
+.fui-pet[data-rarity='uncommon'] { --fui-pet-rarity: var(--fui-rarity-uncommon); }
+.fui-pet[data-rarity='rare'] { --fui-pet-rarity: var(--fui-rarity-rare); }
+.fui-pet[data-rarity='epic'] { --fui-pet-rarity: var(--fui-rarity-epic); }
+.fui-pet[data-rarity='legendary'] { --fui-pet-rarity: var(--fui-rarity-legendary); }
+.fui-pet[data-rarity='mythic'] { --fui-pet-rarity: var(--fui-rarity-mythic); }
+
+.fui-pet__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fui-gap-sm);
+}
+
+.fui-pet__head {
+  display: flex;
+  gap: var(--fui-gap);
+}
+
+.fui-pet__portrait {
+  position: relative;
+  width: 92px;
+  height: 92px;
+  flex: none;
+  border: 2px solid var(--fui-pet-rarity);
+  border-radius: var(--fui-radius);
+  background: rgba(0, 0, 0, 0.6);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--fui-pet-rarity) 35%, transparent);
+  overflow: hidden;
+}
+
+.fui-pet__art {
+  position: absolute;
+  inset: 0;
+  background: center / cover no-repeat;
+}
+
+.fui-pet__level {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 2px 0;
+  background: rgba(0, 0, 0, 0.8);
+  font-size: 10px;
+  font-weight: 700;
+  text-align: center;
+  color: var(--fui-ink);
+}
+
+.fui-pet__out {
+  position: absolute;
+  right: 3px;
+  top: 3px;
+  padding: 1px 6px;
+  border-radius: 7px;
+  background: var(--fui-success);
+  font-size: 8.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #0b1a0e;
+}
+
+.fui-pet__names {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.fui-pet__name {
+  margin: 0;
+  font-size: 16px;
+  color: var(--fui-pet-rarity);
+}
+
+.fui-pet__species {
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  color: var(--fui-ink-faint);
+}
+
+.fui-pet__meter {
+  --fui-pet-ink: var(--fui-xp);
+  display: grid;
+  grid-template-columns: 34px 1fr 34px;
+  align-items: center;
+  gap: 6px;
+}
+
+.fui-pet__meter[data-kind='food'] { --fui-pet-ink: var(--fui-stamina); }
+.fui-pet__meter[data-low='true'] { --fui-pet-ink: var(--fui-danger); }
+
+.fui-pet__meter-label {
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fui-ink-faint);
+}
+
+.fui-pet__bar {
+  display: block;
+  height: 6px;
+  overflow: hidden;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.6);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.fui-pet__fill {
+  display: block;
+  width: calc(var(--fui-pet-p) * 100%);
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--fui-pet-ink) 55%, #000),
+    var(--fui-pet-ink)
+  );
+  transition: width var(--fui-t-slow) var(--fui-ease);
+}
+
+.fui-pet__meter-value {
+  font-size: 9.5px;
+  text-align: right;
+  color: var(--fui-ink-dim);
+}
+
+.fui-pet__warning {
+  padding: 5px 9px;
+  border-radius: var(--fui-radius);
+  background: color-mix(in srgb, var(--fui-danger) 16%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--fui-danger) 45%, transparent);
+  font-size: 10.5px;
+  color: var(--fui-danger);
+}
+
+.fui-pet__timer {
+  font-size: 10px;
+  color: var(--fui-ink-faint);
+}
+
+.fui-pet__bonuses {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+/* A bonus that is not applying must never read as one that is. */
+.fui-pet__bonuses[data-off='true'] .fui-pet__bonus {
+  opacity: 0.45;
+  text-decoration: line-through;
+}
+
+.fui-pet__bonus {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  padding: 2px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.05);
+  font-size: 10px;
+}
+
+.fui-pet__bonus-label { color: var(--fui-ink-faint); }
+
+.fui-pet__bonus-value {
+  font-weight: 700;
+  color: var(--fui-success);
+}
+
+.fui-pet__skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.fui-pet__skill {
+  display: flex;
+  width: 62px;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  text-align: center;
+}
+
+.fui-pet__skill[data-locked='true'] {
+  opacity: 0.5;
+}
+
+.fui-pet__skill-art {
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: var(--fui-radius);
+  background: center / cover no-repeat rgba(0, 0, 0, 0.55);
+}
+
+.fui-pet__skill[data-locked='true'] .fui-pet__skill-art {
+  filter: grayscale(0.9) brightness(0.55);
+}
+
+.fui-pet__skill-label {
+  font-size: 9px;
+  color: var(--fui-ink-dim);
+}
+
+.fui-pet__skill-at {
+  font-size: 8px;
+  color: var(--fui-gold);
+}
+
+.fui-pet__actions {
+  display: flex;
+  gap: var(--fui-gap-sm);
+  margin-top: 2px;
+}
+
+.fui-pet__feed,
+.fui-pet__summon {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 1px;
+  padding: 7px;
+  border-radius: var(--fui-radius);
+  font-family: inherit;
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.fui-pet__feed {
+  border: 1px solid var(--fui-stamina);
+  background: color-mix(in srgb, var(--fui-stamina) 20%, transparent);
+  color: var(--fui-ink);
+}
+
+.fui-pet__feed-cost {
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: var(--fui-ink-faint);
+}
+
+.fui-pet__summon {
+  border: 1px solid var(--fui-accent);
+  background: color-mix(in srgb, var(--fui-accent) 22%, transparent);
+  color: var(--fui-ink);
+}
+
+.fui-pet__feed:hover:not(:disabled),
+.fui-pet__summon:hover:not(:disabled) { filter: brightness(1.28); }
+
+.fui-pet__summon:disabled {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: none;
+  color: var(--fui-ink-faint);
+  cursor: not-allowed;
+}
