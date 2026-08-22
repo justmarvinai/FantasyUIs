@@ -1,0 +1,190 @@
+/* GemButton — the one big round call to action a screen is organised around. */
+
+.fui-gembtn {
+  --fui-gem-size: 120px;
+  --fui-gem-ink: var(--fui-gold, #e0b04a);
+  --fui-gem-charge: 0;
+
+  position: relative;
+  display: inline-grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--fui-text, #e8e0cd);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: transform var(--fui-t-fast, 120ms) var(--fui-ease, ease-out);
+}
+
+.fui-gembtn__orb {
+  position: relative;
+  width: var(--fui-gem-size);
+  height: var(--fui-gem-size);
+  display: grid;
+  place-items: center;
+}
+
+/* The gem is drawn, not textured: a dome, a rim light and an inner shadow, so
+   it takes any colour a game wants without a new asset. */
+/* The three layers are stacked by radius on purpose: dome innermost, charge arc
+   just outside its edge, rune ring outside that. Overlapping any two of them
+   hides the thinner one under the dome's rim glow. */
+.fui-gembtn__dome {
+  position: absolute;
+  inset: 12%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 38% 28%, rgba(255, 255, 255, 0.75), transparent 42%),
+    radial-gradient(circle at 50% 62%,
+      color-mix(in srgb, var(--fui-gem-ink) 92%, #fff 18%) 0%,
+      var(--fui-gem-ink) 46%,
+      color-mix(in srgb, var(--fui-gem-ink) 55%, #000) 100%);
+  box-shadow:
+    inset 0 calc(var(--fui-gem-size) * -0.06) calc(var(--fui-gem-size) * 0.12)
+      color-mix(in srgb, #000 55%, transparent),
+    inset 0 calc(var(--fui-gem-size) * 0.03) calc(var(--fui-gem-size) * 0.05)
+      rgba(255, 255, 255, 0.35),
+    0 calc(var(--fui-gem-size) * 0.04) calc(var(--fui-gem-size) * 0.14) rgba(0, 0, 0, 0.55),
+    0 0 calc(var(--fui-gem-size) * 0.26) color-mix(in srgb, var(--fui-gem-ink) 45%, transparent);
+}
+
+/* A rune ring that turns slowly. Ticks rather than glyph art, so it costs no
+   asset and stays sharp at any diameter. */
+.fui-gembtn__ring {
+  position: absolute;
+  inset: 0;
+  /* Above the dome, not merely outside it: the dome's rim glow reaches a third
+     of its radius past its own edge and would otherwise wash the ticks out. */
+  z-index: 1;
+  border-radius: 50%;
+  background: repeating-conic-gradient(
+    from 0deg,
+    color-mix(in srgb, var(--fui-gem-ink) 55%, #fff) 0deg 2.2deg,
+    transparent 2.2deg 10deg
+  );
+  /* `closest-side` on purpose: the default sizing is farthest-corner, which on
+     a square makes 100% reach 0.707 of the width — a band at 87–99% would sit
+     entirely outside the element and paint nothing at all. */
+  mask: radial-gradient(circle closest-side at center, transparent 80%, #000 82%, #000 98%, transparent 100%);
+  -webkit-mask: radial-gradient(circle closest-side at center, transparent 80%, #000 82%, #000 98%, transparent 100%);
+  animation: fui-gem-turn 24s linear infinite;
+}
+
+/* The charge arc rides the rim, so a free-pull timer needs no second control. */
+.fui-gembtn__arc {
+  position: absolute;
+  inset: 3%;
+  border-radius: 50%;
+  background: conic-gradient(
+    color-mix(in srgb, #fff 70%, var(--fui-gem-ink)) calc(var(--fui-gem-charge) * 360deg),
+    color-mix(in srgb, #000 55%, transparent) 0
+  );
+  mask: radial-gradient(circle closest-side at center, transparent 80%, #000 82%);
+  -webkit-mask: radial-gradient(circle closest-side at center, transparent 80%, #000 82%);
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--fui-gem-ink) 80%, transparent));
+}
+
+.fui-gembtn__glyph {
+  position: relative;
+  z-index: 1;
+  width: 40%;
+  height: 40%;
+  background-color: #fff;
+  mask: var(--fui-gem-glyph, var(--fui-mask-none)) center / contain no-repeat;
+  -webkit-mask: var(--fui-gem-glyph, var(--fui-mask-none)) center / contain no-repeat;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.55));
+}
+
+.fui-gembtn__art {
+  position: relative;
+  z-index: 1;
+  width: 52%;
+  height: 52%;
+  border-radius: 50%;
+  background: var(--fui-gem-art, none) center / cover no-repeat;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.55);
+}
+
+.fui-gembtn__badge {
+  position: absolute;
+  z-index: 2;
+  right: 2%;
+  top: 2%;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 11px;
+  background: var(--fui-danger, #d8543f);
+  border: 2px solid color-mix(in srgb, #000 50%, transparent);
+  color: #fff;
+  font: 700 11px/18px var(--fui-font-ui, system-ui, sans-serif);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  pointer-events: none;
+}
+
+.fui-gembtn__label {
+  font-family: var(--fui-font-display, system-ui, sans-serif);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.85);
+  white-space: nowrap;
+}
+
+/* ── States ─────────────────────────────────────────────────────────────── */
+
+.fui-gembtn[data-pulse='on'] .fui-gembtn__dome {
+  animation: fui-gem-breathe 2.6s var(--fui-ease, ease-in-out) infinite;
+}
+
+.fui-gembtn:hover:not(:disabled) { transform: translateY(-2px); }
+.fui-gembtn:hover:not(:disabled) .fui-gembtn__dome { filter: brightness(1.12); }
+.fui-gembtn:active:not(:disabled) { transform: translateY(2px) scale(0.97); }
+
+.fui-gembtn:disabled {
+  cursor: not-allowed;
+  filter: grayscale(0.85) brightness(0.55);
+}
+
+.fui-gembtn:disabled .fui-gembtn__dome,
+.fui-gembtn:disabled .fui-gembtn__ring { animation: none; }
+
+.fui-gembtn:focus-visible {
+  outline: 2px solid var(--fui-gem-ink);
+  outline-offset: 6px;
+  border-radius: 50%;
+}
+
+@keyframes fui-gem-turn {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fui-gem-breathe {
+  0%, 100% {
+    box-shadow:
+      inset 0 calc(var(--fui-gem-size) * -0.06) calc(var(--fui-gem-size) * 0.12) color-mix(in srgb, #000 55%, transparent),
+      inset 0 calc(var(--fui-gem-size) * 0.03) calc(var(--fui-gem-size) * 0.05) rgba(255, 255, 255, 0.35),
+      0 calc(var(--fui-gem-size) * 0.04) calc(var(--fui-gem-size) * 0.14) rgba(0, 0, 0, 0.55),
+      0 0 calc(var(--fui-gem-size) * 0.26) color-mix(in srgb, var(--fui-gem-ink) 45%, transparent);
+  }
+  50% {
+    box-shadow:
+      inset 0 calc(var(--fui-gem-size) * -0.06) calc(var(--fui-gem-size) * 0.12) color-mix(in srgb, #000 55%, transparent),
+      inset 0 calc(var(--fui-gem-size) * 0.03) calc(var(--fui-gem-size) * 0.05) rgba(255, 255, 255, 0.35),
+      0 calc(var(--fui-gem-size) * 0.04) calc(var(--fui-gem-size) * 0.14) rgba(0, 0, 0, 0.55),
+      0 0 calc(var(--fui-gem-size) * 0.46) color-mix(in srgb, var(--fui-gem-ink) 85%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fui-gembtn,
+  .fui-gembtn__ring,
+  .fui-gembtn[data-pulse='on'] .fui-gembtn__dome { animation: none; transition: none; }
+  .fui-gembtn:hover:not(:disabled),
+  .fui-gembtn:active:not(:disabled) { transform: none; }
+}

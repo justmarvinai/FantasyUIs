@@ -58,8 +58,8 @@
     color-mix(in srgb, var(--fui-impact-ink) 70%, transparent) 0deg 1.2deg,
     transparent 1.2deg 9deg
   );
-  mask: radial-gradient(circle at center, transparent 22%, #000 46%, #000 70%, transparent 82%);
-  -webkit-mask: radial-gradient(circle at center, transparent 22%, #000 46%, #000 70%, transparent 82%);
+  mask: radial-gradient(circle closest-side at center, transparent 22%, #000 46%, #000 70%, transparent 82%);
+  -webkit-mask: radial-gradient(circle closest-side at center, transparent 22%, #000 46%, #000 70%, transparent 82%);
 }
 
 .fui-impact__stack {

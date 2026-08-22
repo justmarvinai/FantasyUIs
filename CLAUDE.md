@@ -58,7 +58,7 @@ build me more components."* That workflow is:
 
 4. **Write a theme file** if the pack is a new visual style: copy
    `src/lib/styles/theme-stone-vine.css` and rebind every semantic slot. A theme
-   that fills in all the slots gets all 209 existing components for free.
+   that fills in all the slots gets all 223 existing components for free.
 
 5. **Build new components** for what the art newly makes possible, plus demos in
    `src/site/demos/`.
@@ -97,6 +97,7 @@ src/site/                    the documentation site (catalog, demos, chrome)
   demos/guild.ts             social: guild bank, applications, gifts, perks, finder
   demos/signals.ts           feedback: objective banners, impact frames, nameplates
   demos/chapters.ts          screens: creator, inventory, summon, credits, season end
+  demos/buttons.ts           the fifteen buttons, one job each
 scripts/ingest.mjs           new_assets/ → public/fui/ + manifests
 scripts/generate.mjs         → static site, registry.json, llms.txt, llms-full.txt, /r/*.json
 scripts/gen-lib.mjs          → src/lib/index.ts and styles/index.css
@@ -149,6 +150,20 @@ zero component changes.
 - **9-slice insets must fit.** If top + bottom slices exceed the element's
   height, `border-image` renders nothing at all. Bars and small buttons carry
   explicit `min-height` guards for this reason.
+- **`radial-gradient(circle, …)` sizes to *farthest-corner* by default.** On a
+  square element that puts 100% at 0.707 × the width, so a ring mask written as
+  `transparent 87%, #000 88%` lands entirely outside the element and paints
+  nothing at all. Every ring mask in the library says `circle closest-side`,
+  which is what makes 100% mean the edge. This was silently blanking
+  `GemButton`'s rune ring and charge arc, and was latent in `HoldButton` and
+  `ImpactFrame`.
+
+- **A `copy` list is a promise that has to compile.** Components import
+  `./Name.ts` sideways and `../core/component.ts` upward, so a vendored install
+  must keep `components/` and `core/` as *siblings* — flattening them into one
+  folder is the one layout that cannot work. `scripts/audit.mjs` now checks
+  every component's real imports against its own `copy` list.
+
 - **Monochrome art should be a mask, not an image.** `Glyph` sets
   `mask-image: var(--fui-img-<id>)` with `background-color: currentColor`, so
   one SVG serves every colour and state. Prefer that to shipping recoloured

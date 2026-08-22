@@ -360,7 +360,14 @@ async function main() {
     return sorted;
   };
   /** The core files every component needs, whatever else it imports. */
-  const CORE_FILES = ['src/lib/core/component.ts', 'src/lib/core/dom.ts'];
+  // Every vendored install needs all three: the base class, the DOM helpers,
+  // and `assets.ts` — without which `setAssetBase()` cannot repoint the art away
+  // from the CDN, which is the whole reason to vendor in the first place.
+  const CORE_FILES = [
+    'src/lib/core/component.ts',
+    'src/lib/core/dom.ts',
+    'src/lib/core/assets.ts',
+  ];
 
   const THEME_PACKS = PACKS.filter((p) => p.kind === 'theme');
   const ART_PACKS = PACKS.filter((p) => p.kind !== 'theme');
@@ -377,7 +384,6 @@ async function main() {
     const deps = resolveDeps(entry.id);
     const copyList = [
       ...CORE_FILES,
-      ...(tsSrc.includes('core/assets.ts') ? ['src/lib/core/assets.ts'] : []),
       ...deps.flatMap((d) => [`src/lib/components/${d}.ts`, `src/lib/components/${d}.css`]),
       `src/lib/components/${entry.id}.ts`,
       `src/lib/components/${entry.id}.css`,
@@ -445,7 +451,7 @@ ${props
       '1. Stylesheet',
     )}
     ${codeBlock(
-      `// main.ts — after copying ${entry.id}.ts and core/ into src/ui/\nimport { ${entry.name} } from './ui/${entry.id}';\n\n// Shipping for real? Copy public/fui/ into your project and repoint the art:\n// import { setAssetBase } from './ui/core/assets';\n// setAssetBase('/fui');`,
+      `// main.ts — mirror the record's \`copy\` paths under src/ui/, keeping\n// components/ and core/ as siblings (components import '../core/...').\nimport { ${entry.name} } from './ui/components/${entry.id}.ts';\n\n// Shipping for real? Copy public/fui/ into your project and repoint the art:\n// import { setAssetBase } from './ui/core/assets.ts';\n// setAssetBase('/fui');`,
       'ts',
       '2. Usage',
     )}
@@ -469,7 +475,7 @@ ${props
         ? `This component composes ${deps
             .map((d) => `<a href="/components/${esc(d)}.html"><code>${esc(d)}</code></a>`)
             .join(', ')}, so copy those too. Everything below has no other dependency.`
-        : 'Both files are dependency-free. Drop them into <code>src/ui/</code> and they work as-is.'
+        : 'Both files are dependency-free. Drop them into <code>src/ui/components/</code>, with <code>core/</code> beside it, and they work as-is.'
     }</p>
     ${codeBlock(copyList.join('\n'), 'text', 'Files to copy')}
     <details class="src"><summary><code>${esc(entry.id)}.ts</code></summary>${codeBlock(tsSrc, 'ts', `${entry.id}.ts`)}</details>
@@ -676,7 +682,7 @@ ${assets
       <li><a href="/registry.json"><code>/registry.json</code></a> — machine-readable index of every component and asset.</li>
       <li><code>/r/&lt;Component&gt;.json</code> — one component's full record including its complete TypeScript and CSS source. <a href="/r/Panel.json">Example: /r/Panel.json</a></li>
     </ul>
-    <p>Most components are self-contained, but not all: <code>ChampionCard</code> composes <code>StarRating</code> and <code>AffinityBadge</code>. Every record carries a <code>dependencies</code> list and a <code>copy</code> list — the complete, ordered set of files that component needs — so copying is a mechanical step rather than a guess. Imports between components are plain relative paths, so a flat <code>src/ui/</code> folder compiles with no rewriting.</p>
+    <p>Most components are self-contained, but not all: <code>ChampionCard</code> composes <code>StarRating</code> and <code>AffinityBadge</code>. Every record carries a <code>dependencies</code> list and a <code>copy</code> list — the complete, ordered set of files that component needs — so copying is a mechanical step rather than a guess. Imports are plain relative paths — <code>./Name.ts</code> between components, <code>../core/component.ts</code> up to the core — so keep the last two segments of every <code>copy</code> path: <code>core/</code> must be a <em>sibling</em> of <code>components/</code>, not a child. Flattening everything into one folder is the one layout that does not compile.</p>
     <p>Point your agent at the site root and it can discover, read and copy any component without a single manual step:</p>
     ${codeBlock(`Use the UI library at ${SITE.origin}.\nRead ${SITE.origin}/llms.txt first \u2014 it explains the method:\nstart from a component's shipped example and change the data, not the structure.\nFetch ${SITE.origin}/r/<Component>.json for one component's example and source,\nor ${SITE.origin}/llms-full.txt for every example in one document.\nWhen vendoring, copy every path in a record's "copy" field \u2014 components compose\neach other, so dependencies have to come along too.`, 'text', 'Prompt')}
   </section>
@@ -873,11 +879,64 @@ differences, which apply to every example in this library:
 
 ### 2. Compose screens out of several components
 
-Nothing here expects to be alone. A battle HUD is a \`HUD\` with \`PartyFrame\`,
-\`BossHealthBar\`, \`ActionBar\`, \`BuffBar\` and \`FloatingText\` inside it; a shop is a
-\`Panel\` full of \`ItemCard\`s over a \`CurrencyBar\`. Each component's record lists
-\`related\` ids — the ones it is normally seen with. Follow those to assemble a
-screen instead of inventing a layout.
+Nothing here expects to be alone, and a whole screen is a handful of components
+in a box rather than one big one. Each component's record lists \`related\` ids —
+the ones it is normally seen with — so follow those instead of inventing a
+layout. The recipes below are the assemblies games actually ship; every name in
+them is a real component with its own example at \`/r/<Name>.json\`.
+
+    Battle HUD          HUD + PartyFrame + BossHealthBar + ActionBar
+                        + BuffBar + FloatingText + Nameplate + KillFeed
+                        + ToggleButton (auto) + ButtonGroup (speed)
+    Turn-based fight    InitiativeTrack + PhaseTracker + BattleGrid
+                        + AbilityButton ×n + TurnMeter + BattleLog
+    Shop                Panel + CurrencyBar + ItemCard ×n + CostButton
+                        + NumberStepper + Ledger
+    Inventory           InventoryScreen, or InventoryGrid + ItemCard
+                        + CompareStats + SplitButton (Use / Use ×10)
+    Gacha banner        SummonScreen + WishList + RateTable + PityCounter
+                        + GemButton (the pull) + SummonResult
+    Guild               ClanCard + ClanRoster + GuildBank + RequestList
+                        + ClanPerks + ChatPanel
+    Hub / main menu     MenuButton ×n (or MainMenu) + TopBar + CurrencyBar
+                        + BottomNav + IconButton (settings, mail)
+    Campaign map        StageTrail or StageSelect + RegionAtlas + Signpost
+                        + RibbonButton (Start battle) + EnergyBar
+    Character sheet     Paperdoll + StatsPanel + StatRadar + ResistGrid
+                        + StatAllocator + LoadoutSlots
+    Settings            SettingsScreen, or Tabs + VolumeMixer
+                        + KeycapButton ×n + Toggle + Slider
+    Results             ResultScreen + RewardPopup + SeasonEndScreen
+                        + LoadingButton (Claim)
+    Dialogue / story    DialogueBox + SpeechBubble + StorySlide + Portrait
+                        + SceneBackdrop + SceneTransition
+
+### 2b. Picking a button
+
+There are fifteen, because "a button" is a dozen different jobs in a game and
+one component cannot carry them all. Match the job, not the look:
+
+| The job | Use |
+| --- | --- |
+| An ordinary labelled action | \`Button\` |
+| Icon only — close, back, settings, mail | \`IconButton\` |
+| A skill, with cooldown / charges / cost | \`AbilityButton\` |
+| Something with no undo | \`HoldButton\` |
+| The one big CTA a screen is built around | \`RibbonButton\` or \`GemButton\` |
+| The colour is the information (rarity, faction) | \`TintButton\` |
+| One common action plus variants | \`SplitButton\` |
+| A button that latches on | \`ToggleButton\` |
+| A purchase, with a price and a balance | \`CostButton\` |
+| A key in a control scheme or rebind list | \`KeycapButton\` |
+| Next / previous / page / step | \`ArrowButton\` |
+| A row of a hub menu | \`MenuButton\` |
+| Anything that waits on a server | \`LoadingButton\` |
+| Several of the above in one row | \`ButtonGroup\` |
+
+Three of them refuse the press themselves and tell you why, so you do not
+re-check the same condition in your handler: \`AbilityButton\` (cooling,
+unaffordable, blocked), \`CostButton\` (emits \`cost:short\` with how much is
+missing), and \`MenuButton\` (emits \`menu:locked\` with the requirement).
 
 ### 3. You can also build entirely new components from the raw art
 
@@ -950,19 +1009,27 @@ self-contained, but some are not: \`ChampionCard\` imports \`StarRating\` and
 compile. Every component also needs \`src/lib/core/component.ts\` and
 \`src/lib/core/dom.ts\`, which are already in the list.
 
-Components import each other with explicit \`./Name.ts\` paths, so a flat folder
-works with no rewriting:
+**Keep the last two segments of every path in \`copy\`.** Components import each
+other as \`./Name.ts\` and reach the core as \`../core/component.ts\`, so \`core/\`
+has to be a *sibling* of the components folder, not a child of it:
 
     src/ui/
-      core/component.ts  core/dom.ts
-      StarRating.ts      StarRating.css
-      AffinityBadge.ts   AffinityBadge.css
-      ChampionCard.ts    ChampionCard.css
+      core/component.ts   core/dom.ts   core/assets.ts
+      components/StarRating.ts     StarRating.css
+      components/AffinityBadge.ts  AffinityBadge.css
+      components/ChampionCard.ts   ChampionCard.css
 
-Then point the art at your own copy once:
+Flattening everything into one folder is the mistake to avoid: \`../core/\` then
+resolves one level above \`src/ui/\` and nothing compiles. Mirroring the \`copy\`
+paths under a root of your choosing always works.
+
+Then point the art at your own copy once, at startup:
 
     import { setAssetBase } from './ui/core/assets.ts';
-    setAssetBase('/fui');
+    setAssetBase('/fui');          // now art resolves to /fui/stone-vine/....png
+
+Copy \`public/fui/\` into your project alongside it, and import the component CSS
+files (or keep linking the hosted stylesheet, which already contains them all).
 
 ## Themes
 

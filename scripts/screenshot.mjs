@@ -175,6 +175,31 @@ const SHOTS = [
   { name: 'character-creator-dark', url: '/components/CharacterCreator.html', height: 1600, theme: 'dark-ember' },
   { name: 'guild-bank-dark', url: '/components/GuildBank.html', height: 1600, theme: 'dark-ember' },
   { name: 'season-end-dark', url: '/components/SeasonEndScreen.html', height: 1600, theme: 'dark-ember' },
+
+  // ── Buttons ──
+  { name: 'icon-button', url: '/components/IconButton.html', height: 1100 },
+  { name: 'ability-button', url: '/components/AbilityButton.html', height: 1200 },
+  { name: 'hold-button', url: '/components/HoldButton.html', height: 1100 },
+  { name: 'ribbon-button', url: '/components/RibbonButton.html', height: 1300 },
+  { name: 'tint-button', url: '/components/TintButton.html', height: 1100 },
+  { name: 'split-button', url: '/components/SplitButton.html', height: 1100 },
+  { name: 'toggle-button', url: '/components/ToggleButton.html', height: 1100 },
+  { name: 'cost-button', url: '/components/CostButton.html', height: 1100 },
+  { name: 'gem-button', url: '/components/GemButton.html', height: 1300 },
+  { name: 'keycap-button', url: '/components/KeycapButton.html', height: 1300 },
+  { name: 'arrow-button', url: '/components/ArrowButton.html', height: 1100 },
+  { name: 'menu-button', url: '/components/MenuButton.html', height: 1400 },
+  { name: 'loading-button', url: '/components/LoadingButton.html', height: 1100 },
+  { name: 'button-group', url: '/components/ButtonGroup.html', height: 1300 },
+
+  // The same buttons in the other theme, to prove the slots bind.
+  { name: 'icon-button-dark', url: '/components/IconButton.html', height: 1100, theme: 'dark-ember' },
+  { name: 'ability-button-dark', url: '/components/AbilityButton.html', height: 1200, theme: 'dark-ember' },
+  { name: 'ribbon-button-dark', url: '/components/RibbonButton.html', height: 1300, theme: 'dark-ember' },
+  { name: 'cost-button-dark', url: '/components/CostButton.html', height: 1100, theme: 'dark-ember' },
+  { name: 'toggle-button-dark', url: '/components/ToggleButton.html', height: 1100, theme: 'dark-ember' },
+  { name: 'menu-button-dark', url: '/components/MenuButton.html', height: 1400, theme: 'dark-ember' },
+  { name: 'gem-button-dark', url: '/components/GemButton.html', height: 1300, theme: 'dark-ember' },
 ];
 
 async function main() {

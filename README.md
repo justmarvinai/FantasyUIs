@@ -2,7 +2,7 @@
 
 **A growing database of ready-to-use UI components for Fantasy & RPG web games.**
 
-209 components built from 494 art assets across 2 swappable themes, 2 icon
+223 components built from 494 art assets across 2 swappable themes, 2 icon
 collections and a tintable ornament set. Vanilla TypeScript and CSS — zero
 runtime dependencies, no framework, no build plugin. Drops into any Vite
 project, React or not, or straight over a Phaser canvas as a DOM layer.
@@ -16,7 +16,8 @@ project, React or not, or straight over a Phaser canvas as a DOM layer.
 | Group | Components |
 | --- | --- |
 | **Surfaces & Framing** | Panel, Frame, Divider, Banner, TintFrame, Carousel, Scroll, OrnateHeader, SceneBackdrop, Ribbon, SceneTransition, **Pedestal**, **RuneCircle**, **Tabletop**, **Signpost**, **StainedGlass** |
-| **Controls** | Button, Tabs, Toggle, Slider, Select, TextInput, ContextMenu, SegmentedControl, NumberStepper, Accordion, ConfirmSlider, CheckList, RangeSlider, KeybindInput, RadialMenu, FilterBar, SortBar, SideNav, Pagination, ReorderList, DyePicker, **DiceRoller**, **StatAllocator**, **RunePad**, **TimeDial**, **VolumeMixer** |
+| **Buttons** | **Button**, **IconButton**, **AbilityButton**, **HoldButton**, **RibbonButton**, **TintButton**, **SplitButton**, **ToggleButton**, **CostButton**, **GemButton**, **KeycapButton**, **ArrowButton**, **MenuButton**, **LoadingButton**, **ButtonGroup** |
+| **Controls** | Tabs, Toggle, Slider, Select, TextInput, ContextMenu, SegmentedControl, NumberStepper, Accordion, ConfirmSlider, CheckList, RangeSlider, KeybindInput, RadialMenu, FilterBar, SortBar, SideNav, Pagination, ReorderList, DyePicker, **DiceRoller**, **StatAllocator**, **RunePad**, **TimeDial**, **VolumeMixer** |
 | **Data display** | Icon, StatBar, Slot, Portrait, Tooltip, Badge, ProgressRing, StatChip, Sparkline, Gauge, Timeline, ItemCard, Glyph, CompareStats, StatRadar, HealthPips, ShareBar, ActivityCalendar, ElementWheel, **StatBlock**, **RelationshipWeb**, **TierList**, **Ledger**, **ResistGrid** |
 | **Game widgets** | InventoryGrid, ActionBar, UnitFrame, PartyFrame, BuffBar, CastBar, DialogueBox, QuestLog, QuestTracker, ShopPanel, LootWindow, CraftingPanel, SkillTree, StatsPanel, Paperdoll, Minimap, CurrencyBar, Leaderboard, WorldMap, CodexEntry, AchievementList, PatchNotes, TradePanel, QuestBoard, Compass, AuctionHouse, CraftingQueue, AutoBattleRules, RegionAtlas, **CompanionPanel**, **HousingGrid**, **LoadoutSlots**, **HagglePanel**, **EventCalendar** |
 | **Combat & battle** | BossHealthBar, ShieldBar, WaveTracker, DamageMeter, BattleLog, ComboCounter, ArenaMatchup, MatchHistory, LootRoll, TargetSelector, ThreatMeter, SkillCheck, DungeonMap, **InitiativeTrack**, **BattleGrid**, **Reticle**, **KillFeed**, **PhaseTracker** |
@@ -35,6 +36,17 @@ nodes on painted art; `RegionAtlas` draws the world as territory you can pan and
 zoom, coloured by who holds it. Each pair speaks the same vocabulary — stages,
 stars, lock state, regions — so swapping one for the other is a layout decision,
 not a rewrite.
+
+There are fifteen buttons because "a button" is a dozen different jobs in a
+game and one component cannot carry them all. Three of them refuse the press
+themselves rather than leaving it to the caller: `AbilityButton` when it is
+cooling, unaffordable or silenced; `CostButton` when the balance is short — and
+it emits `cost:short` with exactly how many are missing, which is the number a
+top-up sheet needs; `MenuButton` when the destination is locked, emitting the
+requirement. `LoadingButton` disables itself the moment it goes busy, which is
+what kills double-submission, and it never leaves that state on its own — only
+`succeed()` or `fail()` ends it, so the UI cannot end up disagreeing with the
+server about whether something happened.
 
 These are not static skins. The inventory grid does real drag-and-drop and
 stacking, the action bar runs cooldown sweeps and greys out what you cannot
@@ -157,6 +169,12 @@ demo markup already rendered, so nothing needs JavaScript to be understood.
 | --- | --- |
 | [`/llms.txt`](https://fantasy-u-is.vercel.app/llms.txt) | The whole library written for an LLM — how to work with it, then every component, its purpose, its options, every asset id |
 | [`/llms-full.txt`](https://fantasy-u-is.vercel.app/llms-full.txt) | The same index with **every component's complete working example inlined**, so an agent can adapt one without a second request |
+
+`llms.txt` also carries a table of **screen recipes** — the component sets that
+make a battle HUD, a shop, a gacha banner, a guild screen, a character sheet —
+and a table matching each of the fifteen buttons to the job it is for. Every
+name in both is checked by `npm run audit` against the real component list, so
+an agent following them can never be sent to a 404.
 | [`/registry.json`](https://fantasy-u-is.vercel.app/registry.json) | Machine-readable index of all components and assets |
 | `/r/<Component>.json` | One component's full record, **including its complete TypeScript and CSS source** |
 | `/components/<Component>.html` | The human-readable page, pre-rendered |
@@ -195,8 +213,27 @@ to be discovered by a failing build:
 }
 ```
 
-Imports between components are plain relative paths, so dropping that list into a
-flat `src/ui/` folder compiles with no rewriting.
+Imports between components are plain relative paths — `./Name.ts` between
+components and `../core/component.ts` up to the core — so **keep the last two
+segments of every path in `copy`**. `core/` has to be a sibling of the
+components folder, not a child of it:
+
+```
+src/ui/
+  core/component.ts   core/dom.ts   core/assets.ts
+  components/StarRating.ts     StarRating.css
+  components/AffinityBadge.ts  AffinityBadge.css
+  components/ChampionCard.ts   ChampionCard.css
+```
+
+Flattening everything into one folder is the mistake to avoid: `../core/` then
+resolves one level above `src/ui/` and nothing compiles. Then repoint the art
+once at startup:
+
+```ts
+import { setAssetBase } from './ui/core/assets.ts';
+setAssetBase('/fui');
+```
 
 ## Adding new art
 

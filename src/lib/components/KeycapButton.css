@@ -1,0 +1,135 @@
+/* KeycapButton — the physical-looking key for control diagrams and rebinding. */
+
+.fui-keycap {
+  --fui-keycap-size: 38px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--fui-text, #e8e0cd);
+  font-family: var(--fui-font-ui, system-ui, sans-serif);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.fui-keycap[data-readonly='on'] { cursor: default; }
+
+/* The cap: a lit top face, a dark skirt below it and a hard shadow, which is
+   what makes it read as a physical key rather than a bordered box. */
+.fui-keycap__cap {
+  display: grid;
+  place-items: center;
+  min-width: var(--fui-keycap-size);
+  height: var(--fui-keycap-size);
+  padding: 0 8px;
+  border-radius: 5px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--fui-text, #e8e0cd) 22%, transparent),
+    color-mix(in srgb, var(--fui-panel-ink, #14100c) 72%, transparent)
+  );
+  border: 1px solid color-mix(in srgb, var(--fui-text, #e8e0cd) 26%, transparent);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    0 3px 0 color-mix(in srgb, #000 62%, transparent),
+    0 4px 7px rgba(0, 0, 0, 0.45);
+  transition:
+    transform var(--fui-t-fast, 120ms) var(--fui-ease, ease-out),
+    box-shadow var(--fui-t-fast, 120ms) var(--fui-ease, ease-out),
+    background var(--fui-t-fast, 120ms) var(--fui-ease, ease-out);
+}
+
+.fui-keycap[data-shape='wide'] .fui-keycap__cap { min-width: calc(var(--fui-keycap-size) * 3); }
+.fui-keycap[data-shape='tall'] .fui-keycap__cap { height: calc(var(--fui-keycap-size) * 1.6); }
+
+.fui-keycap__glyphtext {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+  white-space: nowrap;
+}
+
+.fui-keycap__meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.fui-keycap__glyph {
+  width: 14px;
+  height: 14px;
+  background-color: color-mix(in srgb, var(--fui-accent, #d8c9a6) 90%, transparent);
+  mask: var(--fui-keycap-glyph, var(--fui-mask-none)) center / contain no-repeat;
+  -webkit-mask: var(--fui-keycap-glyph, var(--fui-mask-none)) center / contain no-repeat;
+}
+
+.fui-keycap__action {
+  font-size: 12px;
+  letter-spacing: 0.03em;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 78%, transparent);
+  white-space: nowrap;
+}
+
+/* ── States ─────────────────────────────────────────────────────────────── */
+
+.fui-keycap:not([data-readonly='on']):hover .fui-keycap__cap {
+  border-color: color-mix(in srgb, var(--fui-accent, #d8c9a6) 65%, transparent);
+}
+
+/* Pressed and held look the same on purpose — one is you pressing the button,
+   the other is the game telling you the key is down. */
+.fui-keycap:not([data-readonly='on']):active .fui-keycap__cap,
+.fui-keycap[data-held='on'] .fui-keycap__cap {
+  transform: translateY(3px);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--fui-accent, #d8c9a6) 30%, transparent),
+    color-mix(in srgb, var(--fui-panel-ink, #14100c) 60%, transparent)
+  );
+}
+
+.fui-keycap[data-held='on'] .fui-keycap__cap {
+  border-color: var(--fui-accent, #d8c9a6);
+  color: var(--fui-accent, #d8c9a6);
+}
+
+/* Listening is a live invitation, so the cap sits pressed in and blinks. */
+.fui-keycap[data-listening='on'] .fui-keycap__cap {
+  transform: translateY(3px);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
+  border-color: var(--fui-gold, #e0b04a);
+  color: var(--fui-gold, #e0b04a);
+  animation: fui-keycap-wait 1.1s steps(2, jump-none) infinite;
+}
+
+/* A clash is a *finished* binding that is wrong, so it stays fully readable —
+   fading it would hide the very thing the player has to fix. */
+.fui-keycap[data-conflict='on'] .fui-keycap__cap {
+  border-color: var(--fui-danger, #d8543f);
+  color: var(--fui-danger, #d8543f);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    0 3px 0 color-mix(in srgb, #000 62%, transparent),
+    0 0 10px color-mix(in srgb, var(--fui-danger, #d8543f) 45%, transparent);
+}
+
+.fui-keycap:focus-visible {
+  outline: 2px solid var(--fui-accent, #d8c9a6);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+@keyframes fui-keycap-wait {
+  50% { opacity: 0.62; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fui-keycap__cap { transition: none; }
+  .fui-keycap[data-listening='on'] .fui-keycap__cap { animation: none; }
+}

@@ -1,0 +1,162 @@
+/* LoadingButton — a button that owns its round-trip. */
+
+.fui-loadbtn {
+  --fui-load-ink: var(--fui-btn-ink, #eaf6f3);
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--fui-btn-min-h, 48px);
+  padding: var(--fui-btn-pad, 8px 20px);
+  border: 0;
+  background: none;
+  color: var(--fui-load-ink);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: filter var(--fui-t-fast, 120ms) var(--fui-ease, ease-out);
+}
+
+.fui-loadbtn--block { display: flex; width: 100%; }
+
+.fui-loadbtn[data-tone='gold'] { --fui-load-ink: var(--fui-gold, #e0b04a); }
+.fui-loadbtn[data-tone='danger'] { --fui-load-ink: var(--fui-danger, #d8543f); }
+
+.fui-loadbtn__art {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  border-style: solid;
+  border-color: transparent;
+  border-width: var(--fui-btn-bw);
+  border-image-source: var(--fui-btn-src);
+  border-image-slice: var(--fui-btn-sl) fill;
+  border-image-repeat: stretch;
+}
+
+.fui-loadbtn__face {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.fui-loadbtn__glyph {
+  width: 16px;
+  height: 16px;
+  background-color: currentColor;
+  mask: var(--fui-load-glyph, var(--fui-mask-none)) center / contain no-repeat;
+  -webkit-mask: var(--fui-load-glyph, var(--fui-mask-none)) center / contain no-repeat;
+}
+
+.fui-loadbtn__label {
+  font-family: var(--fui-font-display, system-ui, sans-serif);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.8);
+  white-space: nowrap;
+}
+
+/* ── Busy ───────────────────────────────────────────────────────────────── */
+
+/* Only one of glyph / spinner / tick is ever in the layout, so the label never
+   shifts sideways as the state changes. */
+.fui-loadbtn__spinner,
+.fui-loadbtn__tick { display: none; }
+
+.fui-loadbtn[data-state='busy'] .fui-loadbtn__glyph,
+.fui-loadbtn[data-state='done'] .fui-loadbtn__glyph,
+.fui-loadbtn[data-state='failed'] .fui-loadbtn__glyph { display: none; }
+
+.fui-loadbtn[data-state='busy'] .fui-loadbtn__spinner {
+  display: block;
+  width: 15px;
+  height: 15px;
+  border: 2px solid color-mix(in srgb, currentColor 28%, transparent);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: fui-load-spin 720ms linear infinite;
+}
+
+.fui-loadbtn[data-state='busy'] { cursor: progress; }
+
+/* ── Done / failed ──────────────────────────────────────────────────────── */
+
+.fui-loadbtn[data-state='done'] .fui-loadbtn__tick,
+.fui-loadbtn[data-state='failed'] .fui-loadbtn__tick {
+  display: block;
+  width: 14px;
+  height: 14px;
+  position: relative;
+}
+
+/* A tick drawn from two borders on a rotated box, and a cross from the same
+   box's diagonals — no asset, and both stay sharp at any size. */
+.fui-loadbtn[data-state='done'] .fui-loadbtn__tick::before {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 0;
+  width: 6px;
+  height: 11px;
+  border-right: 2px solid var(--fui-success, #7fb069);
+  border-bottom: 2px solid var(--fui-success, #7fb069);
+  transform: rotate(42deg);
+}
+
+.fui-loadbtn[data-state='failed'] .fui-loadbtn__tick::before,
+.fui-loadbtn[data-state='failed'] .fui-loadbtn__tick::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 6px;
+  width: 14px;
+  height: 2px;
+  background: var(--fui-danger, #d8543f);
+}
+
+.fui-loadbtn[data-state='failed'] .fui-loadbtn__tick::before { transform: rotate(45deg); }
+.fui-loadbtn[data-state='failed'] .fui-loadbtn__tick::after { transform: rotate(-45deg); }
+
+.fui-loadbtn[data-state='done'] .fui-loadbtn__label { color: var(--fui-success, #7fb069); }
+.fui-loadbtn[data-state='failed'] .fui-loadbtn__label { color: var(--fui-danger, #d8543f); }
+
+.fui-loadbtn[data-state='done'] .fui-loadbtn__art {
+  animation: fui-load-flash 500ms var(--fui-ease, ease-out);
+}
+
+/* ── States ─────────────────────────────────────────────────────────────── */
+
+.fui-loadbtn:hover:not(:disabled) { filter: var(--fui-btn-hover-filter, brightness(1.14)); }
+
+/* Busy is disabled but must not look dead — the player has to see that
+   something is happening, not that the button broke. */
+.fui-loadbtn:disabled { cursor: not-allowed; filter: grayscale(0.75) brightness(0.62); }
+.fui-loadbtn[data-state='busy']:disabled,
+.fui-loadbtn[data-state='done']:disabled { filter: none; }
+
+.fui-loadbtn:focus-visible {
+  outline: 2px solid var(--fui-accent, #d8c9a6);
+  outline-offset: 3px;
+}
+
+@keyframes fui-load-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fui-load-flash {
+  0% { filter: brightness(1.8); }
+  100% { filter: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fui-loadbtn { transition: none; }
+  .fui-loadbtn[data-state='busy'] .fui-loadbtn__spinner { animation-duration: 2s; }
+  .fui-loadbtn[data-state='done'] .fui-loadbtn__art { animation: none; }
+}

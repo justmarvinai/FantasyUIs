@@ -1,0 +1,196 @@
+/* AbilityButton — one skill button, with everything read off it mid-fight. */
+
+.fui-abilitybtn {
+  --fui-ability-size: 60px;
+  --fui-ability-cd: 0;
+
+  position: relative;
+  display: block;
+  width: var(--fui-ability-size);
+  height: var(--fui-ability-size);
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  color: var(--fui-btn-ink, #eaf6f3);
+  transition: transform var(--fui-t-fast, 120ms) var(--fui-ease, ease-out);
+}
+
+.fui-abilitybtn__plate {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  border-style: solid;
+  border-color: transparent;
+  border-width: var(--fui-btn-sq-bw);
+  border-image-source: var(--fui-btn-sq-src);
+  border-image-slice: var(--fui-btn-sq-sl) fill;
+  border-image-repeat: stretch;
+}
+
+/* The art sits *under* the frame so the frame overhangs it exactly as painted,
+   and inset so a square icon never pokes out past a rounded plate. */
+.fui-abilitybtn__art {
+  position: absolute;
+  inset: 12%;
+  z-index: 1;
+  border-radius: 3px;
+  background: var(--fui-ability-art, none) center / cover no-repeat,
+    color-mix(in srgb, #000 45%, transparent);
+}
+
+/* ── Cooldown ───────────────────────────────────────────────────────────── */
+
+/* A conic sweep that unwinds anticlockwise, which is the direction every game
+   has trained players to read as "time coming back". */
+.fui-abilitybtn__sweep {
+  position: absolute;
+  inset: 12%;
+  z-index: 3;
+  border-radius: 3px;
+  pointer-events: none;
+  background: conic-gradient(
+    from 0deg,
+    color-mix(in srgb, #000 72%, transparent) calc(var(--fui-ability-cd) * 360deg),
+    transparent 0
+  );
+  opacity: 0;
+}
+
+.fui-abilitybtn__sweep[data-on='on'] { opacity: 1; }
+
+.fui-abilitybtn__time {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  font: 700 calc(var(--fui-ability-size) * 0.3) / 1 var(--fui-font-display, system-ui, sans-serif);
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
+}
+
+/* ── Corner furniture ───────────────────────────────────────────────────── */
+
+.fui-abilitybtn__key {
+  position: absolute;
+  z-index: 5;
+  left: 2px;
+  top: 2px;
+  min-width: 14px;
+  padding: 0 3px;
+  border-radius: 2px;
+  background: color-mix(in srgb, #000 72%, transparent);
+  color: color-mix(in srgb, var(--fui-btn-ink, #eaf6f3) 80%, transparent);
+  font: 700 9px/14px var(--fui-font-ui, system-ui, sans-serif);
+  text-align: center;
+  pointer-events: none;
+}
+
+.fui-abilitybtn__charges {
+  position: absolute;
+  z-index: 5;
+  right: 2px;
+  top: 2px;
+  padding: 0 3px;
+  border-radius: 2px;
+  background: color-mix(in srgb, #000 72%, transparent);
+  color: var(--fui-gold, #e0b04a);
+  font: 700 9px/14px var(--fui-font-ui, system-ui, sans-serif);
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+
+.fui-abilitybtn__charges[data-empty='on'] { color: var(--fui-danger, #d8543f); }
+
+.fui-abilitybtn__cost {
+  position: absolute;
+  z-index: 5;
+  left: 50%;
+  bottom: 1px;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 4px;
+  border-radius: 6px;
+  background: color-mix(in srgb, #000 68%, transparent);
+  pointer-events: none;
+}
+
+.fui-abilitybtn__costglyph {
+  width: 9px;
+  height: 9px;
+  background-color: var(--fui-info, #6fa8dc);
+  mask: var(--fui-ability-costglyph, var(--fui-mask-none)) center / contain no-repeat;
+  -webkit-mask: var(--fui-ability-costglyph, var(--fui-mask-none)) center / contain no-repeat;
+}
+
+.fui-abilitybtn__costnum {
+  font: 700 9px/14px var(--fui-font-ui, system-ui, sans-serif);
+  font-variant-numeric: tabular-nums;
+  color: var(--fui-info, #6fa8dc);
+}
+
+/* ── States ─────────────────────────────────────────────────────────────── */
+
+.fui-abilitybtn:hover { transform: translateY(-1px); }
+.fui-abilitybtn:active { transform: translateY(1px) scale(0.97); }
+
+.fui-abilitybtn[data-state='ready'] .fui-abilitybtn__plate {
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--fui-accent, #d8c9a6) 40%, transparent));
+}
+
+.fui-abilitybtn[data-state='active'] .fui-abilitybtn__plate {
+  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--fui-gold, #e0b04a) 75%, transparent));
+}
+
+.fui-abilitybtn[data-state='active'] .fui-abilitybtn__art {
+  animation: fui-ability-pulse 1.1s ease-in-out infinite;
+}
+
+/* Cooling and blocked read differently on purpose: one is "wait", the other is
+   "this will never work from here". */
+.fui-abilitybtn[data-state='cooling'] .fui-abilitybtn__art { filter: saturate(0.6); }
+
+.fui-abilitybtn[data-state='blocked'] .fui-abilitybtn__art {
+  filter: grayscale(0.9) brightness(0.55);
+}
+
+.fui-abilitybtn[data-state='blocked'] .fui-abilitybtn__plate {
+  filter: grayscale(0.7) brightness(0.7);
+}
+
+/* Refusal is a shake rather than a toast: the answer belongs on the control
+   that was pressed, and the tooltip already carries the reason. */
+.fui-abilitybtn[data-refused='on'] {
+  animation: fui-ability-nope 240ms var(--fui-ease, ease-out);
+}
+
+.fui-abilitybtn:focus-visible {
+  outline: 2px solid var(--fui-accent, #d8c9a6);
+  outline-offset: 3px;
+}
+
+@keyframes fui-ability-pulse {
+  50% { filter: brightness(1.25); }
+}
+
+@keyframes fui-ability-nope {
+  0%, 100% { transform: none; }
+  25% { transform: translateX(-3px); }
+  75% { transform: translateX(3px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fui-abilitybtn,
+  .fui-abilitybtn[data-refused='on'],
+  .fui-abilitybtn[data-state='active'] .fui-abilitybtn__art { animation: none; transition: none; }
+  .fui-abilitybtn:hover,
+  .fui-abilitybtn:active { transform: none; }
+}

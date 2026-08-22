@@ -1,0 +1,153 @@
+/* IconButton — the small square/round button that carries a symbol, not words. */
+
+.fui-iconbtn {
+  --fui-iconbtn-size: 44px;
+  --fui-iconbtn-ink: var(--fui-btn-ink, #eaf6f3);
+
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: var(--fui-iconbtn-size);
+  height: var(--fui-iconbtn-size);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--fui-iconbtn-ink);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  transition:
+    filter var(--fui-t-fast, 120ms) var(--fui-ease, ease-out),
+    transform var(--fui-t-fast, 120ms) var(--fui-ease, ease-out);
+}
+
+.fui-iconbtn[data-tone='accent'] { --fui-iconbtn-ink: var(--fui-accent, #d8c9a6); }
+.fui-iconbtn[data-tone='danger'] { --fui-iconbtn-ink: var(--fui-danger, #d8543f); }
+.fui-iconbtn[data-tone='success'] { --fui-iconbtn-ink: var(--fui-success, #7fb069); }
+.fui-iconbtn[data-tone='gold'] { --fui-iconbtn-ink: var(--fui-gold, #e0b04a); }
+
+/* ── Plate ──────────────────────────────────────────────────────────────── */
+
+.fui-iconbtn__plate {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  border-style: solid;
+  border-color: transparent;
+}
+
+/* A preset is finished artwork with its symbol already painted in, so it is a
+   whole background rather than a 9-sliced frame with something laid on top. */
+.fui-iconbtn[data-shape='preset'] .fui-iconbtn__plate {
+  border: 0;
+  background: var(--fui-iconbtn-preset, none) center / contain no-repeat;
+}
+
+.fui-iconbtn[data-preset='close'] { --fui-iconbtn-preset: var(--fui-btn-close-img); }
+.fui-iconbtn[data-preset='back'] { --fui-iconbtn-preset: var(--fui-btn-back-img); }
+.fui-iconbtn[data-preset='settings'] { --fui-iconbtn-preset: var(--fui-btn-settings-img); }
+
+.fui-iconbtn[data-shape='square'] .fui-iconbtn__plate {
+  border-width: var(--fui-btn-sq-bw);
+  border-image-source: var(--fui-btn-sq-src);
+  border-image-slice: var(--fui-btn-sq-sl) fill;
+  border-image-repeat: stretch;
+}
+
+.fui-iconbtn[data-shape='plate'] .fui-iconbtn__plate {
+  border-width: var(--fui-btn-bw);
+  border-image-source: var(--fui-btn-src);
+  border-image-slice: var(--fui-btn-sl) fill;
+  border-image-repeat: stretch;
+}
+
+/* Round has no 9-slice art — a stretched square frame would show its corners.
+   It is drawn instead, which also lets it take the tone colour. */
+.fui-iconbtn[data-shape='round'] .fui-iconbtn__plate {
+  border: 1px solid color-mix(in srgb, var(--fui-iconbtn-ink) 35%, transparent);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 30%,
+      color-mix(in srgb, var(--fui-iconbtn-ink) 16%, transparent),
+      transparent 70%),
+    color-mix(in srgb, var(--fui-panel-ink, #14100c) 78%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, #fff 12%, transparent);
+}
+
+.fui-iconbtn[data-shape='bare'] .fui-iconbtn__plate { display: none; }
+
+/* ── Symbol ─────────────────────────────────────────────────────────────── */
+
+.fui-iconbtn__glyph {
+  position: relative;
+  z-index: 1;
+  width: 52%;
+  height: 52%;
+  background-color: currentColor;
+  mask: var(--fui-iconbtn-glyph, var(--fui-mask-none)) center / contain no-repeat;
+  -webkit-mask: var(--fui-iconbtn-glyph, var(--fui-mask-none)) center / contain no-repeat;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.7));
+}
+
+.fui-iconbtn__art {
+  position: relative;
+  z-index: 1;
+  width: 62%;
+  height: 62%;
+  background: var(--fui-iconbtn-art, none) center / contain no-repeat;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.65));
+}
+
+/* ── States ─────────────────────────────────────────────────────────────── */
+
+.fui-iconbtn:hover:not(:disabled) { filter: brightness(1.18); }
+.fui-iconbtn:active:not(:disabled) { transform: translateY(1px) scale(0.96); }
+
+.fui-iconbtn:disabled {
+  cursor: not-allowed;
+  filter: grayscale(0.8) brightness(0.6);
+}
+
+.fui-iconbtn:focus-visible {
+  outline: 2px solid var(--fui-accent, #d8c9a6);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ── Badge ──────────────────────────────────────────────────────────────── */
+
+.fui-iconbtn__badge {
+  position: absolute;
+  z-index: 2;
+  right: -3px;
+  top: -3px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  border-radius: 9px;
+  background: var(--fui-danger, #d8543f);
+  border: 1px solid color-mix(in srgb, #000 55%, transparent);
+  color: #fff;
+  font: 700 10px/15px var(--fui-font-ui, system-ui, sans-serif);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  pointer-events: none;
+}
+
+/* A dot says "something changed" with no number to read, so it has no box to
+   size to text and shrinks to a mark. */
+.fui-iconbtn__badge[data-dot='on'] {
+  min-width: 0;
+  width: 9px;
+  height: 9px;
+  padding: 0;
+  right: 0;
+  top: 0;
+  border-radius: 50%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fui-iconbtn { transition: none; }
+  .fui-iconbtn:active:not(:disabled) { transform: none; }
+}

@@ -12,6 +12,8 @@
  *     is generated from them
  *   - every asset id referenced must exist in the manifest, in components and
  *     in the demos, and a slot drawn as a mask must be given monochrome art
+ *   - every component llms.txt names in its recipes must actually exist
+ *   - a component's `copy` list must name every file it actually imports
  *
  *   npm run audit
  */
@@ -307,7 +309,73 @@ for (const file of files) {
   }
 }
 
-// ── 11. Barrel and catalog coverage ─────────────────────────────────────────
+// ── 11. Every component named in llms.txt must exist ────────────────────────
+// The screen recipes and the button table are the first thing an agent reads,
+// and a name in either that resolves to nothing sends it off to fetch a 404.
+// They are prose in a template rather than data, so nothing else checks them.
+{
+  const llmsPath = path.join(ROOT, 'public', 'llms.txt');
+  let llms = '';
+  try {
+    llms = await readFile(llmsPath, 'utf8');
+  } catch {
+    llms = '';
+  }
+  if (llms) {
+    const ids = new Set(manifest.components.map((c) => c.id));
+    const start = llms.indexOf('### 2. Compose screens');
+    const end = llms.indexOf('### 3. You can also');
+    if (start !== -1 && end !== -1) {
+      const section = llms.slice(start, end);
+      const named = new Set();
+      // The button table wraps names in backticks.
+      for (const m of section.matchAll(/`([A-Z][A-Za-z0-9]+)`/g)) named.add(m[1]);
+      // Recipe lines are `<label><wide gap><components>` and wrap onto
+      // continuation lines that begin with `+`. Only the component column is
+      // scanned — the label column is prose like "Battle HUD".
+      for (const line of section.split('\n')) {
+        const continuation = /^\s{8,}\+/.test(line);
+        if (!continuation && !/^ {4}\S/.test(line)) continue;
+        const raw = continuation ? line : line.replace(/^ {4}.*?\s{2,}/, '');
+        if (!continuation && raw === line.trim()) continue;
+        // Parenthesised text is a gloss on the component before it — "(Use ×10)",
+        // "(Start battle)" — not more component names.
+        const tail = raw.replace(/\([^)]*\)/g, ' ');
+        for (const m of tail.matchAll(/\b([A-Z][A-Za-z0-9]{2,})\b/g)) named.add(m[1]);
+      }
+      for (const name of named) {
+        if (!ids.has(name)) fail('llms.txt', `names "${name}", which is not a component`);
+      }
+    }
+  }
+}
+
+// ── 12. A record's `copy` list must actually compile ────────────────────────
+// The promise on every component page is "copy these files and it builds". That
+// only holds if the list names every core module the component imports, so
+// check the imports against the list rather than trusting CORE_FILES to have
+// kept up. Getting this wrong is silent here and fatal in someone's game.
+{
+  const byId = new Map(manifest.components.map((c) => [c.id, c]));
+  for (const file of files) {
+    const name = file.replace(/\.ts$/, '');
+    const record = byId.get(name);
+    if (!record) continue;
+    const ts = await readFile(path.join(COMPONENTS, file), 'utf8');
+    const copy = new Set(record.copy ?? []);
+
+    for (const m of ts.matchAll(/from '\.\.\/core\/([a-zA-Z0-9_-]+)\.ts'/g)) {
+      const needed = `src/lib/core/${m[1]}.ts`;
+      if (!copy.has(needed)) fail(name, `imports ${needed} but its copy list omits it`);
+    }
+    for (const m of ts.matchAll(/from '\.\/([A-Za-z0-9_]+)\.ts'/g)) {
+      const needed = `src/lib/components/${m[1]}.ts`;
+      if (!copy.has(needed)) fail(name, `imports ${needed} but its copy list omits it`);
+    }
+  }
+}
+
+// ── 13. Barrel and catalog coverage ─────────────────────────────────────────
 const barrel = await readFile(path.join(ROOT, 'src', 'lib', 'index.ts'), 'utf8');
 const stylesheet = await readFile(path.join(ROOT, 'src', 'lib', 'styles', 'index.css'), 'utf8');
 const registryIds = new Set(manifest.components.map((c) => c.id));

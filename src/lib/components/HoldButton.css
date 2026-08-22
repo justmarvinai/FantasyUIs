@@ -1,0 +1,133 @@
+/* HoldButton — press and hold to confirm an action with no undo. */
+
+.fui-holdbtn {
+  --fui-hold-p: 0;
+  --fui-hold-ink: var(--fui-danger, #d8543f);
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--fui-btn-min-h, 48px);
+  padding: var(--fui-btn-pad, 8px 20px);
+  overflow: hidden;
+  border: 0;
+  background: none;
+  color: var(--fui-btn-ink, #eaf6f3);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+
+.fui-holdbtn--block { display: flex; width: 100%; }
+
+.fui-holdbtn[data-tone='gold'] { --fui-hold-ink: var(--fui-gold, #e0b04a); }
+.fui-holdbtn[data-tone='accent'] { --fui-hold-ink: var(--fui-accent, #d8c9a6); }
+.fui-holdbtn[data-tone='success'] { --fui-hold-ink: var(--fui-success, #7fb069); }
+
+.fui-holdbtn__plate {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  border-style: solid;
+  border-color: transparent;
+  border-width: var(--fui-btn-bw);
+  border-image-source: var(--fui-btn-src);
+  border-image-slice: var(--fui-btn-sl) fill;
+  border-image-repeat: stretch;
+}
+
+/* ── Fill ───────────────────────────────────────────────────────────────── */
+
+/* No transition on width: the fill is stepped by rAF against a real timestamp
+   so it can never finish on a different frame from the completion event. */
+.fui-holdbtn__fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  z-index: 1;
+  width: calc(100% * var(--fui-hold-p));
+  pointer-events: none;
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--fui-hold-ink) 45%, transparent),
+    color-mix(in srgb, var(--fui-hold-ink) 82%, transparent)
+  );
+  box-shadow: 0 0 18px color-mix(in srgb, var(--fui-hold-ink) 55%, transparent);
+}
+
+.fui-holdbtn[data-variant='ring'] .fui-holdbtn__fill {
+  inset: 3px;
+  width: auto;
+  background: conic-gradient(
+    var(--fui-hold-ink) calc(var(--fui-hold-p) * 360deg),
+    transparent 0
+  );
+  /* A ring, not a disc — the label has to stay readable through it. */
+  mask: radial-gradient(circle closest-side at center, transparent 62%, #000 64%);
+  -webkit-mask: radial-gradient(circle closest-side at center, transparent 62%, #000 64%);
+  box-shadow: none;
+}
+
+/* ── Face ───────────────────────────────────────────────────────────────── */
+
+.fui-holdbtn__face {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--fui-gap-sm, 7px);
+  pointer-events: none;
+}
+
+.fui-holdbtn__glyph {
+  width: 16px;
+  height: 16px;
+  background-color: currentColor;
+  mask: var(--fui-hold-glyph, var(--fui-mask-none)) center / contain no-repeat;
+  -webkit-mask: var(--fui-hold-glyph, var(--fui-mask-none)) center / contain no-repeat;
+}
+
+.fui-holdbtn__label {
+  font-family: var(--fui-font-display, system-ui, sans-serif);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.8);
+  white-space: nowrap;
+}
+
+/* ── States ─────────────────────────────────────────────────────────────── */
+
+.fui-holdbtn:hover:not(:disabled) { filter: var(--fui-btn-hover-filter, brightness(1.14)); }
+
+.fui-holdbtn[data-state='holding'] {
+  filter: brightness(1.1);
+  transform: scale(0.985);
+}
+
+.fui-holdbtn[data-state='done'] .fui-holdbtn__fill {
+  animation: fui-hold-flash 420ms var(--fui-ease, ease-out);
+}
+
+.fui-holdbtn:disabled {
+  cursor: not-allowed;
+  filter: grayscale(0.75) brightness(0.6);
+}
+
+.fui-holdbtn:focus-visible {
+  outline: 2px solid var(--fui-hold-ink);
+  outline-offset: 3px;
+}
+
+@keyframes fui-hold-flash {
+  0% { filter: brightness(2.2); }
+  100% { filter: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fui-holdbtn[data-state='done'] .fui-holdbtn__fill { animation: none; }
+  .fui-holdbtn[data-state='holding'] { transform: none; }
+}
