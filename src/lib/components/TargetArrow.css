@@ -1,0 +1,84 @@
+/* TargetArrow — the curved drag-to-target line. */
+
+.fui-targetarrow {
+  --fui-arrow-weight: 7px;
+  --fui-arrow-ink: #e8543f;
+
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+  opacity: 0;
+  transition: opacity 120ms ease-out;
+}
+
+.fui-targetarrow[data-shown='on'] { opacity: 1; }
+
+.fui-targetarrow[data-kind='spell'] { --fui-arrow-ink: #8fa8f0; }
+.fui-targetarrow[data-kind='friendly'] { --fui-arrow-ink: #7fe3a0; }
+.fui-targetarrow[data-kind='invalid'] { --fui-arrow-ink: #6a6a72; }
+
+.fui-targetarrow__svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.fui-targetarrow__line {
+  fill: none;
+  stroke: var(--fui-arrow-ink);
+  stroke-width: var(--fui-arrow-weight);
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--fui-arrow-ink) 75%, transparent));
+  /* A dashed line that crawls toward the target, which is what reads as
+     "in flight" rather than "connected". */
+  stroke-dasharray: 2 14;
+  animation: fui-arrow-crawl 600ms linear infinite;
+}
+
+.fui-targetarrow[data-locked='on'] .fui-targetarrow__line {
+  stroke-dasharray: none;
+  animation: none;
+  stroke-width: calc(var(--fui-arrow-weight) * 1.2);
+}
+
+.fui-targetarrow[data-kind='invalid'] .fui-targetarrow__line {
+  stroke-dasharray: 6 8;
+  filter: none;
+  opacity: 0.65;
+}
+
+.fui-targetarrow__head {
+  fill: var(--fui-arrow-ink);
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--fui-arrow-ink) 85%, transparent));
+  transition: transform 120ms cubic-bezier(0.2, 0.9, 0.25, 1);
+}
+
+.fui-targetarrow[data-locked='on'] .fui-targetarrow__head {
+  animation: fui-arrow-lock 900ms ease-in-out infinite;
+}
+
+/* The origin dot anchors the curve to the thing being dragged, which is what
+   stops the line looking like it starts in mid-air. */
+.fui-targetarrow__origin {
+  fill: none;
+  stroke: var(--fui-arrow-ink);
+  stroke-width: 3;
+  opacity: 0.85;
+}
+
+@keyframes fui-arrow-crawl {
+  to { stroke-dashoffset: -16; }
+}
+
+@keyframes fui-arrow-lock {
+  50% { transform: scale(1.12); transform-origin: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fui-targetarrow,
+  .fui-targetarrow__line,
+  .fui-targetarrow__head { transition: none; animation: none; }
+}

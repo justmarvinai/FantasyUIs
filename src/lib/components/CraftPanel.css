@@ -1,0 +1,143 @@
+/* CraftPanel — craft and disenchant, with the arithmetic on both buttons. */
+
+.fui-craft {
+  --fui-craft-rarity: #9aa0a6;
+
+  display: grid;
+  gap: 10px;
+  width: 100%;
+  max-width: 300px;
+  padding: 14px;
+  border-radius: 6px;
+  background: var(--fui-panel-fill-src, none) center / 100% 100%;
+  background-color: color-mix(in srgb, var(--fui-panel-ink, #14100c) 84%, transparent);
+  color: var(--fui-text, #e8e0cd);
+  font-family: var(--fui-font-ui, system-ui, sans-serif);
+}
+
+.fui-craft[data-rarity='rare'] { --fui-craft-rarity: #4a8ede; }
+.fui-craft[data-rarity='epic'] { --fui-craft-rarity: #a335ee; }
+.fui-craft[data-rarity='legendary'] { --fui-craft-rarity: #ff8000; }
+.fui-craft[data-rarity='mythic'] { --fui-craft-rarity: #e6cc80; }
+
+.fui-craft__head { display: flex; align-items: center; gap: 11px; }
+
+.fui-craft__art {
+  flex: none;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--fui-craft-art, none) center / cover no-repeat,
+    color-mix(in srgb, #000 45%, transparent);
+  border: 2px solid var(--fui-craft-rarity);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--fui-craft-rarity) 40%, transparent);
+}
+
+.fui-craft__names { display: grid; gap: 1px; min-width: 0; }
+
+.fui-craft__name {
+  font: var(--fui-font-title, 700 14px/1.2 system-ui, sans-serif);
+  color: var(--fui-craft-rarity);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fui-craft__owned {
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 55%, transparent);
+}
+
+.fui-craft__owned[data-state='full'] { color: var(--fui-success, #7fb069); }
+
+.fui-craft__purse {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  justify-self: start;
+  padding: 3px 10px;
+  border-radius: 11px;
+  background: color-mix(in srgb, #000 45%, transparent);
+  border: 1px solid color-mix(in srgb, #9fd8f0 35%, transparent);
+}
+
+.fui-craft__dustmark { color: #9fd8f0; font-size: 12px; }
+
+.fui-craft__dust {
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #9fd8f0;
+}
+
+/* ── Buttons ────────────────────────────────────────────────────────────── */
+
+/* Two prices on two buttons rather than one shared readout: they are different
+   numbers pointing in opposite directions, and a single "value" line is how
+   players dust a card they meant to make. */
+.fui-craft__actions { display: grid; gap: 6px; }
+
+.fui-craft__btn {
+  padding: 9px 12px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: filter 130ms ease-out;
+}
+
+.fui-craft__btn[data-act='make'][data-state='open'] {
+  background: linear-gradient(180deg, #9fe0f5, #3f8fb5);
+  color: #06202c;
+}
+
+.fui-craft__btn[data-act='melt'][data-state='open'] {
+  background: none;
+  border-color: color-mix(in srgb, var(--fui-danger, #d8543f) 45%, transparent);
+  color: color-mix(in srgb, var(--fui-danger, #d8543f) 92%, transparent);
+}
+
+/* Blocked buttons keep their price legible — the number is the point, and the
+   reason is on the title. */
+.fui-craft__btn[data-state='blocked'] {
+  background: none;
+  border-color: color-mix(in srgb, var(--fui-text, #e8e0cd) 16%, transparent);
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 40%, transparent);
+  cursor: not-allowed;
+}
+
+.fui-craft__btn:hover[data-state='open'] { filter: brightness(1.1); }
+
+.fui-craft__btn:focus-visible {
+  outline: 2px solid var(--fui-accent, #d8c9a6);
+  outline-offset: 2px;
+}
+
+.fui-craft__note {
+  margin: 0;
+  min-height: 1.2em;
+  font-size: 10.5px;
+  line-height: 1.35;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 52%, transparent);
+}
+
+.fui-craft__note[data-tone='bad'] { color: var(--fui-danger, #d8543f); font-weight: 600; }
+.fui-craft__note[data-empty='on'][data-tone='plain'] { visibility: hidden; }
+
+.fui-craft[data-refused='on'] { animation: fui-craft-nope 240ms var(--fui-ease, ease-out); }
+
+@keyframes fui-craft-nope {
+  0%, 100% { transform: none; }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fui-craft__btn { transition: none; }
+  .fui-craft[data-refused='on'] { animation: none; }
+}

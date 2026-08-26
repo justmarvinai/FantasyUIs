@@ -1,0 +1,172 @@
+/* EmoteWheel — six things you are allowed to say, around your portrait. */
+
+.fui-emotewheel {
+  --fui-emote-size: 220px;
+
+  position: relative;
+  display: grid;
+  place-items: center;
+  /* `--fui-emote-size` is the ring, not the footprint. The captions sit outside
+     the ring, so the box grows by padding around a content area that stays
+     exactly the ring's size — content-box keeps the two independent, and the
+     wedges still centre on 50% because the padding is symmetric. Without the
+     reservation the top and bottom captions hang outside the element and any
+     ancestor that clips its overflow cuts them off. */
+  box-sizing: content-box;
+  width: var(--fui-emote-size);
+  height: var(--fui-emote-size);
+  padding: calc(var(--fui-emote-size) * 0.06 + 9px) calc(var(--fui-emote-size) * 0.36);
+  font-family: var(--fui-font-ui, system-ui, sans-serif);
+}
+
+.fui-emotewheel__hub {
+  position: relative;
+  z-index: 2;
+  width: calc(var(--fui-emote-size) * 0.32);
+  aspect-ratio: 1;
+  padding: 0;
+  border-radius: 50%;
+  border: 3px solid color-mix(in srgb, var(--fui-accent, #6fb3a8) 65%, #2a2118);
+  background: var(--fui-emote-art, none) center / cover no-repeat,
+    color-mix(in srgb, var(--fui-panel-ink, #14100c) 85%, transparent);
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.6);
+  transition: transform 160ms cubic-bezier(0.2, 0.9, 0.25, 1);
+}
+
+.fui-emotewheel__hub:hover { transform: scale(1.06); }
+
+.fui-emotewheel[data-open='on'] .fui-emotewheel__hub {
+  border-color: var(--fui-gold, #e0b04a);
+}
+
+.fui-emotewheel__ring {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* Each wedge is pushed out along its own angle and then counter-rotated, so the
+   label stays upright however far round the circle it sits. */
+.fui-emotewheel__wedge {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(var(--fui-emote-size) * 0.3);
+  aspect-ratio: 1;
+  margin: calc(var(--fui-emote-size) * -0.15) 0 0 calc(var(--fui-emote-size) * -0.15);
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transform: rotate(var(--fui-emote-a)) translateY(0) rotate(calc(-1 * var(--fui-emote-a)));
+  transition:
+    transform 260ms cubic-bezier(0.2, 0.9, 0.25, 1),
+    opacity 200ms ease-out;
+  transition-delay: calc(var(--fui-emote-i, 0) * 22ms);
+}
+
+.fui-emotewheel[data-open='on'] .fui-emotewheel__wedge {
+  opacity: 1;
+  pointer-events: auto;
+  transform:
+    rotate(var(--fui-emote-a))
+    translateY(calc(var(--fui-emote-size) * -0.34))
+    rotate(calc(-1 * var(--fui-emote-a)));
+}
+
+.fui-emotewheel__glyph {
+  --fui-emote-ink: var(--fui-accent, #6fb3a8);
+
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 2px solid color-mix(in srgb, var(--fui-emote-ink) 65%, #2a2118);
+  background: radial-gradient(
+    circle at 50% 35%,
+    color-mix(in srgb, var(--fui-emote-ink) 30%, #14100c),
+    #0d0a07
+  );
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.55);
+  transition: transform 140ms ease-out, border-color 140ms ease-out;
+}
+
+.fui-emotewheel__glyph::before {
+  content: '';
+  width: 48%;
+  height: 48%;
+  background-color: color-mix(in srgb, var(--fui-emote-ink) 45%, #fff);
+  mask: var(--fui-emote-glyph, var(--fui-mask-none)) center / contain no-repeat;
+  -webkit-mask: var(--fui-emote-glyph, var(--fui-mask-none)) center / contain no-repeat;
+}
+
+.fui-emotewheel__wedge:hover .fui-emotewheel__glyph {
+  transform: scale(1.12);
+  border-color: var(--fui-gold, #e0b04a);
+}
+
+/* Captions ride the wedge's own angle, one step further out than the wedge
+   itself. Parked below their wedge — the obvious placement — the top emote's
+   caption lands on the portrait and the side ones cross the wedges next to
+   them. The counter-rotation keeps every caption upright, and `--fui-emote-lx`
+   pins whichever edge faces the wheel. */
+.fui-emotewheel__label {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform:
+    rotate(var(--fui-emote-a))
+    translateY(calc(var(--fui-emote-size) * -0.2))
+    rotate(calc(-1 * var(--fui-emote-a)))
+    translate(var(--fui-emote-lx, -50%), -50%);
+  padding: 1px 7px;
+  border-radius: 8px;
+  background: color-mix(in srgb, #000 78%, transparent);
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 78%, transparent);
+  white-space: nowrap;
+  /* Bounded so the footprint the root reserves is bounded too. */
+  max-width: calc(var(--fui-emote-size) * 0.38);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+}
+
+.fui-emotewheel__label[data-side='right'] { --fui-emote-lx: 0%; }
+.fui-emotewheel__label[data-side='left'] { --fui-emote-lx: -100%; }
+
+/* Cooling is per-emote: the wedge dims and stops taking clicks while the rest
+   of the wheel keeps working. */
+.fui-emotewheel__wedge[data-cooling='on'] {
+  pointer-events: none;
+  filter: grayscale(0.8) brightness(0.55);
+}
+
+.fui-emotewheel__wedge[data-muted='on'],
+.fui-emotewheel[data-squelched='on'] .fui-emotewheel__wedge {
+  pointer-events: none;
+  filter: grayscale(1) brightness(0.4);
+}
+
+.fui-emotewheel[data-squelched='on'] .fui-emotewheel__hub {
+  border-color: color-mix(in srgb, var(--fui-danger, #d8543f) 60%, transparent);
+}
+
+.fui-emotewheel__hub:focus-visible,
+.fui-emotewheel__wedge:focus-visible {
+  outline: 2px solid var(--fui-accent, #d8c9a6);
+  outline-offset: 3px;
+  border-radius: 50%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fui-emotewheel__wedge,
+  .fui-emotewheel__glyph,
+  .fui-emotewheel__hub { transition: none; }
+}

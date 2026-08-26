@@ -1,0 +1,374 @@
+/* PlayingCard — the card itself. Everything else in this collection holds one,
+   draws one, costs one or counts one.
+
+   Every dimension is an `em` off a font size derived from `--fui-card-w`, so
+   one number scales the whole card: a 90px hand card and a 300px collection
+   card are the same component rather than two stylesheets. */
+
+.fui-card {
+  --fui-card-w: 180px;
+  --fui-card-ink: var(--fui-accent, #d8c9a6);
+  --fui-card-rarity: #9aa0a6;
+
+  position: relative;
+  display: block;
+  width: var(--fui-card-w);
+  /* The classic trading-card ratio, near enough that real art fits. */
+  aspect-ratio: 5 / 7;
+  /* 100px of card width = 10px of type. Everything below is em. */
+  font-size: calc(var(--fui-card-w) / 18);
+  font-family: var(--fui-font-ui, system-ui, sans-serif);
+  color: #f4ead6;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: pointer;
+  /* Keeps the golden foil overlay and the hover lift from bleeding into
+     whatever the card is laid over — a hand, a board, a discover tray. */
+  isolation: isolate;
+  transition:
+    transform 160ms cubic-bezier(0.2, 0.9, 0.25, 1),
+    filter 160ms ease-out;
+}
+
+.fui-card[data-rarity='rare'] { --fui-card-rarity: #4a8ede; }
+.fui-card[data-rarity='epic'] { --fui-card-rarity: #a335ee; }
+.fui-card[data-rarity='legendary'] { --fui-card-rarity: #ff8000; }
+.fui-card[data-rarity='mythic'] { --fui-card-rarity: #e6cc80; }
+.fui-card[data-rarity='uncommon'] { --fui-card-rarity: #4ac26b; }
+
+/* ── Portrait ───────────────────────────────────────────────────────────── */
+
+/* Under the frame, so the frame overhangs it exactly as painted. Minions get an
+   oval window, spells a rectangle — the silhouette is how a player tells the
+   two apart across the table before reading a word. */
+.fui-card__art {
+  position: absolute;
+  left: 12%;
+  top: 9%;
+  width: 76%;
+  height: 42%;
+  background: var(--fui-card-art, none) center / cover no-repeat,
+    color-mix(in srgb, #000 55%, transparent);
+  box-shadow: inset 0 0 1.4em rgba(0, 0, 0, 0.75);
+}
+
+.fui-card[data-kind='minion'] .fui-card__art,
+.fui-card[data-kind='hero'] .fui-card__art { border-radius: 50% / 46%; }
+
+.fui-card[data-kind='spell'] .fui-card__art {
+  top: 8%;
+  height: 40%;
+  border-radius: 0.3em;
+}
+
+.fui-card[data-kind='weapon'] .fui-card__art { border-radius: 46% / 50%; }
+.fui-card[data-kind='location'] .fui-card__art { border-radius: 0.3em 0.3em 40% 40%; }
+
+/* ── Frame ──────────────────────────────────────────────────────────────── */
+
+.fui-card__frame {
+  position: absolute;
+  inset: 0;
+  border-radius: 0.9em;
+  /* The card stock: a class-tinted rim over a dark board, with a bevel that
+     reads at 90px as well as at 300px because it is all relative. */
+  background:
+    linear-gradient(
+      165deg,
+      color-mix(in srgb, var(--fui-card-ink) 55%, #1a150f) 0%,
+      color-mix(in srgb, var(--fui-card-ink) 22%, #12100c) 40%,
+      #0e0c09 100%
+    );
+  border: 0.22em solid color-mix(in srgb, var(--fui-card-ink) 60%, #2a2118);
+  box-shadow:
+    inset 0 0 0 0.1em rgba(255, 255, 255, 0.09),
+    inset 0 0 1.6em rgba(0, 0, 0, 0.7),
+    0 0.4em 1.1em rgba(0, 0, 0, 0.55);
+  pointer-events: none;
+}
+
+/* The legendary flourish: a rim in the rarity colour plus a halo, standing in
+   for the dragon that frames an elite portrait. */
+.fui-card__elite {
+  position: absolute;
+  left: 9%;
+  top: 6%;
+  width: 82%;
+  height: 48%;
+  border-radius: 50% / 46%;
+  border: 0.14em solid var(--fui-card-rarity);
+  box-shadow:
+    0 0 0.8em color-mix(in srgb, var(--fui-card-rarity) 60%, transparent),
+    inset 0 0 0.7em color-mix(in srgb, var(--fui-card-rarity) 45%, transparent);
+  pointer-events: none;
+}
+
+/* ── Mana gem ───────────────────────────────────────────────────────────── */
+
+.fui-card__cost {
+  position: absolute;
+  left: -0.35em;
+  top: -0.35em;
+  width: 2.6em;
+  height: 2.6em;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 38% 30%, rgba(255, 255, 255, 0.7), transparent 45%),
+    radial-gradient(circle at 50% 60%, #6fc0f5 0%, #1f6bb5 55%, #0d3a68 100%);
+  border: 0.12em solid #0a2540;
+  box-shadow: 0 0.2em 0.4em rgba(0, 0, 0, 0.6), inset 0 0 0.5em rgba(0, 0, 0, 0.35);
+  color: #fff;
+  font: 900 1.55em/1 var(--fui-font-display, system-ui, sans-serif);
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0.06em 0.12em rgba(0, 0, 0, 0.9);
+}
+
+/* A discount is the one number on a card that changes mid-turn, so it gets its
+   own colour rather than silently ticking down. */
+.fui-card__cost[data-discounted='on'] {
+  background:
+    radial-gradient(circle at 38% 30%, rgba(255, 255, 255, 0.75), transparent 45%),
+    radial-gradient(circle at 50% 60%, #9ff5b0 0%, #2fa055 55%, #10502a 100%);
+  border-color: #0c3a1e;
+}
+
+/* ── Name plate ─────────────────────────────────────────────────────────── */
+
+.fui-card__nameplate {
+  position: absolute;
+  left: 6%;
+  top: 47%;
+  width: 88%;
+  height: 2.3em;
+  border-radius: 0.25em;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--fui-card-ink) 45%, #241c14),
+    #17120d
+  );
+  border-top: 0.08em solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 0.15em 0.4em rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+}
+
+.fui-card__name {
+  position: absolute;
+  left: 8%;
+  top: 47%;
+  width: 84%;
+  height: 2.3em;
+  display: grid;
+  place-items: center;
+  font: 700 0.95em/1.1 var(--fui-font-display, system-ui, sans-serif);
+  letter-spacing: 0.02em;
+  text-align: center;
+  text-shadow: 0 0.1em 0.16em rgba(0, 0, 0, 0.9);
+  /* Long names shrink rather than wrap out of the plate. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.fui-card__gem {
+  position: absolute;
+  left: 50%;
+  top: calc(47% + 2.3em);
+  width: 1.1em;
+  height: 1.1em;
+  margin-left: -0.55em;
+  transform: translateY(-45%) rotate(45deg);
+  background: var(--fui-card-rarity);
+  border: 0.08em solid rgba(0, 0, 0, 0.65);
+  box-shadow: 0 0 0.5em color-mix(in srgb, var(--fui-card-rarity) 70%, transparent);
+  pointer-events: none;
+}
+
+.fui-card__tribe {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 1.4em;
+  text-align: center;
+  font-size: 0.72em;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, #f4ead6 62%, transparent);
+  pointer-events: none;
+}
+
+/* ── Text box ───────────────────────────────────────────────────────────── */
+
+.fui-card__body {
+  position: absolute;
+  left: 12%;
+  top: 57%;
+  width: 76%;
+  height: 27%;
+  display: grid;
+  align-content: center;
+  gap: 0.2em;
+  text-align: center;
+  pointer-events: none;
+}
+
+/* A spell has no stat gems, so its text box can use the full lower half. */
+.fui-card[data-kind='spell'] .fui-card__body {
+  left: 10%;
+  width: 80%;
+  height: 32%;
+}
+
+.fui-card__text {
+  margin: 0;
+  font-size: 0.82em;
+  line-height: 1.25;
+  color: #efe3cd;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+}
+
+.fui-card__text b { color: #fff; font-weight: 800; }
+.fui-card__text i { color: var(--fui-card-ink); font-style: normal; font-weight: 700; }
+
+.fui-card__flavour {
+  margin: 0;
+  font-size: 0.68em;
+  line-height: 1.2;
+  font-style: italic;
+  color: color-mix(in srgb, #f4ead6 45%, transparent);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* ── Stat gems ──────────────────────────────────────────────────────────── */
+
+.fui-card__attack,
+.fui-card__health {
+  position: absolute;
+  bottom: -0.3em;
+  width: 2.5em;
+  height: 2.5em;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font: 900 1.5em/1 var(--fui-font-display, system-ui, sans-serif);
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0.06em 0.12em rgba(0, 0, 0, 0.9);
+  color: #fff;
+  border: 0.12em solid rgba(0, 0, 0, 0.7);
+  box-shadow: 0 0.2em 0.4em rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+}
+
+.fui-card__attack {
+  left: -0.3em;
+  background:
+    radial-gradient(circle at 38% 30%, rgba(255, 255, 255, 0.6), transparent 45%),
+    radial-gradient(circle at 50% 60%, #f5c86f 0%, #c07a1f 55%, #6a3d09 100%);
+}
+
+.fui-card__health {
+  right: -0.3em;
+  background:
+    radial-gradient(circle at 38% 30%, rgba(255, 255, 255, 0.6), transparent 45%),
+    radial-gradient(circle at 50% 60%, #f57f6f 0%, #b52f1f 55%, #661209 100%);
+}
+
+/* Durability is a weapon's health slot but a different resource, so it reads
+   grey-steel rather than blood-red. */
+.fui-card__health[data-slot='durability'] {
+  background:
+    radial-gradient(circle at 38% 30%, rgba(255, 255, 255, 0.65), transparent 45%),
+    radial-gradient(circle at 50% 60%, #d6dde6 0%, #7c8b9c 55%, #39434e 100%);
+}
+
+/* Buffed and damaged are the two states a player scans for mid-combat, so they
+   are colour rather than a badge. */
+.fui-card__attack[data-buffed='on'],
+.fui-card__health[data-buffed='on'] { color: #6dff9a; }
+/* Damage brightens the gem, not the digit. Red on the red health gem scores
+   1.6:1 — the number a player reads most, unreadable exactly when it matters. */
+.fui-card__health[data-damaged='on'] {
+  color: #fff2f2;
+  background:
+    radial-gradient(circle at 38% 30%, rgba(255, 255, 255, 0.72), transparent 45%),
+    radial-gradient(circle at 50% 60%, #ff9a86 0%, #e03a22 55%, #7d1408 100%);
+}
+
+/* ── Golden ─────────────────────────────────────────────────────────────── */
+
+/* A slow sheen across the whole card rather than a gold border: the border is
+   already carrying rarity, and stacking a second gold ring on a legendary makes
+   both unreadable. */
+.fui-card[data-golden='on'] .fui-card__frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    115deg,
+    transparent 30%,
+    rgba(255, 226, 150, 0.35) 45%,
+    rgba(255, 255, 255, 0.5) 50%,
+    rgba(255, 226, 150, 0.35) 55%,
+    transparent 70%
+  );
+  background-size: 300% 100%;
+  animation: fui-card-foil 4.5s linear infinite;
+}
+
+/* ── Face down ──────────────────────────────────────────────────────────── */
+
+.fui-card__back {
+  position: absolute;
+  inset: 0;
+  border-radius: 0.9em;
+  background:
+    radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--fui-card-ink) 40%, transparent), transparent 55%),
+    repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.28) 0 0.5em, transparent 0.5em 1em),
+    linear-gradient(160deg, #3a2a1c, #17110c);
+  border: 0.24em solid color-mix(in srgb, var(--fui-card-ink) 45%, #2a2118);
+  box-shadow: inset 0 0 1.4em rgba(0, 0, 0, 0.8), 0 0.4em 1em rgba(0, 0, 0, 0.5);
+}
+
+/* ── States ─────────────────────────────────────────────────────────────── */
+
+.fui-card[data-playable='on'] .fui-card__frame {
+  box-shadow:
+    inset 0 0 0 0.1em rgba(255, 255, 255, 0.12),
+    inset 0 0 1.6em rgba(0, 0, 0, 0.65),
+    0 0 1.2em color-mix(in srgb, #7fe3a0 65%, transparent),
+    0 0.4em 1.1em rgba(0, 0, 0, 0.55);
+  border-color: color-mix(in srgb, #7fe3a0 55%, var(--fui-card-ink));
+}
+
+/* Unplayable is the resting state, not an error, so it desaturates rather than
+   greying out — the art still has to be readable while you plan a turn. */
+.fui-card[data-playable='off'] { filter: saturate(0.85) brightness(0.92); }
+
+.fui-card:hover { transform: translateY(-0.5em) scale(1.03); }
+.fui-card:active { transform: translateY(-0.2em) scale(1.01); }
+
+.fui-card:focus-visible {
+  outline: 0.14em solid var(--fui-accent, #d8c9a6);
+  outline-offset: 0.2em;
+  border-radius: 0.9em;
+}
+
+@keyframes fui-card-foil {
+  0% { background-position: 160% 0; }
+  100% { background-position: -60% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fui-card { transition: none; }
+  .fui-card:hover, .fui-card:active { transform: none; }
+  .fui-card[data-golden='on'] .fui-card__frame::after { animation: none; }
+}

@@ -1,0 +1,142 @@
+/* EndTurnButton — four states, and the difference between them is the point. */
+
+.fui-endturn {
+  --fui-endturn-w: 132px;
+  --fui-endturn-ink: #6fb3a8;
+
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--fui-endturn-w);
+  height: calc(var(--fui-endturn-w) * 0.62);
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: var(--fui-font-ui, system-ui, sans-serif);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: transform 150ms cubic-bezier(0.2, 0.9, 0.25, 1);
+}
+
+.fui-endturn__plate,
+.fui-endturn__glow {
+  position: absolute;
+  inset: 0;
+  /* A long hexagon: the shape a card game's turn button has always been, and
+     it distinguishes it from every rectangular button on the screen. */
+  clip-path: polygon(14% 0, 86% 0, 100% 50%, 86% 100%, 14% 100%, 0 50%);
+  pointer-events: none;
+}
+
+.fui-endturn__plate {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--fui-endturn-ink) 62%, #241c14),
+    color-mix(in srgb, var(--fui-endturn-ink) 22%, #100d0a)
+  );
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.16);
+}
+
+.fui-endturn__glow {
+  background: linear-gradient(180deg, #ffe9a8, #d98b1f);
+  opacity: 0;
+  transition: opacity 220ms ease-out;
+}
+
+.fui-endturn__label {
+  position: relative;
+  z-index: 1;
+  padding: 0 12%;
+  font-family: var(--fui-font-display, system-ui, sans-serif);
+  font-size: calc(var(--fui-endturn-w) / 10);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 1.15;
+  color: #f4ead6;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
+  pointer-events: none;
+}
+
+/* ── Nothing left to play ───────────────────────────────────────────────── */
+
+/* Gold and breathing only when there is genuinely nothing left to do. A button
+   that always pulses is a button nobody reads. */
+.fui-endturn[data-nudge='on'] .fui-endturn__glow { opacity: 1; }
+.fui-endturn[data-nudge='on'] .fui-endturn__label { color: #241802; }
+
+.fui-endturn[data-nudge='on'] {
+  animation: fui-endturn-breathe 1.6s ease-in-out infinite;
+}
+
+/* ── Not your turn ──────────────────────────────────────────────────────── */
+
+/* Not a disabled button: a different, unpressable panel with its own text. A
+   greyed-out "End turn" invites a click that teaches the player nothing. */
+.fui-endturn[data-state='theirs'],
+.fui-endturn[data-state='waiting'] {
+  cursor: default;
+  animation: none;
+}
+
+.fui-endturn[data-state='theirs'] .fui-endturn__plate {
+  background: linear-gradient(180deg, #3a3a42, #1c1c22);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.07);
+}
+
+.fui-endturn[data-state='theirs'] .fui-endturn__label {
+  color: color-mix(in srgb, #f4ead6 45%, transparent);
+}
+
+.fui-endturn[data-state='waiting'] .fui-endturn__plate {
+  background: linear-gradient(180deg, #4a4436, #221f18);
+}
+
+.fui-endturn[data-state='waiting'] .fui-endturn__label {
+  color: color-mix(in srgb, #f4ead6 65%, transparent);
+}
+
+/* A spinner ring around the hexagon rather than inside the label, so the text
+   stays put while the state changes. */
+.fui-endturn[data-state='waiting']::after {
+  content: '';
+  position: absolute;
+  right: 8%;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  margin-top: -6px;
+  border: 2px solid color-mix(in srgb, #f4ead6 25%, transparent);
+  border-top-color: #f4ead6;
+  border-radius: 50%;
+  animation: fui-endturn-spin 700ms linear infinite;
+}
+
+.fui-endturn[data-state='mulligan'] { --fui-endturn-ink: #b98fe0; }
+
+.fui-endturn[data-state='yours']:hover { transform: translateY(-2px); }
+.fui-endturn[data-state='yours']:active { transform: translateY(1px); }
+
+.fui-endturn:focus-visible {
+  outline: 2px solid var(--fui-accent, #d8c9a6);
+  outline-offset: 4px;
+}
+
+@keyframes fui-endturn-breathe {
+  0%, 100% { filter: drop-shadow(0 0 4px rgba(255, 200, 90, 0.5)); }
+  50% { filter: drop-shadow(0 0 16px rgba(255, 200, 90, 0.95)); }
+}
+
+@keyframes fui-endturn-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fui-endturn,
+  .fui-endturn[data-nudge='on'],
+  .fui-endturn__glow { transition: none; animation: none; }
+  .fui-endturn[data-state='waiting']::after { animation-duration: 2s; }
+  .fui-endturn[data-state='yours']:hover { transform: none; }
+}

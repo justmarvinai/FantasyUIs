@@ -242,7 +242,8 @@ ${extraHead}
     <span class="brand__text">Fantasy<em>UIs</em></span>
   </a>
   <nav class="topnav">
-    <a href="/"${active === 'index' ? ' aria-current="page"' : ''}>Components</a>
+    <a href="/"${active === 'index' ? ' aria-current="page"' : ''}>RPGs</a>
+    <a href="/cardgames.html"${active === 'cardgames' ? ' aria-current="page"' : ''}>Card games</a>
     <a href="/assets.html"${active === 'assets' ? ' aria-current="page"' : ''}>Assets</a>
     <a href="/start.html"${active === 'start' ? ' aria-current="page"' : ''}>Get started</a>
     <a href="/llms.txt" class="topnav__ai">For AI agents</a>
@@ -325,7 +326,10 @@ async function main() {
 
   const dom = await vite.ssrLoadModule('/src/lib/core/dom.ts');
   dom.setDocument(document);
-  const { CATALOG, GROUP_LABELS, GROUP_ORDER } = await vite.ssrLoadModule('/src/site/catalog.ts');
+  const { CATALOG, GROUP_LABELS, GROUP_ORDER, COLLECTION_LABELS, COLLECTION_ORDER, COLLECTION_GROUPS } =
+    await vite.ssrLoadModule('/src/site/catalog.ts');
+  /** Which tab a component lives under. Everything predates the split as RPG. */
+  const collectionOf = (c) => c.collection ?? 'rpg';
   const { ASSETS, PACKS } = await vite.ssrLoadModule('/src/data/assets.generated.ts');
 
   /**
@@ -434,7 +438,7 @@ ${props
       .join('');
 
     const body = `<article class="page">
-  <nav class="crumbs"><a href="/">Components</a> <span>/</span> <span>${esc(GROUP_LABELS[entry.group])}</span> <span>/</span> <strong>${esc(entry.name)}</strong></nav>
+  <nav class="crumbs"><a href="${collectionOf(entry) === 'rpg' ? '/' : '/cardgames.html'}">${esc(COLLECTION_LABELS[collectionOf(entry)])}</a> <span>/</span> <span>${esc(GROUP_LABELS[entry.group])}</span> <span>/</span> <strong>${esc(entry.name)}</strong></nav>
   <header class="page__head">
     <h1>${esc(entry.name)}</h1>
     <p class="lede">${esc(entry.blurb)}</p>
@@ -501,6 +505,7 @@ ${props
       name: entry.name,
       group: entry.group,
       groupLabel: GROUP_LABELS[entry.group],
+      collection: collectionOf(entry),
       blurb: entry.blurb,
       description: entry.description ?? '',
       tags: entry.tags,
@@ -531,17 +536,40 @@ ${props
   drainTimers();
 
   // ── Gallery index ────────────────────────────────────────────────────────
-  const groups = GROUP_ORDER.map((g) => ({
-    id: g,
-    label: GROUP_LABELS[g],
-    items: CATALOG.filter((c) => c.group === g),
-  })).filter((g) => g.items.length);
+  // ── Gallery pages, one per collection ────────────────────────────────────
+  // Two real pages rather than a client-side filter: each tab keeps its own URL
+  // and its own crawlable HTML, which is the whole point of this site. The tab
+  // strip is links, so it works with JavaScript off and with a screen reader.
+  const collectionPage = (id) => (id === 'rpg' ? '/' : `/${id}s.html`);
 
-  const indexBody = `<section class="hero">
+  const tabStrip = (current) => `<nav class="tabs" aria-label="Component collections">
+${COLLECTION_ORDER.map((id) => {
+  const count = CATALOG.filter((c) => collectionOf(c) === id).length;
+  const on = id === current;
+  return `  <a class="tabs__tab" href="${collectionPage(id)}"${on ? ' aria-current="page"' : ''}>
+    <span class="tabs__label">${esc(COLLECTION_LABELS[id].toUpperCase())}</span>
+    <span class="tabs__count">${esc(count)}</span>
+  </a>`;
+}).join('\n')}
+</nav>`;
+
+  const COLLECTION_LEDE = {
+    rpg: `${esc(SITE.tagline)}. Panels, inventories, HUDs, gacha banners, guild screens and full-screen templates — vanilla TypeScript and CSS, zero dependencies.`,
+    cardgame:
+      'Everything a Hearthstone-shaped game needs: the card itself, the board it is played on, the mana it costs, and the deckbuilder behind it. Same zero-dependency components, same two themes.',
+  };
+
+  for (const collection of COLLECTION_ORDER) {
+    const mine = CATALOG.filter((c) => collectionOf(c) === collection);
+    const groups = (COLLECTION_GROUPS[collection] ?? GROUP_ORDER)
+      .map((g) => ({ id: g, label: GROUP_LABELS[g], items: mine.filter((c) => c.group === g) }))
+      .filter((g) => g.items.length);
+
+    const body = `<section class="hero">
   <div class="hero__inner">
     <p class="hero__eyebrow">${esc(CATALOG.length)} components · ${esc(ASSETS.length)} art assets · ${esc(THEME_PACKS.length)} themes · ${esc(ART_PACKS.length)} art collections</p>
     <h1>Fantasy<em>UIs</em></h1>
-    <p class="hero__lede">${esc(SITE.tagline)}. Vanilla TypeScript and CSS, zero dependencies — drops into any Vite project, React or not, or straight over a Phaser canvas.</p>
+    <p class="hero__lede">${COLLECTION_LEDE[collection]}</p>
     <div class="hero__actions">
       <a class="btn btn--primary" href="/start.html">Get started</a>
       <a class="btn" href="/assets.html">Browse the art</a>
@@ -551,8 +579,10 @@ ${props
   </div>
 </section>
 
+${tabStrip(collection)}
+
 <div class="searchbar">
-  <input id="search" type="search" placeholder="Search components — try “inventory”, “health bar”, “dialogue”…" autocomplete="off" />
+  <input id="search" type="search" placeholder="Search ${esc(COLLECTION_LABELS[collection].toLowerCase())} components — try ${collection === 'cardgame' ? '“minion”, “mana”, “deck”' : '“inventory”, “health bar”, “dialogue”'}…" autocomplete="off" />
   <p class="searchbar__count" id="searchcount"></p>
 </div>
 
@@ -575,17 +605,25 @@ ${g.items
   )
   .join('\n')}`;
 
-  await writeFile(
-    path.join(ROOT, 'index.html'),
-    layout({
-      title: `${SITE.name} — ${SITE.tagline}`,
-      description: `${CATALOG.length} ready-to-use fantasy and RPG game UI components for Vite + TypeScript, built from ${ASSETS.length} hand-painted art assets. Panels, inventories, health bars, dialogue boxes, skill trees, HUDs and full screens.`,
-      canonical: SITE.origin + '/',
-      active: 'index',
-      body: indexBody,
-    }),
-    'utf8',
-  );
+    const file = collection === 'rpg' ? 'index.html' : `${collection}s.html`;
+    await writeFile(
+      path.join(ROOT, file),
+      layout({
+        title:
+          collection === 'rpg'
+            ? `${SITE.name} — ${SITE.tagline}`
+            : `Card game UI components — ${SITE.name}`,
+        description:
+          collection === 'rpg'
+            ? `${mine.length} ready-to-use fantasy and RPG game UI components for Vite + TypeScript, built from ${ASSETS.length} hand-painted art assets. Panels, inventories, health bars, dialogue boxes, skill trees, HUDs and full screens.`
+            : `${mine.length} ready-to-use collectible card game UI components for Vite + TypeScript — playing cards, hands, board lanes, minions, hero powers, mana crystals, turn ropes, deckbuilders and collection browsers.`,
+        canonical: SITE.origin + (collection === 'rpg' ? '/' : `/${collection}s.html`),
+        active: collection === 'rpg' ? 'index' : 'cardgames',
+        body,
+      }),
+      'utf8',
+    );
+  }
 
   // ── Asset browser ────────────────────────────────────────────────────────
   const byPack = PACKS.map((p) => ({
@@ -798,11 +836,26 @@ ${assets
 
 > ${SITE.tagline}. ${CATALOG.length} components built from ${ASSETS.length} art assets, in ${THEME_PACKS.length} swappable themes plus ${ART_PACKS.length} art collections (icons, glyphs and tintable ornament frames). Vanilla TypeScript + CSS, zero runtime dependencies, framework-agnostic.
 
-You are almost certainly here because someone asked you to build a fantasy or RPG
-game UI. Read this file, then go straight to **Working method** below. Do not
-design a component library from scratch — one already exists, every piece of it
-ships with a working example, and adapting an example is both faster and better
-than starting from an empty file.
+You are almost certainly here because someone asked you to build a fantasy game
+UI. Read this file, then go straight to **Working method** below. Do not design a
+component library from scratch — one already exists, every piece of it ships with
+a working example, and adapting an example is both faster and better than
+starting from an empty file.
+
+The library covers two kinds of game, and every component says which one it
+belongs to in its \`collection\` field:
+
+${COLLECTION_ORDER.map((id) => {
+  const mine = CATALOG.filter((c) => collectionOf(c) === id);
+  const groups = COLLECTION_GROUPS[id].filter((g) => mine.some((c) => c.group === g));
+  return `- **${COLLECTION_LABELS[id]}** (\`${id}\`) — ${mine.length} components: ${groups
+    .map((g) => GROUP_LABELS[g].toLowerCase())
+    .join(', ')}. Browse at ${SITE.origin}${id === 'rpg' ? '/' : `/${id}s.html`}`;
+}).join('\n')}
+
+They share everything underneath — the same themes, the same art, the same base
+class — so a card game is free to use \`Panel\`, \`Tooltip\` and \`ToastStack\`, and
+an RPG is free to use \`PlayingCard\`. The split is a search aid, not a wall.
 
 ## The 60-second version
 
@@ -937,6 +990,41 @@ Three of them refuse the press themselves and tell you why, so you do not
 re-check the same condition in your handler: \`AbilityButton\` (cooling,
 unaffordable, blocked), \`CostButton\` (emits \`cost:short\` with how much is
 missing), and \`MenuButton\` (emits \`menu:locked\` with the requirement).
+
+### 2c. Building a card game
+
+The card-game collection is a Hearthstone-shaped set: a match is a board, two
+heroes, a hand and a mana tray, and everything between matches is deckbuilding.
+The assemblies:
+
+    Match screen        BoardLane ×2 (yours, theirs) + HeroPortrait ×2
+                        + HeroPower ×2 + WeaponSlot + SecretRow ×2
+                        + ManaTray + CardHand + DeckPile ×2
+                        + EndTurnButton + TurnRope + PlayHistory + EmoteWheel
+    Playing a card      CardHand (emits \`hand:play\`) + TargetArrow (aim)
+                        + BoardLane.summon() + Minion
+    Mulligan            MulliganTray, then CardHand for the kept hand
+    Mid-match choice    DiscoverPicker (three cards, one pick, a clock)
+    Board objectives    QuestTile + SecretRow
+    Deck builder        DeckList + ManaCurve + CollectionGrid + CraftPanel
+    Arena / draft run   ArenaDraft (choices, record and running curve in one)
+    Collection browse   CollectionGrid + CraftPanel + SortBar + FilterBar
+
+\`PlayingCard\` is the piece everything else is built on — \`CardHand\`,
+\`DiscoverPicker\`, \`MulliganTray\`, \`CollectionGrid\` and \`ArenaDraft\` all construct
+it internally and take its options through — so learn its record first and the
+rest follow. Its five \`kind\` values (\`minion\`, \`spell\`, \`weapon\`, \`hero\`,
+\`location\`) each get their own frame.
+
+A card that has been *played* is a \`Minion\`, not a \`PlayingCard\`. They are
+deliberately different components: a card in hand is a rectangle you read, and a
+minion on the board is a round token with attack, health, keyword overlays and
+its own rules. Do not try to make one serve both.
+
+Four of them refuse an action and tell you why, so the rule lives in one place:
+\`HeroPower.why()\` (used this turn, not enough mana), \`CraftPanel.whyNotMake()\` /
+\`whyNotMelt()\`, \`BoardLane.full()\` (seven minions), and \`CardHand\`'s own
+affordability check, which greys a card the current mana cannot pay for.
 
 ### 3. You can also build entirely new components from the raw art
 
@@ -1157,6 +1245,7 @@ Full source: ${SITE.origin}/r/${c.id}.json`;
   const urls = [
     `${SITE.origin}/`,
     `${SITE.origin}/start.html`,
+    `${SITE.origin}/cardgames.html`,
     `${SITE.origin}/assets.html`,
     `${SITE.origin}/llms.txt`,
     `${SITE.origin}/llms-full.txt`,
@@ -1174,7 +1263,7 @@ Full source: ${SITE.origin}/r/${c.id}.json`;
     `✓ generated ${CATALOG.length} component pages, ${lib.components.length} exports, ${ASSETS.length} assets indexed`,
   );
   console.log(
-    '  index.html, start.html, assets.html, registry.json, llms.txt, llms-full.txt, sitemap.xml',
+    '  index.html, cardgames.html, start.html, assets.html, registry.json, llms.txt, llms-full.txt, sitemap.xml',
   );
 }
 

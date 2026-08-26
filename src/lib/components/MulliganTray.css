@@ -1,0 +1,161 @@
+/* MulliganTray — the opening hand, keepable or replaceable, one confirm. */
+
+.fui-mulligan {
+  --fui-mull-size: 170px;
+
+  display: grid;
+  gap: 20px;
+  justify-items: center;
+  padding: 26px 22px;
+  width: 100%;
+  font-family: var(--fui-font-ui, system-ui, sans-serif);
+  background:
+    radial-gradient(ellipse 75% 60% at 50% 35%,
+      color-mix(in srgb, var(--fui-accent, #6fb3a8) 10%, transparent),
+      transparent 70%),
+    color-mix(in srgb, #000 62%, transparent);
+}
+
+.fui-mulligan__head {
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+  text-align: center;
+}
+
+.fui-mulligan__title {
+  margin: 0;
+  font: var(--fui-font-title, 700 19px/1.2 system-ui, sans-serif);
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: #f6ecd8;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9);
+}
+
+.fui-mulligan__note {
+  margin: 0;
+  font-size: 12px;
+  color: color-mix(in srgb, #f4ead6 60%, transparent);
+}
+
+.fui-mulligan__clock {
+  margin-top: 4px;
+  padding: 2px 10px;
+  border-radius: 10px;
+  background: color-mix(in srgb, #000 55%, transparent);
+  border: 1px solid color-mix(in srgb, #f4ead6 22%, transparent);
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: color-mix(in srgb, #f4ead6 72%, transparent);
+}
+
+.fui-mulligan__clock[data-urgent='on'] { color: #ff9a3c; }
+
+/* ── Tray ───────────────────────────────────────────────────────────────── */
+
+.fui-mulligan__tray {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.fui-mulligan__slot {
+  position: relative;
+  transition: transform 180ms cubic-bezier(0.2, 0.9, 0.25, 1), filter 180ms ease-out;
+}
+
+/* Marked cards stay in place with a cross over them. Removing them collapses
+   the layout and takes away the very thing being compared against — a mulligan
+   is a comparison, not a sequence of independent decisions. */
+.fui-mulligan__slot[data-replacing='on'] {
+  transform: translateY(10px) scale(0.94);
+  filter: grayscale(0.75) brightness(0.62);
+}
+
+.fui-mulligan__cross {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease-out;
+}
+
+.fui-mulligan__cross::before,
+.fui-mulligan__cross::after {
+  content: '';
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: 50%;
+  height: 5px;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--fui-danger, #d8543f) 85%, transparent);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--fui-danger, #d8543f) 70%, transparent);
+}
+
+.fui-mulligan__cross::before { transform: rotate(14deg); }
+.fui-mulligan__cross::after { transform: rotate(-14deg); }
+
+.fui-mulligan__slot[data-replacing='on'] .fui-mulligan__cross { opacity: 1; }
+
+.fui-mulligan__verdict {
+  position: absolute;
+  left: 50%;
+  bottom: -22px;
+  transform: translateX(-50%);
+  padding: 2px 10px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: color-mix(in srgb, var(--fui-success, #7fb069) 24%, transparent);
+  border: 1px solid color-mix(in srgb, var(--fui-success, #7fb069) 55%, transparent);
+  color: var(--fui-success, #7fb069);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.fui-mulligan__slot[data-replacing='on'] .fui-mulligan__verdict {
+  background: color-mix(in srgb, var(--fui-danger, #d8543f) 24%, transparent);
+  border-color: color-mix(in srgb, var(--fui-danger, #d8543f) 55%, transparent);
+  color: var(--fui-danger, #d8543f);
+}
+
+/* ── Confirm ────────────────────────────────────────────────────────────── */
+
+.fui-mulligan__confirm {
+  margin-top: 12px;
+  padding: 11px 30px;
+  border: 0;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #f0d68a, var(--fui-gold, #e0b04a));
+  color: #1a1408;
+  font-family: var(--fui-font-display, system-ui, sans-serif);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.45);
+  transition: filter 130ms ease-out, transform 130ms ease-out;
+}
+
+.fui-mulligan__confirm:hover:not(:disabled) { filter: brightness(1.08); }
+.fui-mulligan__confirm:active:not(:disabled) { transform: translateY(3px); box-shadow: none; }
+.fui-mulligan__confirm:disabled { filter: grayscale(0.7) brightness(0.65); cursor: default; }
+
+.fui-mulligan__confirm:focus-visible {
+  outline: 2px solid var(--fui-accent, #d8c9a6);
+  outline-offset: 3px;
+}
+
+.fui-mulligan[data-done='on'] .fui-mulligan__slot { pointer-events: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fui-mulligan__slot,
+  .fui-mulligan__cross,
+  .fui-mulligan__confirm { transition: none; }
+}

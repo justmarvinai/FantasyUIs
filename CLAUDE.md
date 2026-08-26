@@ -56,6 +56,12 @@ build me more components."* That workflow is:
 3. `npm run ingest` — optimises art into `public/fui/<pack>/`, writes thumbnails,
    regenerates `src/data/assets.generated.ts` and the CSS variable layer.
 
+3b. **Pick the collection.** `src/site/types.ts` splits the catalog into `rpg`
+   and `cardgame`, each rendered as its own crawlable page (`/` and
+   `/cardgames.html`) with its own groups — a client-side filter was rejected
+   because a crawler would never see the second half. An entry with no
+   `collection` defaults to `rpg`, so nothing that predates the split moved.
+
 4. **Write a theme file** if the pack is a new visual style: copy
    `src/lib/styles/theme-stone-vine.css` and rebind every semantic slot. A theme
    that fills in all the slots gets all 223 existing components for free.
@@ -87,6 +93,9 @@ src/site/                    the documentation site (catalog, demos, chrome)
   demos/gacha.ts, roster.ts  collection, champions, gear, ascension
   demos/world.ts             maps, codex, social, achievements, patch notes
   demos/screens.ts           full-screen templates and feedback
+  demos/cards.ts             PlayingCard, CardBack, CardHand
+  demos/board.ts             the match — board, heroes, mana, turn
+  demos/deckbuild.ts         mulligan, deck list, curve, collection, draft
   demos/chrome.ts, systems.ts, station.ts, economy.ts, atlas.ts
   demos/hall.ts              surfaces: Pedestal, RuneCircle, Tabletop, Signpost, glass
   demos/dials.ts             controls: dice, stat points, rune gestures, time, audio
@@ -209,6 +218,47 @@ zero component changes.
   `getBoundingClientRect()`, because a `position: fixed` element is laid out
   against the nearest *transformed* ancestor when there is one — as there is
   inside every demo stage.
+- **A running animation beats the declaration it fill-modes into.** `Minion`'s
+  sleep marker sat at `opacity: 0` with an infinite keyframe holding
+  `opacity: 1`, so every minion on the board announced itself asleep. Put the
+  animation on the state's rule, never on the base rule it is meant to reveal.
+
+- **`color-mix()` carries alpha through.** `color-mix(in srgb, transparent 70%,
+  var(--fui-text))` is not "70% of the text colour" — it is the text colour at
+  30% alpha. `DeckList` used `transparent` as its common-rarity token and printed
+  every ordinary card's name at 30% opacity over its own artwork. A token meaning
+  "no tint" has to be the base colour itself.
+
+- **An inset box-shadow follows the border box, not the clip path.** Ring a
+  `clip-path` hexagon with `box-shadow: inset 0 0 0 2px` and it prints as two
+  bright bars down the straight sides and nothing on the diagonals. `ManaTray`
+  draws every outlined crystal as a second clipped layer inside the first, so the
+  element's own background becomes the ring.
+
+- **A percentage height needs a definite track.** Under `display: grid;
+  align-content: end` the rows size to their content, so every `height: N%` child
+  resolves to `auto`. `ArenaDraft`'s curve collapsed to eight 2px dashes until
+  the column became `grid-template-rows: 1fr auto`.
+
+- **Red type on a red gem is 1.6:1.** `Minion` and `PlayingCard` both coloured a
+  damaged health *digit* red — over the red health gem, the one number a player
+  reads mid-combat became unreadable. Damage brightens the gem; the digit stays
+  near-white.
+
+- **Transforms do not grow the layout box.** `CardHand`'s fan rotates and drops
+  its end cards below the container, and any stage with `overflow: hidden` cuts
+  them off. The reserve starts from the fan's geometry so the pre-rendered markup
+  is close, then corrects itself from a measurement over *every* descendant —
+  a card's stat gems sit past its own edge, and a bounding rect stops at the
+  border box.
+
+- **A child placed radially already carries its parent's radius.** `EmoteWheel`'s
+  captions live inside wedges sitting at `0.34 × size` from the hub, so a caption
+  offset of `0.53` landed at `0.87` — outside the wheel entirely. The same
+  component is why percentage sizing inside a padded root is a trap: padding the
+  root to make room for the captions inflated every `width: 30%` wedge until the
+  ring collapsed inward. Size a ring from its own variable, not from its box.
+
 - **Demos are the code samples.** `scripts/generate.mjs` extracts each demo's own
   source with `Function.prototype.toString()`, so the snippet on the page can
   never drift from the code that ran. Write demos as idiomatic usage. Vite's SSR

@@ -1,0 +1,138 @@
+/* TurnRope — the turn timer as a burning rope. A bar says "you have time"; a
+   rope with a flame on the end says "hurry up". */
+
+.fui-turnrope {
+  --fui-rope-len: 240px;
+  --fui-rope-burn: 0;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--fui-font-ui, system-ui, sans-serif);
+  /* Invisible until it ignites — that is what makes it a warning. */
+  opacity: 0;
+  transition: opacity 300ms ease-out;
+}
+
+.fui-turnrope[data-lit='on'] { opacity: 1; }
+
+.fui-turnrope__track {
+  position: relative;
+  width: var(--fui-rope-len);
+  height: 14px;
+}
+
+.fui-turnrope[data-axis='y'] .fui-turnrope__track {
+  width: 14px;
+  height: var(--fui-rope-len);
+}
+
+/* The cord shortens from the far end, so the flame eats toward the player. */
+.fui-turnrope__cord {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  height: 9px;
+  width: calc(100% * (1 - var(--fui-rope-burn)));
+  transform: translateY(-50%);
+  border-radius: 5px;
+  /* Twisted hemp: two diagonal stripe layers at different pitches. */
+  background:
+    repeating-linear-gradient(66deg,
+      rgba(0, 0, 0, 0.22) 0 3px,
+      transparent 3px 7px),
+    linear-gradient(180deg, #d9b072 0%, #a97b3e 55%, #6d4a1f 100%);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.55);
+}
+
+.fui-turnrope[data-axis='y'] .fui-turnrope__cord {
+  left: 50%;
+  top: 0;
+  width: 9px;
+  height: calc(100% * (1 - var(--fui-rope-burn)));
+  transform: translateX(-50%);
+  background:
+    repeating-linear-gradient(156deg, rgba(0, 0, 0, 0.22) 0 3px, transparent 3px 7px),
+    linear-gradient(90deg, #d9b072 0%, #a97b3e 55%, #6d4a1f 100%);
+}
+
+/* The flame sits exactly at the burn point, so what a player sees and what the
+   timer will do are the same number. */
+.fui-turnrope__flame {
+  position: absolute;
+  top: 50%;
+  left: calc(100% * (1 - var(--fui-rope-burn)));
+  width: 20px;
+  height: 24px;
+  transform: translate(-50%, -50%);
+  border-radius: 50% 50% 46% 46%;
+  background: radial-gradient(circle at 50% 68%, #fff3c4 0%, #ffb43c 42%, #d8481a 78%, transparent 86%);
+  filter: blur(0.4px) drop-shadow(0 0 8px rgba(255, 150, 40, 0.9));
+  animation: fui-rope-flicker 320ms steps(3, jump-none) infinite;
+}
+
+.fui-turnrope[data-axis='y'] .fui-turnrope__flame {
+  left: 50%;
+  top: calc(100% * (1 - var(--fui-rope-burn)));
+}
+
+/* Ash trails behind the flame, so the burnt length is legible rather than
+   simply absent. */
+.fui-turnrope__track::after {
+  content: '';
+  position: absolute;
+  left: calc(100% * (1 - var(--fui-rope-burn)));
+  right: 0;
+  top: 50%;
+  height: 4px;
+  transform: translateY(-50%);
+  border-radius: 2px;
+  background: repeating-linear-gradient(90deg, #3a332c 0 4px, transparent 4px 9px);
+  opacity: calc(var(--fui-rope-burn) * 0.9);
+}
+
+.fui-turnrope[data-axis='y'] .fui-turnrope__track::after {
+  left: 50%;
+  right: auto;
+  top: calc(100% * (1 - var(--fui-rope-burn)));
+  bottom: 0;
+  width: 4px;
+  height: auto;
+  transform: translateX(-50%);
+  background: repeating-linear-gradient(180deg, #3a332c 0 4px, transparent 4px 9px);
+}
+
+.fui-turnrope[data-urgent='on'] .fui-turnrope__flame {
+  width: 26px;
+  height: 30px;
+  animation-duration: 180ms;
+}
+
+.fui-turnrope__seconds {
+  font-size: 13px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 70%, transparent);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+}
+
+.fui-turnrope__seconds[data-urgent='on'] {
+  color: #ff9a3c;
+  animation: fui-rope-tick 500ms steps(2, jump-none) infinite;
+}
+
+@keyframes fui-rope-flicker {
+  0% { transform: translate(-50%, -50%) scale(1) skewX(0deg); }
+  33% { transform: translate(-50%, -52%) scale(1.12) skewX(-5deg); }
+  66% { transform: translate(-50%, -48%) scale(0.94) skewX(5deg); }
+}
+
+@keyframes fui-rope-tick {
+  50% { opacity: 0.55; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fui-turnrope,
+  .fui-turnrope__flame,
+  .fui-turnrope__seconds[data-urgent='on'] { transition: none; animation: none; }
+}

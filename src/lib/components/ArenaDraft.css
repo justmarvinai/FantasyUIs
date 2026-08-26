@@ -1,0 +1,148 @@
+/* ArenaDraft — three cards, the run record, and the curve so far. */
+
+.fui-arenadraft {
+  --fui-draft-size: 175px;
+
+  display: grid;
+  gap: 16px;
+  width: 100%;
+  padding: 20px;
+  font-family: var(--fui-font-ui, system-ui, sans-serif);
+  color: var(--fui-text, #e8e0cd);
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 25%,
+      color-mix(in srgb, var(--fui-gold, #e0b04a) 9%, transparent), transparent 70%),
+    color-mix(in srgb, #000 55%, transparent);
+}
+
+.fui-arenadraft__head {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.fui-arenadraft__title {
+  margin: 0;
+  flex: 1;
+  font: var(--fui-font-title, 700 17px/1.2 system-ui, sans-serif);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.fui-arenadraft__pick {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  font-variant-numeric: tabular-nums;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 60%, transparent);
+}
+
+.fui-arenadraft__record {
+  padding: 3px 10px;
+  border-radius: 10px;
+  background: color-mix(in srgb, #000 45%, transparent);
+  border: 1px solid color-mix(in srgb, var(--fui-gold, #e0b04a) 40%, transparent);
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--fui-gold, #e0b04a);
+}
+
+/* One loss from the end of the run is the state that changes how you draft. */
+.fui-arenadraft__record[data-risk='on'] {
+  border-color: color-mix(in srgb, var(--fui-danger, #d8543f) 60%, transparent);
+  color: var(--fui-danger, #d8543f);
+}
+
+/* ── Layout ─────────────────────────────────────────────────────────────── */
+
+.fui-arenadraft__cols {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 22px;
+  align-items: start;
+}
+
+.fui-arenadraft__tray {
+  display: flex;
+  gap: 18px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.fui-arenadraft__slot {
+  animation: fui-draft-in 360ms cubic-bezier(0.2, 0.9, 0.25, 1) both;
+  animation-delay: calc(var(--fui-draft-i, 0) * 80ms);
+}
+
+/* ── Curve strip ────────────────────────────────────────────────────────── */
+
+.fui-arenadraft__curve {
+  display: grid;
+  gap: 6px;
+  min-width: 150px;
+  padding: 10px 12px;
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--fui-panel-ink, #14100c) 70%, transparent);
+}
+
+.fui-arenadraft__curvetitle {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 45%, transparent);
+}
+
+.fui-arenadraft__chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 74px;
+}
+
+/* The bar's height is a percentage, so it needs a track with a definite size to
+   resolve against. Under `align-content: end` the rows size to their content,
+   every percentage resolves to auto, and all eight bars collapse to their
+   min-height. `1fr auto` gives the bar a real track and keeps the label under
+   it. */
+.fui-arenadraft__col {
+  flex: 1;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  align-items: end;
+  justify-items: center;
+  gap: 2px;
+  height: 100%;
+}
+
+.fui-arenadraft__bar {
+  width: 100%;
+  min-height: 2px;
+  border-radius: 2px 2px 0 0;
+  background: linear-gradient(180deg, #6fc0f5, #1f6bb5);
+}
+
+.fui-arenadraft__costlabel {
+  font-size: 9px;
+  font-variant-numeric: tabular-nums;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 42%, transparent);
+}
+
+.fui-arenadraft__taken {
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 52%, transparent);
+}
+
+@keyframes fui-draft-in {
+  from { opacity: 0; transform: translateY(24px) scale(0.9); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (max-width: 780px) {
+  .fui-arenadraft__cols { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fui-arenadraft__slot { animation: none; }
+}

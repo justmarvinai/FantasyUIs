@@ -1,0 +1,156 @@
+/* DeckPile — a stack whose depth tracks what is left in it. */
+
+.fui-deckpile {
+  --fui-deck-w: 84px;
+  --fui-deck-ink: #6a3fa0;
+  --fui-deck-fill: 1;
+
+  position: relative;
+  display: block;
+  width: var(--fui-deck-w);
+  height: calc(var(--fui-deck-w) * 1.4);
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: calc(var(--fui-deck-w) / 8);
+  font-family: var(--fui-font-ui, system-ui, sans-serif);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: transform 150ms cubic-bezier(0.2, 0.9, 0.25, 1);
+}
+
+.fui-deckpile[data-kind='discard'] { --fui-deck-ink: #6a6a72; }
+.fui-deckpile[data-kind='banish'] { --fui-deck-ink: #b04a8a; }
+
+.fui-deckpile__stack {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* Three offset layers, spread by how full the pile is. Two would not read as a
+   stack and four is invisible at this size. */
+.fui-deckpile__layer {
+  position: absolute;
+  inset: 0;
+  border-radius: 0.55em;
+  background:
+    radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--fui-deck-ink) 55%, transparent), transparent 60%),
+    repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.26) 0 0.4em, transparent 0.4em 0.85em),
+    linear-gradient(160deg,
+      color-mix(in srgb, var(--fui-deck-ink) 50%, #000),
+      color-mix(in srgb, var(--fui-deck-ink) 16%, #000));
+  border: 0.2em solid color-mix(in srgb, var(--fui-deck-ink) 45%, #2a2118);
+  box-shadow: 0 0.25em 0.6em rgba(0, 0, 0, 0.55);
+  transform:
+    translate(calc(var(--fui-deck-i) * 0.42em * var(--fui-deck-fill)),
+              calc(var(--fui-deck-i) * -0.42em * var(--fui-deck-fill)));
+}
+
+/* Only the top layer carries the sigil, or the stack looks like three cards
+   fanned rather than one deck seen edge-on. */
+.fui-deckpile__layer:last-child::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 46%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  background-color: color-mix(in srgb, #fff 78%, var(--fui-deck-ink));
+  mask: var(--fui-deck-sigil, var(--fui-mask-none)) center / contain no-repeat;
+  -webkit-mask: var(--fui-deck-sigil, var(--fui-mask-none)) center / contain no-repeat;
+  opacity: 0.85;
+}
+
+.fui-deckpile__count {
+  position: absolute;
+  right: -0.35em;
+  bottom: 1.4em;
+  min-width: 2.2em;
+  height: 2.2em;
+  padding: 0 0.35em;
+  display: grid;
+  place-items: center;
+  border-radius: 1.1em;
+  background: color-mix(in srgb, #000 78%, transparent);
+  border: 0.12em solid color-mix(in srgb, var(--fui-deck-ink) 60%, transparent);
+  color: #f4ead6;
+  font: 900 1.15em/1 var(--fui-font-display, system-ui, sans-serif);
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+
+.fui-deckpile[data-low='on'] .fui-deckpile__count {
+  border-color: var(--fui-warning, #d9a441);
+  color: var(--fui-warning, #d9a441);
+}
+
+.fui-deckpile[data-empty='on'] .fui-deckpile__count {
+  border-color: var(--fui-danger, #d8543f);
+  color: var(--fui-danger, #d8543f);
+}
+
+/* An empty pile keeps its socket — it is still the place cards come from, and
+   it is where fatigue is now happening. */
+.fui-deckpile[data-empty='on'] .fui-deckpile__layer {
+  background: none;
+  border-style: dashed;
+  border-color: color-mix(in srgb, var(--fui-danger, #d8543f) 45%, transparent);
+  box-shadow: none;
+  transform: none;
+}
+
+.fui-deckpile[data-empty='on'] .fui-deckpile__layer:not(:last-child) { display: none; }
+.fui-deckpile[data-empty='on'] .fui-deckpile__layer:last-child::after { opacity: 0.25; }
+
+.fui-deckpile__fatigue {
+  position: absolute;
+  left: -0.3em;
+  top: -0.3em;
+  padding: 0.1em 0.5em;
+  border-radius: 0.8em;
+  background: var(--fui-danger, #d8543f);
+  color: #fff;
+  font: 900 1em/1.6 var(--fui-font-display, system-ui, sans-serif);
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 0.15em 0.4em rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+}
+
+.fui-deckpile__label {
+  position: absolute;
+  left: -20%;
+  right: -20%;
+  bottom: -0.2em;
+  text-align: center;
+  font-size: 0.85em;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 50%, transparent);
+  pointer-events: none;
+}
+
+.fui-deckpile:hover { transform: translateY(-0.25em); }
+.fui-deckpile:active { transform: translateY(0.1em); }
+
+.fui-deckpile[data-hurt='on'] { animation: fui-deck-fatigue 320ms var(--fui-ease, ease-out); }
+
+.fui-deckpile:focus-visible {
+  outline: 0.14em solid var(--fui-accent, #d8c9a6);
+  outline-offset: 0.3em;
+  border-radius: 0.6em;
+}
+
+@keyframes fui-deck-fatigue {
+  0%, 100% { transform: none; }
+  30% { transform: translateX(-0.4em) rotate(-2deg); }
+  70% { transform: translateX(0.4em) rotate(2deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fui-deckpile { transition: none; }
+  .fui-deckpile[data-hurt='on'] { animation: none; }
+  .fui-deckpile:hover, .fui-deckpile:active { transform: none; }
+}

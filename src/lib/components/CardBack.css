@@ -1,0 +1,170 @@
+/* CardBack — the deck skin. Patterns are drawn, not shipped, so a back is a
+   colour and a sigil rather than another PNG to download. */
+
+.fui-cardback {
+  --fui-back-w: 140px;
+  --fui-back-ink: #6a3fa0;
+  --fui-back-edge: color-mix(in srgb, var(--fui-back-ink) 45%, #120d1c);
+
+  position: relative;
+  display: block;
+  width: var(--fui-back-w);
+  aspect-ratio: 5 / 7;
+  font-size: calc(var(--fui-back-w) / 18);
+  font-family: var(--fui-font-ui, system-ui, sans-serif);
+  border-radius: 0.9em;
+  overflow: hidden;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: transform 160ms cubic-bezier(0.2, 0.9, 0.25, 1), filter 160ms ease-out;
+}
+
+.fui-cardback[role='presentation'] { cursor: default; }
+
+.fui-cardback__weave {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 40%,
+      color-mix(in srgb, var(--fui-back-ink) 70%, transparent),
+      transparent 62%),
+    linear-gradient(160deg,
+      color-mix(in srgb, var(--fui-back-ink) 55%, #000),
+      color-mix(in srgb, var(--fui-back-ink) 18%, #000));
+}
+
+/* Painted art, when a game has it, replaces the drawn weave entirely. */
+.fui-cardback__weave:has(+ .fui-cardback__sigil) { background-blend-mode: normal; }
+
+.fui-cardback[style*='--fui-back-art'] .fui-cardback__weave {
+  background: var(--fui-back-art, none) center / cover no-repeat;
+}
+
+.fui-cardback[data-pattern='diagonal'] .fui-cardback__weave::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(0, 0, 0, 0.3) 0 0.45em,
+    transparent 0.45em 0.95em
+  );
+}
+
+/* Overlapping half-circles read as scales; two offset radial grids do it with
+   no asset and stay sharp at any card size. */
+.fui-cardback[data-pattern='scales'] .fui-cardback__weave::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 100%, transparent 0.55em, rgba(0, 0, 0, 0.34) 0.56em 0.62em, transparent 0.63em),
+    radial-gradient(circle at 0 100%, transparent 0.55em, rgba(0, 0, 0, 0.34) 0.56em 0.62em, transparent 0.63em),
+    radial-gradient(circle at 100% 100%, transparent 0.55em, rgba(0, 0, 0, 0.34) 0.56em 0.62em, transparent 0.63em);
+  background-size: 1.2em 0.62em;
+}
+
+.fui-cardback[data-pattern='runes'] .fui-cardback__weave::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.06) 0 0.12em, transparent 0.12em 1.1em),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.06) 0 0.12em, transparent 0.12em 1.1em);
+}
+
+.fui-cardback__sigil {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 44%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  background-color: color-mix(in srgb, #fff 82%, var(--fui-back-ink));
+  mask: var(--fui-back-sigil, var(--fui-mask-none)) center / contain no-repeat;
+  -webkit-mask: var(--fui-back-sigil, var(--fui-mask-none)) center / contain no-repeat;
+  filter: drop-shadow(0 0 0.5em color-mix(in srgb, var(--fui-back-ink) 80%, transparent));
+  opacity: 0.92;
+}
+
+.fui-cardback__rim {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 0.24em solid var(--fui-back-edge);
+  box-shadow:
+    inset 0 0 0 0.1em rgba(255, 255, 255, 0.14),
+    inset 0 0 1.6em rgba(0, 0, 0, 0.65),
+    0 0.4em 1em rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+}
+
+/* ── Collection furniture ───────────────────────────────────────────────── */
+
+.fui-cardback__name {
+  position: absolute;
+  left: 0.6em;
+  right: 0.6em;
+  bottom: 0.7em;
+  text-align: center;
+  font-size: 0.85em;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #f4ead6;
+  text-shadow: 0 0.1em 0.2em rgba(0, 0, 0, 0.95);
+  pointer-events: none;
+}
+
+.fui-cardback__source {
+  position: absolute;
+  left: 0.6em;
+  right: 0.6em;
+  bottom: 2.1em;
+  text-align: center;
+  font-size: 0.7em;
+  letter-spacing: 0.05em;
+  color: color-mix(in srgb, #f4ead6 60%, transparent);
+  text-shadow: 0 0.1em 0.2em rgba(0, 0, 0, 0.95);
+  pointer-events: none;
+}
+
+.fui-cardback__badge {
+  position: absolute;
+  left: 50%;
+  top: 0.6em;
+  transform: translateX(-50%);
+  padding: 0.1em 0.6em;
+  border-radius: 0.8em;
+  background: var(--fui-success, #7fb069);
+  color: #10190c;
+  font-size: 0.68em;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+/* An unowned back still shows its art — it is the thing being sold. */
+.fui-cardback[data-owned='off'] .fui-cardback__weave,
+.fui-cardback[data-owned='off'] .fui-cardback__sigil { filter: grayscale(0.7) brightness(0.62); }
+
+.fui-cardback[data-equipped='on'] .fui-cardback__rim {
+  border-color: var(--fui-success, #7fb069);
+  box-shadow:
+    inset 0 0 0 0.1em rgba(255, 255, 255, 0.16),
+    0 0 1.1em color-mix(in srgb, var(--fui-success, #7fb069) 60%, transparent),
+    0 0.4em 1em rgba(0, 0, 0, 0.5);
+}
+
+.fui-cardback:hover:not([role='presentation']) { transform: translateY(-0.4em); }
+
+.fui-cardback:focus-visible {
+  outline: 0.14em solid var(--fui-accent, #d8c9a6);
+  outline-offset: 0.2em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fui-cardback { transition: none; }
+  .fui-cardback:hover:not([role='presentation']) { transform: none; }
+}

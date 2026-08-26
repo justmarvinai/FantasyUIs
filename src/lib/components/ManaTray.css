@@ -1,0 +1,127 @@
+/* ManaTray — filled, spent, temporary and overloaded crystals. */
+
+.fui-manatray {
+  --fui-mana-size: 22px;
+  --fui-mana-ink: #4aa8f0;
+  --fui-mana-hex: polygon(50% 0, 100% 27%, 100% 73%, 50% 100%, 0 73%, 0 27%);
+
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--fui-font-ui, system-ui, sans-serif);
+}
+
+.fui-manatray__row {
+  display: flex;
+  gap: calc(var(--fui-mana-size) * 0.12);
+}
+
+/* A hexagonal crystal rather than a circle: the shape is what separates mana
+   from health at a glance, and a clip-path costs nothing. */
+.fui-manatray__crystal {
+  position: relative;
+  width: var(--fui-mana-size);
+  height: calc(var(--fui-mana-size) * 1.15);
+  clip-path: var(--fui-mana-hex);
+  background: color-mix(in srgb, #000 62%, transparent);
+  transition: background 160ms ease-out, filter 160ms ease-out;
+}
+
+/* An inset box-shadow follows the border box, not the clip path: on a hexagon
+   it prints as two bright bars down the straight sides and nothing anywhere
+   else. Every outline here is a second clipped layer sitting inside the first,
+   so the crystal's own background becomes the ring. */
+.fui-manatray__crystal::after {
+  content: '';
+  position: absolute;
+  inset: var(--fui-mana-ring, 0);
+  clip-path: var(--fui-mana-hex);
+  background: var(--fui-mana-core, transparent);
+  pointer-events: none;
+}
+
+.fui-manatray__crystal[data-state='full'] {
+  background:
+    radial-gradient(circle at 42% 30%, rgba(255, 255, 255, 0.85), transparent 48%),
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--fui-mana-ink) 88%, #fff 20%),
+      color-mix(in srgb, var(--fui-mana-ink) 60%, #001a33));
+  filter: drop-shadow(0 0 calc(var(--fui-mana-size) * 0.22)
+    color-mix(in srgb, var(--fui-mana-ink) 60%, transparent));
+}
+
+/* Spent this turn: the socket is still there, so a player can see the turn's
+   total without counting two rows. */
+.fui-manatray__crystal[data-state='spent'] {
+  --fui-mana-ring: 1px;
+  --fui-mana-core: color-mix(in srgb, var(--fui-mana-ink) 16%, #08131f);
+
+  background: color-mix(in srgb, var(--fui-mana-ink) 30%, #08131f);
+}
+
+/* Beyond this turn's total — a socket that does not exist yet. */
+.fui-manatray__crystal[data-state='locked'] {
+  --fui-mana-ring: 1px;
+  --fui-mana-core: color-mix(in srgb, #fff 6%, transparent);
+
+  background: color-mix(in srgb, #fff 12%, transparent);
+}
+
+/* The crystals a hovered card would take. This is the state games skip and
+   players miss: it answers "can I still play the other thing" with no
+   arithmetic at all. */
+.fui-manatray__crystal[data-state='preview'] {
+  background:
+    radial-gradient(circle at 42% 30%, rgba(255, 255, 255, 0.9), transparent 48%),
+    linear-gradient(180deg, #fff5c2, #e8a13c);
+  filter: drop-shadow(0 0 calc(var(--fui-mana-size) * 0.3) rgba(255, 214, 120, 0.9));
+  animation: fui-mana-flash 900ms ease-in-out infinite;
+}
+
+/* Temporary crystals vanish at end of turn, so they are drawn as an outline —
+   present, but not yours. */
+.fui-manatray__crystal[data-temp='on'] {
+  --fui-mana-ring: 1.5px;
+  /* Denser than an empty socket's fill: the ring behind it is white, and at
+     62% black enough of it bleeds through to lighten the whole crystal. */
+  --fui-mana-core: color-mix(in srgb, #000 88%, transparent);
+
+  background: #fff;
+  opacity: 0.9;
+}
+
+/* Overloaded crystals are locked, not removed: a player has to see the cost of
+   last turn's decision while making this turn's. */
+.fui-manatray__crystal[data-overload='on'] {
+  /* The lock is the whole crystal, so it clears the inner layer the outlined
+     states use — otherwise the core paints straight over the hatch. */
+  --fui-mana-ring: 0;
+  --fui-mana-core: transparent;
+
+  background: repeating-linear-gradient(
+    -45deg,
+    #8892a0 0 3px,
+    #4a525c 3px 6px
+  );
+  filter: none;
+}
+
+.fui-manatray__count {
+  font-size: calc(var(--fui-mana-size) * 0.72);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: color-mix(in srgb, var(--fui-mana-ink) 75%, #fff);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
+}
+
+.fui-manatray__count[data-empty='on'] {
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 40%, transparent);
+}
+
+@keyframes fui-mana-flash {
+  50% { filter: drop-shadow(0 0 calc(var(--fui-mana-size) * 0.5) rgba(255, 214, 120, 1)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fui-manatray__crystal { transition: none; animation: none; }
+}

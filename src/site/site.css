@@ -376,12 +376,77 @@ h3 {
   background: color-mix(in srgb, var(--fui-accent, #6fb3a8) 20%, var(--site-panel));
 }
 
+/* ── Collection tabs ──────────────────────────────────────────────────────── */
+/* Links, not buttons: each tab is a real page with its own URL, so the strip
+   works with JavaScript off, middle-clicks into a new window, and tells a
+   screen reader which page it is on through `aria-current` rather than a
+   class. */
+.tabs {
+  display: flex;
+  gap: 4px;
+  margin: 34px 0 0;
+  border-bottom: 1px solid var(--site-line);
+}
+
+.tabs__tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 22px;
+  border: 1px solid transparent;
+  border-bottom: 0;
+  border-radius: var(--site-radius) var(--site-radius) 0 0;
+  color: var(--site-ink-2);
+  font-family: var(--site-font-display, inherit);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-decoration: none;
+  /* The 1px lift covers the container's own bottom border, so the active tab
+     joins the page below it instead of sitting on a line. */
+  margin-bottom: -1px;
+  transition: color 140ms ease-out, background 140ms ease-out;
+}
+
+.tabs__tab:hover {
+  color: var(--site-ink);
+  background: color-mix(in srgb, var(--site-panel) 60%, transparent);
+  text-decoration: none;
+}
+
+.tabs__tab[aria-current='page'] {
+  border-color: var(--site-line);
+  border-bottom: 1px solid var(--site-bg);
+  background: var(--site-bg);
+  color: var(--fui-accent, #6fb3a8);
+}
+
+.tabs__count {
+  padding: 1px 8px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--site-ink) 10%, transparent);
+  color: var(--site-ink-2);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.tabs__tab[aria-current='page'] .tabs__count {
+  background: color-mix(in srgb, var(--fui-accent, #6fb3a8) 22%, transparent);
+  color: var(--fui-accent, #6fb3a8);
+}
+
+@media (max-width: 560px) {
+  .tabs__tab { padding: 11px 14px; font-size: 12px; letter-spacing: 0.08em; }
+}
+
 /* ── Search ───────────────────────────────────────────────────────────────── */
 .searchbar {
   position: sticky;
   top: 60px;
   z-index: 20;
-  padding: 22px 0 14px;
+  padding: 18px 0 14px;
   background: linear-gradient(180deg, var(--site-bg) 70%, transparent);
 }
 

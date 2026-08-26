@@ -8,6 +8,7 @@ dist/
 # Produced by `npm run gen` on every build — never hand-edited, never committed.
 /components/
 /index.html
+/cardgames.html
 /start.html
 /assets.html
 /public/registry.json

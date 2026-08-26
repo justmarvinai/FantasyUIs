@@ -1,0 +1,111 @@
+/* PlayHistory — the strip of what happened, newest at the bottom. */
+
+.fui-playhistory {
+  --fui-hist-size: 40px;
+
+  display: grid;
+  gap: 5px;
+  font-family: var(--fui-font-ui, system-ui, sans-serif);
+}
+
+.fui-playhistory__title {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 40%, transparent);
+}
+
+.fui-playhistory[data-align='right'] .fui-playhistory__title { text-align: right; }
+
+.fui-playhistory__list {
+  display: grid;
+  gap: 3px;
+  max-height: calc(var(--fui-hist-size) * 7.4);
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+/* Thumbnails rather than text: a card game's log is read at a glance mid-turn,
+   and art you have seen a hundred times is faster to recognise than a name. */
+.fui-playhistory__row {
+  --fui-hist-ink: var(--fui-info, #6fa8dc);
+
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 2px 8px 2px 2px;
+  border-radius: 3px;
+  /* The side is an edge, not a colour wash — the log has to stay readable over
+     whatever the board behind it is doing. */
+  border-left: 3px solid var(--fui-hist-ink);
+  background: color-mix(in srgb, #000 62%, transparent);
+}
+
+.fui-playhistory[data-align='right'] .fui-playhistory__row {
+  flex-direction: row-reverse;
+  padding: 2px 2px 2px 8px;
+  border-left: 0;
+  border-right: 3px solid var(--fui-hist-ink);
+}
+
+.fui-playhistory__row[data-side='enemy'] { --fui-hist-ink: var(--fui-danger, #d8543f); }
+
+/* Five states, five colours, no reading. */
+.fui-playhistory__row[data-kind='drawn'] { --fui-hist-ink: #8a8a92; }
+.fui-playhistory__row[data-kind='died'] { --fui-hist-ink: #6a2a2a; }
+.fui-playhistory__row[data-kind='triggered'] { --fui-hist-ink: var(--fui-gold, #e0b04a); }
+.fui-playhistory__row[data-kind='discarded'] { --fui-hist-ink: #7a5a2a; }
+
+.fui-playhistory__thumb {
+  flex: none;
+  width: var(--fui-hist-size);
+  height: calc(var(--fui-hist-size) * 0.72);
+  border-radius: 2px;
+  background: var(--fui-hist-art, none) center 30% / cover no-repeat,
+    color-mix(in srgb, #000 45%, transparent);
+}
+
+.fui-playhistory__row[data-kind='died'] .fui-playhistory__thumb { filter: grayscale(0.9) brightness(0.55); }
+
+.fui-playhistory__cost {
+  flex: none;
+  width: 17px;
+  height: 17px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #4a9de0, #1a4f80);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.fui-playhistory__name {
+  flex: 1;
+  min-width: 0;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 78%, transparent);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fui-playhistory[data-align='right'] .fui-playhistory__name { text-align: right; }
+
+.fui-playhistory__row.is-new {
+  animation: fui-hist-in 260ms cubic-bezier(0.2, 0.9, 0.25, 1) both;
+}
+
+.fui-playhistory[data-empty='on'] .fui-playhistory__list { min-height: 0; }
+
+@keyframes fui-hist-in {
+  from { opacity: 0; transform: translateX(-14px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fui-playhistory__row.is-new { animation: none; }
+}

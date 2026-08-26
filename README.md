@@ -2,10 +2,18 @@
 
 **A growing database of ready-to-use UI components for Fantasy & RPG web games.**
 
-223 components built from 494 art assets across 2 swappable themes, 2 icon
+247 components built from 494 art assets across 2 swappable themes, 2 icon
 collections and a tintable ornament set. Vanilla TypeScript and CSS — zero
 runtime dependencies, no framework, no build plugin. Drops into any Vite
 project, React or not, or straight over a Phaser canvas as a DOM layer.
+
+They come in two collections, each with its own tab on the site:
+[**RPGs**](https://fantasy-u-is.vercel.app/) — 223 components for the panels,
+inventories, HUDs and screens an action or party RPG is made of — and
+[**Card Games**](https://fantasy-u-is.vercel.app/cardgames.html) — 24 components
+for a Hearthstone-shaped game: cards, a board, a mana tray and a deckbuilder.
+Both sit on the same themes, art and base class, so either is free to use the
+other's components.
 
 🔗 **[fantasy-u-is.vercel.app](https://fantasy-u-is.vercel.app)**
 
@@ -24,9 +32,24 @@ project, React or not, or straight over a Phaser canvas as a DOM layer.
 | **Collection & live-ops** | PityCounter, BannerCarousel, TopBar, VipProgress, EventBanner, StreakMeter, StarRating, AffinityBadge, ChampionCard, SummonResult, TeamSlots, TurnMeter, EnergyBar, RewardTrack, DailyRewards, UpgradePanel, StageSelect, OfferCard, CountdownTimer, BottomNav, BattleControls, TierBadge, ChampionList, SkillCard, MasteryGrid, ArtifactCard, ArtifactSet, RankUpPanel, ShardCounter, PowerRating, FormationGrid, SocketPanel, CollectionProgress, FusionPanel, BondMeter, SpinWheel, RateTable, IdleRewards, StageTrail, **WishList**, **ExchangeShop**, **SkinSelector**, **SynergyPanel**, **SubscriptionCard** |
 | **Social & clan** | ClanCard, MailInbox, ChatPanel, FriendList, LeaderboardPodium, ClanRoster, PlayerProfile, PartyFinder, WarBoard, **GuildBank**, **RequestList**, **GiftPanel**, **ClanPerks**, **ClanFinder** |
 | **Feedback** | LoadingDots, EmptyState, TutorialTip, RewardPopup, Ticker, ConnectionStatus, SpeechBubble, DamageVignette, ToastStack, FloatingText, AchievementPopup, **ObjectiveBanner**, **ImpactFrame**, **Nameplate**, **TutorialMask**, **CountdownOverlay** |
-| **Screens & overlays** | Modal, TitleGate, StorySlide, DeathScreen, MainMenu, PauseMenu, SettingsScreen, CharacterSelect, LoadingScreen, ResultScreen, LevelUpModal, HUD, **CharacterCreator**, **InventoryScreen**, **SummonScreen**, **CreditsRoll**, **SeasonEndScreen** |
+| **Screens & overlays** | Modal, TitleGate, StorySlide, DeathScreen, MainMenu, PauseMenu, SettingsScreen, CharacterSelect, LoadingScreen, ResultScreen, LevelUpModal, HUD, CharacterCreator, InventoryScreen, SummonScreen, CreditsRoll, SeasonEndScreen |
+
+And the card-game collection:
+
+| Group | Components |
+| --- | --- |
+| **Cards** | **PlayingCard**, **CardBack**, **CardHand** |
+| **Board & match** | **Minion**, **BoardLane**, **HeroPortrait**, **HeroPower**, **WeaponSlot**, **SecretRow**, **ManaTray**, **DeckPile**, **TurnRope**, **EndTurnButton**, **TargetArrow**, **PlayHistory**, **EmoteWheel**, **QuestTile** |
+| **Deckbuilding & collection** | **DiscoverPicker**, **MulliganTray**, **DeckList**, **ManaCurve**, **CollectionGrid**, **CraftPanel**, **ArenaDraft** |
 
 Bold marks the newest additions.
+
+`PlayingCard` is the piece the rest are built on — `CardHand`, `DiscoverPicker`,
+`MulliganTray`, `CollectionGrid` and `ArenaDraft` all construct it internally —
+and a card that has been *played* is a `Minion`, not a `PlayingCard`. They are
+separate components on purpose: a card in hand is a rectangle you read, a minion
+on the board is a round token with attack, health and a stack of keyword
+overlays, and neither shape serves the other.
 
 Some jobs get two components rather than one, because the same data wants a
 different shape at a different size. `StageSelect` is a row of numbered discs

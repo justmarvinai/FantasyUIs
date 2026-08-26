@@ -1,0 +1,204 @@
+/* DeckList — every card, in curve order, with copies and dust owed. */
+
+.fui-decklist {
+  --fui-decklist-h: 380px;
+
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  max-width: 320px;
+  padding: 12px;
+  border-radius: 6px;
+  background: var(--fui-panel-fill-src, none) center / 100% 100%;
+  background-color: color-mix(in srgb, var(--fui-panel-ink, #14100c) 82%, transparent);
+  color: var(--fui-text, #e8e0cd);
+  font-family: var(--fui-font-ui, system-ui, sans-serif);
+}
+
+.fui-decklist__head { display: flex; align-items: center; gap: 10px; }
+
+.fui-decklist__names { flex: 1; display: grid; gap: 0; min-width: 0; }
+
+.fui-decklist__name {
+  font: var(--fui-font-title, 700 14px/1.2 system-ui, sans-serif);
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fui-decklist__class {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--fui-accent, #6fb3a8) 85%, transparent);
+}
+
+.fui-decklist__count {
+  padding: 3px 9px;
+  border-radius: 10px;
+  background: color-mix(in srgb, #000 45%, transparent);
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 68%, transparent);
+}
+
+.fui-decklist__count[data-state='full'] { color: var(--fui-success, #7fb069); }
+.fui-decklist__count[data-state='over'] { color: var(--fui-danger, #d8543f); }
+
+/* ── Rows ───────────────────────────────────────────────────────────────── */
+
+.fui-decklist__list {
+  display: grid;
+  gap: 2px;
+  max-height: var(--fui-decklist-h);
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.fui-decklist__row {
+  /* Not `transparent`: color-mix carries alpha through, so mixing 70% of it
+     into the text colour prints every common card's name at 30% opacity over
+     its own artwork. A common card's rarity colour *is* the text colour. */
+  --fui-decklist-rarity: var(--fui-text, #e8e0cd);
+
+  position: relative;
+  display: grid;
+  grid-template-columns: 26px 1fr auto;
+  align-items: center;
+  gap: 8px;
+  height: 28px;
+  padding-right: 6px;
+  border-radius: 3px;
+  overflow: hidden;
+  /* The art bleeds in from the right under a dark scrim, which is what makes a
+     deck list scannable by picture as well as by name. */
+  background: color-mix(in srgb, var(--fui-panel-ink, #14100c) 60%, transparent);
+}
+
+.fui-decklist__row[data-rarity='rare'] { --fui-decklist-rarity: #4a8ede; }
+.fui-decklist__row[data-rarity='epic'] { --fui-decklist-rarity: #a335ee; }
+.fui-decklist__row[data-rarity='legendary'] { --fui-decklist-rarity: #ff8000; }
+.fui-decklist__row[data-rarity='mythic'] { --fui-decklist-rarity: #e6cc80; }
+
+.fui-decklist__strip {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 58%;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--fui-panel-ink, #14100c) 96%, transparent) 30%, transparent 96%),
+    var(--fui-decklist-art, none) center / cover no-repeat;
+  opacity: 0.42;
+  pointer-events: none;
+}
+
+.fui-decklist__cost {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 100%;
+  background: linear-gradient(180deg, #2c6fae, #123a63);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.fui-decklist__cardname {
+  position: relative;
+  z-index: 1;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95);
+  /* Rarity lives in the name's colour rather than a gem, because a 28px row has
+     no space for one and the name is what a player reads anyway. */
+  color: color-mix(in srgb, var(--fui-decklist-rarity) 70%, var(--fui-text, #e8e0cd));
+}
+
+.fui-decklist__copies,
+.fui-decklist__craft {
+  position: relative;
+  z-index: 1;
+  min-width: 20px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--fui-gold, #e0b04a);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95);
+}
+
+/* A missing card is a shopping-list entry, not an error — it keeps its row and
+   swaps the copy count for what it would cost to craft. */
+.fui-decklist__row[data-missing='on'] .fui-decklist__strip { filter: grayscale(1); opacity: 0.3; }
+.fui-decklist__row[data-missing='on'] .fui-decklist__cardname { opacity: 0.62; }
+
+.fui-decklist__craft {
+  color: #9fd8f0;
+  font-size: 11px;
+}
+
+.fui-decklist__craft::after { content: ' ✦'; opacity: 0.7; }
+
+/* A legendary can only be run once, so it shows a star instead of a "1" — the
+   number would suggest you could have two. */
+.fui-decklist__unique {
+  position: relative;
+  z-index: 1;
+  width: 12px;
+  height: 12px;
+  clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  background: var(--fui-gold, #e0b04a);
+}
+
+.fui-decklist__drop {
+  position: relative;
+  z-index: 1;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 0;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--fui-danger, #d8543f) 22%, transparent);
+  color: var(--fui-danger, #d8543f);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 130ms ease-out;
+}
+
+.fui-decklist__row:hover .fui-decklist__drop,
+.fui-decklist__drop:focus-visible { opacity: 1; }
+
+.fui-decklist__empty {
+  margin: 0;
+  padding: 26px 0;
+  text-align: center;
+  font-size: 12px;
+  font-style: italic;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 40%, transparent);
+}
+
+.fui-decklist__dust {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  color: #9fd8f0;
+}
+
+.fui-decklist__dust[data-empty='on'] { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fui-decklist__drop { transition: none; }
+}

@@ -22,6 +22,9 @@ import { GUILD } from './demos/guild.ts';
 import { SIGNALS } from './demos/signals.ts';
 import { CHAPTERS } from './demos/chapters.ts';
 import { BUTTONS } from './demos/buttons.ts';
+import { CARDS } from './demos/cards.ts';
+import { BOARD } from './demos/board.ts';
+import { DECKBUILD } from './demos/deckbuild.ts';
 
 /** Every documented component, in the order the gallery lists them. */
 export const CATALOG: CatalogEntry[] = [
@@ -49,9 +52,20 @@ export const CATALOG: CatalogEntry[] = [
   ...SIGNALS,
   ...SCREENS,
   ...CHAPTERS,
+
+  // ── Card games ──
+  ...CARDS,
+  ...BOARD,
+  ...DECKBUILD,
 ];
 
 export const CATALOG_BY_ID = new Map(CATALOG.map((c) => [c.id, c]));
 
-export { GROUP_LABELS, GROUP_ORDER } from './types.ts';
-export type { CatalogEntry, CatalogGroup, Demo } from './types.ts';
+export {
+  GROUP_LABELS,
+  GROUP_ORDER,
+  COLLECTION_LABELS,
+  COLLECTION_ORDER,
+  COLLECTION_GROUPS,
+} from './types.ts';
+export type { CatalogEntry, CatalogGroup, Collection, Demo } from './types.ts';

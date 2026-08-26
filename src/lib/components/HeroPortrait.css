@@ -1,0 +1,215 @@
+/* HeroPortrait — the thing at each end of the board that everything aims at. */
+
+.fui-hero {
+  --fui-hero-size: 120px;
+  --fui-hero-ink: var(--fui-accent, #6fb3a8);
+
+  position: relative;
+  display: block;
+  width: var(--fui-hero-size);
+  height: calc(var(--fui-hero-size) * 1.16);
+  font-size: calc(var(--fui-hero-size) / 11);
+  font-family: var(--fui-font-ui, system-ui, sans-serif);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  isolation: isolate;
+  transition: transform 160ms cubic-bezier(0.2, 0.9, 0.25, 1);
+}
+
+.fui-hero[data-side='enemy'] { --fui-hero-ink: var(--fui-danger, #d8543f); }
+
+.fui-hero__portrait {
+  position: absolute;
+  left: 8%;
+  top: 2%;
+  width: 84%;
+  aspect-ratio: 1;
+  /* A hexagon: a hero is not a minion, and the silhouette says so before the
+     size does. */
+  clip-path: polygon(50% 0, 95% 25%, 95% 75%, 50% 100%, 5% 75%, 5% 25%);
+  background: var(--fui-hero-art, none) center / cover no-repeat,
+    color-mix(in srgb, #000 55%, transparent);
+}
+
+.fui-hero__rim {
+  position: absolute;
+  left: 4%;
+  top: -1%;
+  width: 92%;
+  aspect-ratio: 1;
+  clip-path: polygon(50% 0, 95% 25%, 95% 75%, 50% 100%, 5% 75%, 5% 25%);
+  background: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--fui-hero-ink) 75%, #2a2118),
+    color-mix(in srgb, var(--fui-hero-ink) 25%, #14100c)
+  );
+  z-index: -1;
+  pointer-events: none;
+}
+
+.fui-hero__frost {
+  position: absolute;
+  left: 8%;
+  top: 2%;
+  width: 84%;
+  aspect-ratio: 1;
+  clip-path: polygon(50% 0, 95% 25%, 95% 75%, 50% 100%, 5% 75%, 5% 25%);
+  background:
+    linear-gradient(160deg, rgba(150, 220, 255, 0.42), rgba(70, 130, 200, 0.32)),
+    repeating-linear-gradient(60deg, rgba(255, 255, 255, 0.26) 0 0.15em, transparent 0.15em 0.6em);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.fui-hero[data-frozen='on'] .fui-hero__frost { opacity: 1; }
+
+.fui-hero[data-immune='on'] .fui-hero__rim {
+  background: linear-gradient(160deg, #f5e08a, #a8791f);
+  filter: drop-shadow(0 0 0.6em rgba(245, 224, 138, 0.8));
+}
+
+.fui-hero[data-targeted='on'] .fui-hero__rim {
+  filter: drop-shadow(0 0 0.7em color-mix(in srgb, var(--fui-danger, #d8543f) 90%, transparent));
+}
+
+/* ── Name plate ─────────────────────────────────────────────────────────── */
+
+.fui-hero__plate {
+  position: absolute;
+  left: -8%;
+  right: -8%;
+  bottom: 0.1em;
+  display: grid;
+  justify-items: center;
+  gap: 0;
+  pointer-events: none;
+}
+
+.fui-hero__name {
+  font-size: 0.95em;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #f4ead6;
+  text-shadow: 0 0.12em 0.24em rgba(0, 0, 0, 0.95);
+  white-space: nowrap;
+}
+
+.fui-hero__class {
+  font-size: 0.72em;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--fui-hero-ink) 85%, #fff);
+  text-shadow: 0 0.12em 0.24em rgba(0, 0, 0, 0.95);
+  white-space: nowrap;
+}
+
+/* ── Gems ───────────────────────────────────────────────────────────────── */
+
+.fui-hero__health,
+.fui-hero__attack,
+.fui-hero__armour {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 0.11em solid rgba(0, 0, 0, 0.7);
+  box-shadow: 0 0.15em 0.35em rgba(0, 0, 0, 0.65);
+  color: #fff;
+  font: 900 1.25em/1 var(--fui-font-display, system-ui, sans-serif);
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0.06em 0.12em rgba(0, 0, 0, 0.9);
+  pointer-events: none;
+}
+
+.fui-hero__health {
+  right: -2%;
+  bottom: 22%;
+  width: 2.4em;
+  height: 2.4em;
+  background:
+    radial-gradient(circle at 38% 30%, rgba(255, 255, 255, 0.6), transparent 45%),
+    radial-gradient(circle at 50% 60%, #f57f6f 0%, #b52f1f 55%, #661209 100%);
+}
+
+.fui-hero__health[data-low='on'] {
+  animation: fui-hero-lowpulse 1.2s ease-in-out infinite;
+}
+
+.fui-hero__attack {
+  left: -2%;
+  bottom: 22%;
+  width: 2.4em;
+  height: 2.4em;
+  background:
+    radial-gradient(circle at 38% 30%, rgba(255, 255, 255, 0.6), transparent 45%),
+    radial-gradient(circle at 50% 60%, #f5c86f 0%, #c07a1f 55%, #6a3d09 100%);
+}
+
+/* Armour is its own gem, and damage() spends it first. Folding it into health
+   is why "you are on 24 but really 29" is the maths players get wrong. A
+   shield-shaped clip says it behaves differently before the number is read. */
+.fui-hero__armour {
+  right: -6%;
+  bottom: 48%;
+  width: 2em;
+  height: 2.2em;
+  border: 0;
+  border-radius: 0;
+  clip-path: polygon(50% 0, 100% 18%, 100% 62%, 50% 100%, 0 62%, 0 18%);
+  background: linear-gradient(180deg, #d6dde6, #5c6a7a);
+  color: #14202c;
+  font-size: 1.05em;
+  text-shadow: none;
+}
+
+/* ── Effects ────────────────────────────────────────────────────────────── */
+
+.fui-hero__effects {
+  position: absolute;
+  left: 50%;
+  top: -0.6em;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.25em;
+  pointer-events: none;
+}
+
+.fui-hero__effects[data-empty='on'] { display: none; }
+
+.fui-hero__effect {
+  width: 1.3em;
+  height: 1.3em;
+  background-color: #cfe4ff;
+  mask: var(--fui-hero-glyph, var(--fui-mask-none)) center / contain no-repeat;
+  -webkit-mask: var(--fui-hero-glyph, var(--fui-mask-none)) center / contain no-repeat;
+  filter: drop-shadow(0 0.08em 0.16em rgba(0, 0, 0, 0.9));
+}
+
+/* ── States ─────────────────────────────────────────────────────────────── */
+
+.fui-hero:hover { transform: translateY(-0.3em); }
+
+.fui-hero[data-hurt='on'] { animation: fui-hero-hit 300ms var(--fui-ease, ease-out); }
+
+.fui-hero:focus-visible {
+  outline: 0.16em solid var(--fui-accent, #d8c9a6);
+  outline-offset: 0.25em;
+}
+
+@keyframes fui-hero-lowpulse {
+  50% { filter: brightness(1.5); }
+}
+
+@keyframes fui-hero-hit {
+  0%, 100% { transform: none; }
+  25% { transform: translateX(-0.4em) rotate(-2deg); }
+  75% { transform: translateX(0.4em) rotate(2deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fui-hero,
+  .fui-hero__health[data-low='on'],
+  .fui-hero[data-hurt='on'] { transition: none; animation: none; }
+  .fui-hero:hover { transform: none; }
+}

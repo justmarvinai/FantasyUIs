@@ -1,0 +1,97 @@
+/* BoardLane — a row of minions in play, with an insertion gap. */
+
+.fui-lane {
+  --fui-lane-size: 92px;
+  --fui-lane-ink: var(--fui-accent, #6fb3a8);
+
+  display: grid;
+  gap: 6px;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-family: var(--fui-font-ui, system-ui, sans-serif);
+  /* A shallow trough, so the row reads as a place things sit rather than as
+     floating tokens. */
+  background:
+    linear-gradient(180deg,
+      color-mix(in srgb, #000 30%, transparent),
+      color-mix(in srgb, var(--fui-lane-ink) 8%, transparent));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.fui-lane[data-side='enemy'] { --fui-lane-ink: var(--fui-danger, #d8543f); }
+
+.fui-lane__row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 10px;
+  min-height: calc(var(--fui-lane-size) * 1.2);
+}
+
+.fui-lane__slot {
+  transition: margin 160ms cubic-bezier(0.2, 0.9, 0.25, 1);
+}
+
+/* The gap opens on the side the pointer is nearer, which is what makes a drop
+   land where the player is looking. Position matters on a board — adjacency
+   buffs, splash damage, deathrattle order — so "the end" is not good enough. */
+.fui-lane[data-inserting='on'] .fui-lane__slot[data-gap='left'] {
+  margin-right: calc(var(--fui-lane-size) * 0.3);
+}
+
+.fui-lane[data-inserting='on'] .fui-lane__slot[data-gap='right'] {
+  margin-left: calc(var(--fui-lane-size) * 0.3);
+}
+
+.fui-lane[data-inserting='on'] .fui-lane__row::after {
+  content: '';
+  position: absolute;
+}
+
+.fui-lane[data-droppable='on'][data-inserting='on'] {
+  outline: 1px dashed color-mix(in srgb, var(--fui-lane-ink) 60%, transparent);
+  outline-offset: -3px;
+}
+
+/* A full board refuses the drop rather than accepting it and failing on the
+   server, and says which limit was hit. */
+.fui-lane[data-full='on'] {
+  outline: 1px dashed color-mix(in srgb, var(--fui-danger, #d8543f) 70%, transparent);
+  outline-offset: -3px;
+}
+
+.fui-lane__empty {
+  margin: 0;
+  align-self: center;
+  font-size: 12px;
+  font-style: italic;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 30%, transparent);
+}
+
+.fui-lane__foot {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.fui-lane__label {
+  flex: 1;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 42%, transparent);
+}
+
+.fui-lane__count {
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 60%, transparent);
+}
+
+.fui-lane__count[data-full='on'] { color: var(--fui-danger, #d8543f); }
+
+@media (prefers-reduced-motion: reduce) {
+  .fui-lane__slot { transition: none; }
+}

@@ -1,0 +1,285 @@
+/* Minion — a card once it hits the board: a round token with status overlays,
+   which is a different object from the rectangle it was in hand. */
+
+.fui-minion {
+  --fui-minion-size: 92px;
+  --fui-minion-ink: #6fb3a8;
+
+  position: relative;
+  display: block;
+  width: var(--fui-minion-size);
+  height: calc(var(--fui-minion-size) * 1.12);
+  font-size: calc(var(--fui-minion-size) / 9);
+  font-family: var(--fui-font-ui, system-ui, sans-serif);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  isolation: isolate;
+  transition: transform 160ms cubic-bezier(0.2, 0.9, 0.25, 1), filter 160ms ease-out;
+}
+
+.fui-minion[data-side='enemy'] { --fui-minion-ink: #d8543f; }
+
+/* ── Portrait ───────────────────────────────────────────────────────────── */
+
+.fui-minion__portrait {
+  position: absolute;
+  left: 6%;
+  top: 2%;
+  width: 88%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--fui-minion-art, none) center / cover no-repeat,
+    color-mix(in srgb, #000 55%, transparent);
+  box-shadow: inset 0 0 1.2em rgba(0, 0, 0, 0.7);
+}
+
+.fui-minion__rim {
+  position: absolute;
+  left: 6%;
+  top: 2%;
+  width: 88%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 0.22em solid color-mix(in srgb, var(--fui-minion-ink) 55%, #241c14);
+  box-shadow: 0 0.25em 0.6em rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+}
+
+.fui-minion[data-elite='on'] .fui-minion__rim {
+  border-color: var(--fui-gold, #e0b04a);
+  box-shadow:
+    0 0 0.8em color-mix(in srgb, var(--fui-gold, #e0b04a) 55%, transparent),
+    0 0.25em 0.6em rgba(0, 0, 0, 0.6);
+}
+
+/* ── Overlays. They stack on purpose: a taunt shield, a divine-shield halo and
+   a frozen sheet all read at once, which is the case a single status border
+   cannot handle and the case that decides a turn. ──────────────────────── */
+
+/* Taunt: a slab behind the token, wider than it, reading as a body blocking. */
+.fui-minion__taunt {
+  position: absolute;
+  left: -6%;
+  top: -4%;
+  width: 112%;
+  height: 104%;
+  clip-path: polygon(50% 0, 100% 22%, 92% 88%, 50% 100%, 8% 88%, 0 22%);
+  background: linear-gradient(180deg, #b9a271, #6d5a34);
+  box-shadow: 0 0.3em 0.7em rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.fui-minion[data-taunt='on'] .fui-minion__taunt { opacity: 1; }
+
+.fui-minion__shield {
+  position: absolute;
+  left: 1%;
+  top: -3%;
+  width: 98%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 0.18em solid #ffe89a;
+  box-shadow:
+    0 0 0.9em rgba(255, 232, 154, 0.85),
+    inset 0 0 0.8em rgba(255, 232, 154, 0.55);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms ease-out, transform 200ms ease-out;
+}
+
+.fui-minion[data-divineshield='on'] .fui-minion__shield { opacity: 1; }
+
+/* The shield pops rather than fading, so losing it is an event. */
+.fui-minion[data-popped='on'] .fui-minion__shield {
+  opacity: 0;
+  transform: scale(1.4);
+}
+
+.fui-minion__frost {
+  position: absolute;
+  left: 6%;
+  top: 2%;
+  width: 88%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    linear-gradient(160deg, rgba(150, 220, 255, 0.45), rgba(70, 130, 200, 0.35)),
+    repeating-linear-gradient(60deg, rgba(255, 255, 255, 0.28) 0 0.15em, transparent 0.15em 0.6em);
+  box-shadow: inset 0 0 0.8em rgba(200, 240, 255, 0.7);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.fui-minion[data-frozen='on'] .fui-minion__frost { opacity: 1; }
+
+/* Stealth: a minion that is there but cannot be targeted. Ghosting the whole
+   token is what says "you cannot click this" without a tooltip. */
+.fui-minion[data-stealth='on'] .fui-minion__portrait { opacity: 0.42; }
+.fui-minion[data-stealth='on'] .fui-minion__rim {
+  border-style: dashed;
+  opacity: 0.6;
+}
+
+.fui-minion[data-silenced='on'] .fui-minion__portrait { filter: grayscale(0.85); }
+
+/* ── Sleep and exhaustion. Different states, same consequence — and games
+   conflate them constantly. The zzz says "next turn", the grey-out says
+   "already went". ─────────────────────────────────────────────────────── */
+
+.fui-minion__zzz {
+  position: absolute;
+  right: 2%;
+  top: 0;
+  font-size: 1.2em;
+  font-weight: 700;
+  color: #cfe4ff;
+  text-shadow: 0 0.1em 0.2em rgba(0, 0, 0, 0.9);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* The animation lives on the state, not on the base rule. A running animation
+   wins over the declaration it fill-modes into, so a keyframe holding
+   `opacity: 1` here would light the marker on every minion on the board. */
+.fui-minion[data-asleep='on'] .fui-minion__zzz {
+  opacity: 1;
+  animation: fui-minion-zzz 2.4s ease-in-out infinite;
+}
+.fui-minion[data-asleep='on'] { cursor: default; }
+
+.fui-minion[data-exhausted='on'] .fui-minion__portrait { filter: grayscale(0.7) brightness(0.6); }
+.fui-minion[data-exhausted='on'] { cursor: default; }
+
+/* ── Stat gems ──────────────────────────────────────────────────────────── */
+
+.fui-minion__attack,
+.fui-minion__health {
+  position: absolute;
+  bottom: 0;
+  width: 2.3em;
+  height: 2.3em;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 0.11em solid rgba(0, 0, 0, 0.7);
+  box-shadow: 0 0.15em 0.35em rgba(0, 0, 0, 0.65);
+  color: #fff;
+  font: 900 1.3em/1 var(--fui-font-display, system-ui, sans-serif);
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0.06em 0.12em rgba(0, 0, 0, 0.9);
+  pointer-events: none;
+}
+
+.fui-minion__attack {
+  left: -2%;
+  background:
+    radial-gradient(circle at 38% 30%, rgba(255, 255, 255, 0.6), transparent 45%),
+    radial-gradient(circle at 50% 60%, #f5c86f 0%, #c07a1f 55%, #6a3d09 100%);
+}
+
+.fui-minion__health {
+  right: -2%;
+  background:
+    radial-gradient(circle at 38% 30%, rgba(255, 255, 255, 0.6), transparent 45%),
+    radial-gradient(circle at 50% 60%, #f57f6f 0%, #b52f1f 55%, #661209 100%);
+}
+
+.fui-minion__attack[data-buffed='on'] { color: #6dff9a; }
+/* Damage brightens the gem rather than the digit. Red text on the red health
+   gem is the obvious-looking choice and it scores 1.6:1 — the one number a
+   player reads mid-combat, unreadable. */
+.fui-minion__health[data-damaged='on'] {
+  color: #fff2f2;
+  background:
+    radial-gradient(circle at 38% 30%, rgba(255, 255, 255, 0.72), transparent 45%),
+    radial-gradient(circle at 50% 60%, #ff9a86 0%, #e03a22 55%, #7d1408 100%);
+}
+
+/* ── Keyword marks ──────────────────────────────────────────────────────── */
+
+/* Only keywords with no overlay of their own get a chip, or a taunt would be
+   announced twice — once by its shield and once here. */
+.fui-minion__marks {
+  position: absolute;
+  left: 50%;
+  bottom: 1.9em;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.2em;
+  pointer-events: none;
+}
+
+.fui-minion__mark {
+  width: 0.85em;
+  height: 0.85em;
+  border-radius: 50%;
+  border: 0.08em solid rgba(0, 0, 0, 0.6);
+}
+
+.fui-minion__mark[data-kw='windfury'] { background: #6fd0f0; }
+.fui-minion__mark[data-kw='poisonous'] { background: #6fd06f; }
+.fui-minion__mark[data-kw='lifesteal'] { background: #c86ff0; }
+.fui-minion__mark[data-kw='rush'] { background: #f0a06f; }
+.fui-minion__mark[data-kw='immune'] { background: #f0e06f; }
+
+.fui-minion__mark[data-kw='enchant'] {
+  border: 0;
+  border-radius: 0;
+  background-color: #b9e8ff;
+  mask: var(--fui-minion-ench, var(--fui-mask-none)) center / contain no-repeat;
+  -webkit-mask: var(--fui-minion-ench, var(--fui-mask-none)) center / contain no-repeat;
+}
+
+.fui-minion__name {
+  position: absolute;
+  left: -12%;
+  right: -12%;
+  bottom: -1.3em;
+  text-align: center;
+  font-size: 0.82em;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 70%, transparent);
+  text-shadow: 0 0.1em 0.2em rgba(0, 0, 0, 0.9);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0;
+  transition: opacity 140ms ease-out;
+  pointer-events: none;
+}
+
+.fui-minion:hover .fui-minion__name,
+.fui-minion:focus-visible .fui-minion__name { opacity: 1; }
+
+/* ── States ─────────────────────────────────────────────────────────────── */
+
+.fui-minion:not([data-asleep='on']):not([data-exhausted='on']):hover {
+  transform: translateY(-0.4em) scale(1.05);
+}
+
+.fui-minion[data-hurt='on'] { animation: fui-minion-hit 260ms var(--fui-ease, ease-out); }
+
+.fui-minion:focus-visible {
+  outline: 0.16em solid var(--fui-accent, #d8c9a6);
+  outline-offset: 0.2em;
+  border-radius: 50%;
+}
+
+@keyframes fui-minion-zzz {
+  0%, 100% { transform: translateY(0); opacity: 1; }
+  50% { transform: translateY(-0.3em); opacity: 0.5; }
+}
+
+@keyframes fui-minion-hit {
+  0%, 100% { transform: none; }
+  30% { transform: translateX(-0.35em) rotate(-3deg); }
+  70% { transform: translateX(0.35em) rotate(3deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fui-minion,
+  .fui-minion__zzz,
+  .fui-minion[data-hurt='on'] { transition: none; animation: none; }
+  .fui-minion:hover { transform: none; }
+}

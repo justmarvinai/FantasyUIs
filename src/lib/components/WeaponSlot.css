@@ -1,0 +1,140 @@
+/* WeaponSlot — the equipped weapon beside the hero. */
+
+.fui-weaponslot {
+  --fui-weapon-size: 72px;
+  --fui-weapon-ink: #c9a248;
+
+  position: relative;
+  display: block;
+  width: var(--fui-weapon-size);
+  height: var(--fui-weapon-size);
+  font-size: calc(var(--fui-weapon-size) / 8);
+  font-family: var(--fui-font-ui, system-ui, sans-serif);
+  user-select: none;
+  -webkit-user-select: none;
+  isolation: isolate;
+}
+
+.fui-weaponslot:not([data-empty='on']) { cursor: pointer; }
+
+/* The socket is permanent: a weapon appearing and vanishing from the layout
+   shifts the hero every time one breaks, and an empty socket also tells a new
+   player that a weapon is a thing they could have. */
+.fui-weaponslot__socket {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 0.16em dashed color-mix(in srgb, var(--fui-text, #e8e0cd) 22%, transparent);
+  background: color-mix(in srgb, #000 40%, transparent);
+}
+
+.fui-weaponslot:not([data-empty='on']) .fui-weaponslot__socket {
+  border-style: solid;
+  border-color: color-mix(in srgb, var(--fui-weapon-ink) 65%, #2a2118);
+  box-shadow: 0 0.2em 0.5em rgba(0, 0, 0, 0.55);
+}
+
+.fui-weaponslot__art {
+  position: absolute;
+  inset: 12%;
+  border-radius: 50%;
+  background: var(--fui-weapon-art, none) center / cover no-repeat,
+    color-mix(in srgb, #000 45%, transparent);
+  box-shadow: inset 0 0 0.9em rgba(0, 0, 0, 0.7);
+}
+
+/* Used this turn: the weapon is still equipped and still has durability, it
+   just cannot swing again — so it dims rather than greying out entirely. */
+.fui-weaponslot[data-used='on'] .fui-weaponslot__art { filter: brightness(0.6) saturate(0.7); }
+
+.fui-weaponslot__attack,
+.fui-weaponslot__dur {
+  position: absolute;
+  bottom: -0.1em;
+  width: 2.1em;
+  height: 2.1em;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 0.1em solid rgba(0, 0, 0, 0.7);
+  box-shadow: 0 0.14em 0.32em rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font: 900 1.2em/1 var(--fui-font-display, system-ui, sans-serif);
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0.06em 0.12em rgba(0, 0, 0, 0.9);
+  pointer-events: none;
+}
+
+.fui-weaponslot__attack {
+  left: -0.1em;
+  background:
+    radial-gradient(circle at 38% 30%, rgba(255, 255, 255, 0.6), transparent 45%),
+    radial-gradient(circle at 50% 60%, #f5c86f 0%, #c07a1f 55%, #6a3d09 100%);
+}
+
+/* Durability is steel, not blood — a weapon breaking is not the hero dying. */
+.fui-weaponslot__dur {
+  right: -0.1em;
+  background:
+    radial-gradient(circle at 38% 30%, rgba(255, 255, 255, 0.65), transparent 45%),
+    radial-gradient(circle at 50% 60%, #d6dde6 0%, #7c8b9c 55%, #39434e 100%);
+  color: #16202b;
+  text-shadow: none;
+}
+
+.fui-weaponslot__dur[data-damaged='on'] { color: #7a1d12; }
+
+/* One swing left is the number that changes a turn's plan, so it pulses. */
+.fui-weaponslot__dur[data-low='on'] {
+  animation: fui-weapon-last 1.3s ease-in-out infinite;
+}
+
+.fui-weaponslot__tip {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 0.6em);
+  transform: translateX(-50%);
+  width: max(13em, 170px);
+  display: grid;
+  gap: 0.2em;
+  padding: 0.65em 0.85em;
+  border-radius: 0.4em;
+  background: color-mix(in srgb, var(--fui-panel-ink, #14100c) 97%, transparent);
+  border: 1px solid color-mix(in srgb, var(--fui-weapon-ink) 45%, transparent);
+  box-shadow: 0 0.6em 1.3em rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 140ms ease-out;
+  z-index: 20;
+}
+
+.fui-weaponslot:hover .fui-weaponslot__tip,
+.fui-weaponslot:focus-visible .fui-weaponslot__tip { opacity: 1; }
+
+.fui-weaponslot__tipname {
+  font-size: 1em;
+  font-weight: 700;
+  color: var(--fui-weapon-ink);
+}
+
+.fui-weaponslot__tiptext {
+  margin: 0;
+  font-size: 0.9em;
+  line-height: 1.35;
+  color: color-mix(in srgb, var(--fui-text, #e8e0cd) 80%, transparent);
+}
+
+.fui-weaponslot:focus-visible {
+  outline: 0.16em solid var(--fui-accent, #d8c9a6);
+  outline-offset: 0.25em;
+  border-radius: 50%;
+}
+
+@keyframes fui-weapon-last {
+  50% { filter: brightness(1.45); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fui-weaponslot__dur[data-low='on'] { animation: none; }
+  .fui-weaponslot__tip { transition: none; }
+}
